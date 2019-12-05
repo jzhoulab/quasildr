@@ -1,4 +1,4 @@
-#Quasilinear data representation
+# Quasilinear data representation
 
 Quasildr is a python library for quasilinear data representation methods. 
 It mainly implements two methods, a quasilinear data representation or visualization 
@@ -7,12 +7,12 @@ Estimation (NRE)**. The Quasildr package is developed for
 single-cell omics data analysis, but you can use it on other 
 data types as well. 
 
-##Install
+## Install
 
 Run `pip install .` in this directory.
 
 
-##Quick Start
+## Quick Start
 
 For quick start, see tutorials under `./tutorials/` directory.
 
