@@ -79,7 +79,7 @@ if __name__ == '__main__':
         refine_threshold=float(arguments['--refine_threshold']),no_rotation=arguments['--no_rotation'],
         rescale=True, method='auto', metric=arguments['--metric'])
 
-    pd.DataFrame(Z).to_csv(arguments['<input_file>']+ DOCSTR + '.drgraph',
+    pd.DataFrame(Z).to_csv(arguments['<input_file>']+ DOCSTR + '.graphdr',
                 sep='\t', index_label=False)
 
     if arguments['--plot']:
@@ -96,7 +96,3 @@ if __name__ == '__main__':
             p.save(arguments['<input_file>'] + DOCSTR + '.pdf')
         except ImportError:
             warnings.warn('plotnine needs to be installed for the plotting function.')
-
-
-
-

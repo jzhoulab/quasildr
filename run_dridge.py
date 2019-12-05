@@ -94,7 +94,7 @@ if opt.anno_file != "":
     anno = pd.read_csv(opt.anno_file, sep='\t')
 
 if opt.bigdata and data.shape[0] > 5000:
-    datas = quasildr.utils.coarsify(data)
+    datas = dridge.multilevel_compression(data)
     s = dridge.Scms(datas[0], bw=bw, min_radius=opt.adaptive_bw)
 else:
     s = dridge.Scms(data, bw=bw, min_radius=opt.adaptive_bw)
