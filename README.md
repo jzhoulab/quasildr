@@ -1,4 +1,5 @@
-# Quasilinear data representation for single-cell omics data analysis
+# Quasilinear data representations 
+## for single-cell omics data analysis
 
 Quasildr is a python library for quasilinear data representation methods. 
 It mainly implements two methods, a quasilinear data representation or visualization 
