@@ -1,0 +1,778 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>quasildr.graphdr &mdash; Quasildr 0.1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="quasildr.structdr" href="structdr.html" />
+    <link rel="prev" title="Tutorials" href="Tutorials.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="main.html" class="icon icon-home"> Quasildr
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Introduction</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Tutorials.html">Tutorials</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Python API</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">quasildr.graphdr</a></li>
+<li class="toctree-l1"><a class="reference internal" href="structdr.html">quasildr.structdr</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">quasildr.utils</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="main.html">Quasildr</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="main.html">Docs</a> &raquo;</li>
+        
+      <li>quasildr.graphdr</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/graphdr.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-quasildr.graphdr">
+<span id="quasildr-graphdr"></span><h1>quasildr.graphdr<a class="headerlink" href="#module-quasildr.graphdr" title="Permalink to this headline">¶</a></h1>
+<p>This module implements the quaslinear representation method GraphDR and relevant
+functions. The method is implemented in the graphdr function. A scikit-learn
+Estimator-like interface to graphdr is also provided through the GraphDR class.</p>
+<p><strong>Classes</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#quasildr.graphdr.GraphDR" title="quasildr.graphdr.GraphDR"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GraphDR</span></code></a>([n_neighbors, regularization, …])</p></td>
+<td><p>Quasilinear data representation that preserves interpretability of a linear space.</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Functions</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#quasildr.graphdr.cg" title="quasildr.graphdr.cg"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cg</span></code></a>(A, B[, x0, tol, atol, use_cuda])</p></td>
+<td><p>Solve X in linear equation AX = B when A is sparse with conjugate gradient method.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#quasildr.graphdr.graphdr" title="quasildr.graphdr.graphdr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">graphdr</span></code></a>(X[, n_neighbors, regularization, …])</p></td>
+<td><p>Quasilinear data representation that preserves interpretability of a linear space.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#quasildr.graphdr.knn_graph" title="quasildr.graphdr.knn_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">knn_graph</span></code></a>(X[, n_neighbors, space, …])</p></td>
+<td><p>Construct an approximate K-nearest neighbors graph with nmslib.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="class">
+<dt id="quasildr.graphdr.GraphDR">
+<em class="property">class </em><code class="sig-prename descclassname">quasildr.graphdr.</code><code class="sig-name descname">GraphDR</code><span class="sig-paren">(</span><em class="sig-param">n_neighbors=10</em>, <em class="sig-param">regularization=1000</em>, <em class="sig-param">n_components=None</em>, <em class="sig-param">no_rotation=False</em>, <em class="sig-param">metric='l2'</em>, <em class="sig-param">metric_params={}</em>, <em class="sig-param">method='auto'</em>, <em class="sig-param">_lambda=None</em>, <em class="sig-param">symmetrize=True</em>, <em class="sig-param">rescale=True</em>, <em class="sig-param">refine_iter=0</em>, <em class="sig-param">refine_threshold=12</em>, <em class="sig-param">_refine_threshold=None</em>, <em class="sig-param">tol=1e-07</em>, <em class="sig-param">atol=1e-15</em>, <em class="sig-param">nmslib_params={'post': 2}</em>, <em class="sig-param">n_jobs=1</em>, <em class="sig-param">n_jobs_nmslib=8</em>, <em class="sig-param">use_cuda=False</em>, <em class="sig-param">verbose=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/quasildr/graphdr.html#GraphDR"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#quasildr.graphdr.GraphDR" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.base.BaseEstimator</span></code></p>
+<p>Quasilinear data representation that preserves interpretability of a
+linear space.</p>
+<p>This class provides a scikit-learn type interface that wraps around
+the graphdr function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n_neighbors</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of nearest neigbors to compute per sample. Default is <cite>10</cite>.</p></li>
+<li><p><strong>regularization</strong> (<em>float</em><em>, </em><em>optional</em>) – Regularization parameter determines the weight on the graph shrinkage term
+relative to the reconstruction error term. A smaller regularization parameter
+leads to output that are more similar to a linear representation. A larger
+regularization parameter provides more contraction based on the graph. Default is <cite>100</cite>.</p></li>
+<li><p><strong>n_components</strong> (<em>int</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – Number of dimensions in the output. Specify a n_components smaller than the input
+dimension when <cite>no_rotation=True</cite> can reduce the amount of computation.
+Default is <cite>None</cite>.</p></li>
+<li><p><strong>no_rotation</strong> (<em>bool</em><em>, </em><em>optional</em>) – <span class="math notranslate nohighlight">\(W\)</span> is fixed to identity matrix so that the output is not rotated
+relative to input. no_rotation can also speed up the computation for large
+input when <cite>n_components</cite> is also specified, because only the required top
+<cite>n_components</cite> are computed. If <cite>no_rotation=True</cite>, you may consider preprocessing
+the input with another linear dimensionality reduction method like PCA.
+Default is <cite>False</cite>.</p></li>
+<li><p><strong>metric</strong> (<em>str</em><em>, </em><em>optional</em>) – <p>distance metric for constructing nearest_neighbors graph. Note that here
+<cite>metric</cite> can be non-metric distance function. The allowed values depend on
+the <cite>method</cite> specified. As three nearest neighbors algorithms are supported,
+and these algorithms support different distance metrics. Default is <cite>euclidean</cite>.
+* ‘small’ :</p>
+<blockquote>
+<div><p>Use sklearn.neighbors.kneighbors_graph
+Supported values are</p>
+<blockquote>
+<div><ul>
+<li><p>euclidean</p></li>
+<li><p>manhattan</p></li>
+<li><p>chebyshev</p></li>
+<li><p>minkowski</p></li>
+<li><p>wminkowski</p></li>
+<li><p>seuclidean</p></li>
+<li><p>mahalanobis</p></li>
+<li><p>hamming</p></li>
+<li><p>canberra</p></li>
+<li><p>braycurtis</p></li>
+</ul>
+</div></blockquote>
+<p>See <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.DistanceMetric.html">https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.DistanceMetric.html</a></p>
+</div></blockquote>
+<ul>
+<li><dl class="simple">
+<dt>’big_nndescent’ or ‘big_nnumap’ :</dt><dd><dl class="simple">
+<dt>umap.nndescent. Supported values are</dt><dd><ul>
+<li><p>euclidean</p></li>
+<li><p>manhattan</p></li>
+<li><p>chebyshev</p></li>
+<li><p>minkowski</p></li>
+<li><p>canberra</p></li>
+<li><p>braycurtis</p></li>
+<li><p>mahalanobis</p></li>
+<li><p>wminkowski</p></li>
+<li><p>seuclidean</p></li>
+<li><p>cosine</p></li>
+<li><p>correlation</p></li>
+<li><p>haversine</p></li>
+<li><p>hamming</p></li>
+<li><p>jaccard</p></li>
+<li><p>dice</p></li>
+<li><p>russelrao</p></li>
+<li><p>kulsinski</p></li>
+<li><p>rogerstanimoto</p></li>
+<li><p>sokalmichener</p></li>
+<li><p>sokalsneath</p></li>
+<li><p>yule</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+<li><p>’big_nmslib’ :</p></li>
+</ul>
+<dl class="simple">
+<dt>nmslib. See <a class="reference external" href="https://github.com/nmslib/nmslib/blob/master/manual/manual.pdf">https://github.com/nmslib/nmslib/blob/master/manual/manual.pdf</a> for details:</dt><dd><ul>
+<li><p>bit_hamming</p></li>
+<li><p>l1</p></li>
+<li><p>l1_sparse</p></li>
+<li><p>l2, euclidean</p></li>
+<li><p>l2_sparse</p></li>
+<li><p>linf</p></li>
+<li><p>linf_sparse</p></li>
+<li><p>lp:p=…</p></li>
+<li><p>lp_sparse:p=…</p></li>
+<li><p>angulardist, angulardist sparse, angulardist sparse fast</p></li>
+<li><p>jsmetrslow, jsmetrfast, jsmetrfastapprox</p></li>
+<li><p>leven</p></li>
+<li><p>sqfd minus func, sqfd heuristic func:alpha=…, sqfd gaussian func:alpha=…</p></li>
+<li><p>jsdivslow, jsdivfast, jsdivfastapprox</p></li>
+<li><p>cosinesimil, cosine, cosinesimil sparse</p></li>
+<li><p>normleven</p></li>
+<li><p>kldivfast</p></li>
+<li><p>kldivgenslow, kldivgenfast, kldivgenfastrq</p></li>
+<li><p>itakurasaitoslow, itakurasaitofast, itakurasaitofastrq</p></li>
+<li><p>negdotprod_sparse</p></li>
+<li><p>querynorm_negdotprod_sparse</p></li>
+<li><p>renyi_diverg</p></li>
+<li><p>ab_diverg</p></li>
+</ul>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>metric_params</strong> (<em>dict</em><em>, </em><em>optional</em>) – Some distance metrics requires additional arguments which can be provided as
+a dictionary. Default is <cite>{}</cite>.</p></li>
+<li><p><strong>method</strong> (<em>str</em><em>, </em><em>optional {'auto'</em><em>, </em><em>'small'</em><em>, </em><em>'big_nmslib'</em><em>, </em><em>'big_umap'</em><em>, </em><em>'big_nndescent'}</em>) – <p>Method to use. Different algorithms strongly affect the computation speed.
+Optimal choices are dependent on the input size. Default is <cite>auto</cite>.
+* ‘auto’</p>
+<blockquote>
+<div><p>Choose automatically based on input size. Recommended for most uses.</p>
+</div></blockquote>
+<ul>
+<li><dl class="simple">
+<dt>’small’</dt><dd><p>For input of small size, it is affordable to compute nearest-neigbors exactly
+and use matrix inversion in the algorithm.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>’big_nmslib’</dt><dd><p>For input of large size. If NMSlib is installed, it is the fastest algorithm that
+is supported.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>’big_nndescent’</dt><dd><p>For input of large size. The NN-Descent algorithm implemented in the the umap package.
+Do not require external libraries.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>’big_nnumap’</dt><dd><p>For input of large size. Do not require external libraries.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</p></li>
+<li><p><strong>_lambda</strong> (<em>float</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – Regularization parameter <span class="math notranslate nohighlight">\(\lambda\)</span>. If not specified <span class="math notranslate nohighlight">\(\lambda\)</span> is
+computed from <cite>regularization</cite>,
+specifying <cite>regularization</cite> instead of <cite>_lambda</cite> is generally recommended as it
+automatically adjusts based on graph density. Default is None.</p></li>
+<li><p><strong>symmetrize</strong> (<em>bool</em><em>, </em><em>optional</em>) – Symmetrize the nearest-neighbors graph by averaging with its transpose. Default is <cite>True</cite>.</p></li>
+<li><p><strong>rescale</strong> (<em>bool</em><em>, </em><em>optional</em>) – Rescale each dimension in the output to align with the input. It works with and without
+<cite>no_rotation</cite>. Default is <cite>False</cite></p></li>
+<li><p><strong>refine_iter</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of refinement iterations. Default is <cite>3</cite>.</p></li>
+<li><p><strong>refine_threshold</strong> (<em>float</em><em>, </em><em>optional</em>) – Specify the cutoff for refinement. Unit is IQR (distance between the 25% quantile and the 75% quantile)
+of overall “stress” distribution across all edges. Default is <cite>12</cite>.</p></li>
+<li><p><strong>_refine_threshold</strong> (<em>float</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – Used internally. Default is None.</p></li>
+<li><p><strong>atol</strong> (<em>tol</em><em>,</em>) – Tolerances for iterative linear solver <cite>norm(residual) &lt;= max(tol*norm(b), atol)</cite>.
+Default is <cite>tol=1e-7, atol=1e-15</cite>.</p></li>
+<li><p><strong>nmslib_params</strong> (<em>dict</em><em>, </em><em>optional</em>) – Parameters given to nmslib createIndex function.
+See <a class="reference external" href="https://github.com/nmslib/nmslib/blob/master/manual/methods.md">https://github.com/nmslib/nmslib/blob/master/manual/methods.md</a> for details.
+Default is <cite>{‘post’: 2}</cite>.</p></li>
+<li><p><strong>n_jobs</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of jobs to run in parallel. Specifying <cite>n_jobs &gt; 1</cite> can speed up computation
+when method is one of <cite>big_nmslib</cite>, <cite>big_nndescent</cite>, or <cite>big_nnumap</cite>. Note that
+when <cite>use_cuda=True</cite> specifying <cite>n_jobs</cite> does not run the jobs in parallel but
+can reduce amount of GPU memory required by splitting the problem and run sequentially.
+Default is 1.</p></li>
+<li><p><strong>n_jobs_nmslib</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of threads used by nmslib. Default is <cite>8</cite>.</p></li>
+<li><p><strong>use_cuda</strong> (<em>bool</em><em>, </em><em>optional</em>) – Use CUDA GPU acceleration. CuPy has to be installed (<a class="reference external" href="https://github.com/cupy/cupy">https://github.com/cupy/cupy</a>)
+and a CUDA-enabled GPU is required. Default is <cite>False</cite>.</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em><em>, </em><em>optional</em>) – Print additional information. Default is <cite>False</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Methods</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#quasildr.graphdr.GraphDR.fit" title="quasildr.graphdr.GraphDR.fit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit</span></code></a>(X[, y, custom_graph, init, …])</p></td>
+<td><p>Fit the model from data in X.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#quasildr.graphdr.GraphDR.fit_transform" title="quasildr.graphdr.GraphDR.fit_transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit_transform</span></code></a>(X[, y])</p></td>
+<td><p>Fit the model from data in X and transform X.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="quasildr.graphdr.GraphDR.embedding_">
+<code class="sig-name descname">embedding_</code><a class="headerlink" href="#quasildr.graphdr.GraphDR.embedding_" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>array, shape (n_samples, n_components)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="quasildr.graphdr.GraphDR.W_">
+<code class="sig-name descname">W_</code><a class="headerlink" href="#quasildr.graphdr.GraphDR.W_" title="Permalink to this definition">¶</a></dt>
+<dd><p>Left linear operator in the transformation Z = WXK. <a href="#id1"><span class="problematic" id="id2">W_</span></a> is None when <cite>no_rotation=True</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>array, shape (n_features, n_components)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="quasildr.graphdr.GraphDR.fit">
+<code class="sig-name descname">fit</code><span class="sig-paren">(</span><em class="sig-param">X</em>, <em class="sig-param">y=None</em>, <em class="sig-param">custom_graph=None</em>, <em class="sig-param">init=None</em>, <em class="sig-param">refine_protected_graph=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/quasildr/graphdr.html#GraphDR.fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#quasildr.graphdr.GraphDR.fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fit the model from data in X.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<em>array</em><em>, </em><em>shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em><em></em>) – X may be a sparse matrix. If self.skip_pca is true, X must be orthogonal.</p></li>
+<li><p><strong>y</strong> (<em>Ignored</em>) – </p></li>
+<li><p><strong>custom_graph</strong> (<em>sparse matrix</em><em>, </em><em>shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_samples</em><em>)</em><em>, </em><em>optional</em>) – If provided, use it instead of the graph constructed from X.</p></li>
+<li><p><strong>init</strong> (<em>array</em><em>, </em><em>optional</em>) – Initialize output representation Z with this array if solved through
+iterative solver. <cite>init</cite> is only used when <cite>self.no_rotation=True</cite>
+and <cite>self.method</cite> is not <cite>small</cite>.</p></li>
+<li><p><strong>refine_protected_graph</strong> (<em>sparse matrix</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>self</strong> – Returns the instance itself.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="quasildr.graphdr.GraphDR.fit_transform">
+<code class="sig-name descname">fit_transform</code><span class="sig-paren">(</span><em class="sig-param">X</em>, <em class="sig-param">y=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/quasildr/graphdr.html#GraphDR.fit_transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#quasildr.graphdr.GraphDR.fit_transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fit the model from data in X and transform X.
+:param X:
+:type X: array, shape (n_samples, n_features)
+:param y:
+:type y: Ignored</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>Z</strong> – Embedding of the input data.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>array, shape (n_samples, n_components)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="quasildr.graphdr.cg">
+<code class="sig-prename descclassname">quasildr.graphdr.</code><code class="sig-name descname">cg</code><span class="sig-paren">(</span><em class="sig-param">A</em>, <em class="sig-param">B</em>, <em class="sig-param">x0=None</em>, <em class="sig-param">tol=1e-07</em>, <em class="sig-param">atol=1e-15</em>, <em class="sig-param">use_cuda=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/quasildr/graphdr.html#cg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#quasildr.graphdr.cg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Solve X in linear equation AX = B when A is sparse with conjugate gradient method.
+Support GPU with use_cuda=True.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>A</strong> (<em>sparse matrix</em><em> or </em><em>array</em>) – A N-by-N matrix of the linear system.</p></li>
+<li><p><strong>B</strong> (<em>array</em>) – Right hand side of the linear system.</p></li>
+<li><p><strong>x0</strong> (<em>array</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – If specified, initialize the solution with x0.</p></li>
+<li><p><strong>atol</strong> (<em>tol</em><em>,</em>) – Tolerances for convergence <cite>norm(residual) &lt;= max(tol*norm(b), atol)</cite>.
+Default is <cite>tol=1e-7, atol=1e-15</cite>.</p></li>
+<li><p><strong>use_cuda</strong> (<em>bool</em><em>, </em><em>optional</em>) – Use GPU acceleration with CUDA. A GPU supporting CUDA is needed and CuPy
+package need to be installed.
+Default is <cite>False</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The solution to X.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="quasildr.graphdr.graphdr">
+<code class="sig-prename descclassname">quasildr.graphdr.</code><code class="sig-name descname">graphdr</code><span class="sig-paren">(</span><em class="sig-param">X</em>, <em class="sig-param">n_neighbors=10</em>, <em class="sig-param">regularization=100</em>, <em class="sig-param">n_components=None</em>, <em class="sig-param">no_rotation=False</em>, <em class="sig-param">metric='euclidean'</em>, <em class="sig-param">metric_params={}</em>, <em class="sig-param">method='auto'</em>, <em class="sig-param">_lambda=None</em>, <em class="sig-param">init=None</em>, <em class="sig-param">symmetrize=True</em>, <em class="sig-param">custom_graph=None</em>, <em class="sig-param">rescale=False</em>, <em class="sig-param">refine_iter=0</em>, <em class="sig-param">refine_threshold=12</em>, <em class="sig-param">_refine_threshold=None</em>, <em class="sig-param">refine_protected_graph=None</em>, <em class="sig-param">tol=1e-07</em>, <em class="sig-param">atol=1e-15</em>, <em class="sig-param">nmslib_params={'post': 2}</em>, <em class="sig-param">n_jobs=1</em>, <em class="sig-param">n_jobs_nmslib=8</em>, <em class="sig-param">use_cuda=False</em>, <em class="sig-param">verbose=False</em>, <em class="sig-param">return_all=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/quasildr/graphdr.html#graphdr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#quasildr.graphdr.graphdr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Quasilinear data representation that preserves interpretability of a linear space.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<em>array</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – The input array.</p></li>
+<li><p><strong>n_neighbors</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of nearest neigbors to compute per sample. Default is <cite>10</cite>.</p></li>
+<li><p><strong>regularization</strong> (<em>float</em><em>, </em><em>optional</em>) – Regularization parameter determines the weight on the graph shrinkage term
+relative to the reconstruction error term. A smaller regularization parameter
+leads to output that are more similar to a linear representation. A larger
+regularization parameter provides more contraction based on the graph. Default is <cite>100</cite>.</p></li>
+<li><p><strong>n_components</strong> (<em>int</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – Number of dimensions in the output. Specify a n_components smaller than the input
+dimension when <cite>no_rotation=True</cite> can reduce the amount of computation.
+Default is <cite>None</cite>.</p></li>
+<li><p><strong>no_rotation</strong> (<em>bool</em><em>, </em><em>optional</em>) – <dl class="field-list simple">
+<dt class="field-odd">param refine_protected_graph</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<p><span class="math notranslate nohighlight">\(W\)</span> is fixed to identity matrix so that the output is not rotated
+relative to input. no_rotation can also speed up the computation for large
+input when <cite>n_components</cite> is also specified, because only the required top
+<cite>n_components</cite> are computed. If <cite>no_rotation=True</cite>, you may consider preprocessing
+the input with another linear dimensionality reduction method like PCA.
+Default is <cite>False</cite>.</p>
+</p></li>
+<li><p><strong>metric</strong> (<em>str</em><em>, </em><em>optional</em>) – <p>distance metric for constructing nearest_neighbors graph. Note that here
+<cite>metric</cite> can be non-metric distance function. The allowed values depend on
+the <cite>method</cite> specified. As three nearest neighbors algorithms are supported,
+and these algorithms support different distance metrics. Default is <cite>euclidean</cite>.
+* ‘small’:</p>
+<blockquote>
+<div><p>Use sklearn.neighbors.kneighbors_graph
+Supported values are</p>
+<blockquote>
+<div><ul>
+<li><p>euclidean</p></li>
+<li><p>manhattan</p></li>
+<li><p>chebyshev</p></li>
+<li><p>minkowski</p></li>
+<li><p>wminkowski</p></li>
+<li><p>seuclidean</p></li>
+<li><p>mahalanobis</p></li>
+<li><p>hamming</p></li>
+<li><p>canberra</p></li>
+<li><p>braycurtis</p></li>
+</ul>
+</div></blockquote>
+<p>See <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.DistanceMetric.html">https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.DistanceMetric.html</a></p>
+</div></blockquote>
+<ul>
+<li><dl class="simple">
+<dt>’big_nndescent’ or ‘big_nnumap’:</dt><dd><dl class="simple">
+<dt>umap.nndescent. Supported values are</dt><dd><ul>
+<li><p>euclidean</p></li>
+<li><p>manhattan</p></li>
+<li><p>chebyshev</p></li>
+<li><p>minkowski</p></li>
+<li><p>canberra</p></li>
+<li><p>braycurtis</p></li>
+<li><p>mahalanobis</p></li>
+<li><p>wminkowski</p></li>
+<li><p>seuclidean</p></li>
+<li><p>cosine</p></li>
+<li><p>correlation</p></li>
+<li><p>haversine</p></li>
+<li><p>hamming</p></li>
+<li><p>jaccard</p></li>
+<li><p>dice</p></li>
+<li><p>russelrao</p></li>
+<li><p>kulsinski</p></li>
+<li><p>rogerstanimoto</p></li>
+<li><p>sokalmichener</p></li>
+<li><p>sokalsneath</p></li>
+<li><p>yule</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+<li><p>’big_nmslib’</p></li>
+</ul>
+<dl class="simple">
+<dt>nmslib. See <a class="reference external" href="https://github.com/nmslib/nmslib/blob/master/manual/manual.pdf">https://github.com/nmslib/nmslib/blob/master/manual/manual.pdf</a> for details:</dt><dd><ul>
+<li><p>bit_hamming</p></li>
+<li><p>l1</p></li>
+<li><p>l1_sparse</p></li>
+<li><p>l2, euclidean</p></li>
+<li><p>l2_sparse</p></li>
+<li><p>linf</p></li>
+<li><p>linf_sparse</p></li>
+<li><p>lp:p=…</p></li>
+<li><p>lp_sparse:p=…</p></li>
+<li><p>angulardist, angulardist sparse, angulardist sparse fast</p></li>
+<li><p>jsmetrslow, jsmetrfast, jsmetrfastapprox</p></li>
+<li><p>leven</p></li>
+<li><p>sqfd minus func, sqfd heuristic func:alpha=…, sqfd gaussian func:alpha=…</p></li>
+<li><p>jsdivslow, jsdivfast, jsdivfastapprox</p></li>
+<li><p>cosinesimil, cosine, cosinesimil sparse</p></li>
+<li><p>normleven</p></li>
+<li><p>kldivfast</p></li>
+<li><p>kldivgenslow, kldivgenfast, kldivgenfastrq</p></li>
+<li><p>itakurasaitoslow, itakurasaitofast, itakurasaitofastrq</p></li>
+<li><p>negdotprod_sparse</p></li>
+<li><p>querynorm_negdotprod_sparse</p></li>
+<li><p>renyi_diverg</p></li>
+<li><p>ab_diverg</p></li>
+</ul>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>metric_params</strong> (<em>dict</em><em>, </em><em>optional</em>) – Some distance metrics requires additional arguments which can be provided as
+a dictionary. Default is <cite>{}</cite>.</p></li>
+<li><p><strong>method</strong> (<em>str</em><em>, </em><em>optional {'auto'</em><em>, </em><em>'small'</em><em>, </em><em>'big_nmslib'</em><em>, </em><em>'big_umap'</em><em>, </em><em>'big_nndescent'}</em>) – <p>Method to use. Different algorithms strongly affect the computation speed.
+Optimal choices are dependent on the input size. Default is <cite>auto</cite>.
+* ‘auto’</p>
+<blockquote>
+<div><p>Choose automatically based on input size. Recommended for most uses.</p>
+</div></blockquote>
+<ul>
+<li><dl class="simple">
+<dt>’small’</dt><dd><p>For input of small size, it is affordable to compute nearest-neigbors exactly
+and use matrix inversion in the algorithm.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>’big_nmslib’</dt><dd><p>For input of large size. If NMSlib is installed, it is the fastest algorithm that
+is supported.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>’big_nndescent’</dt><dd><p>For input of large size. The NN-Descent algorithm implemented in the the umap package.
+Do not require external libraries.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>’big_nnumap’</dt><dd><p>For input of large size. Do not require external libraries.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</p></li>
+<li><p><strong>_lambda</strong> (<em>float</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – Regularization parameter <span class="math notranslate nohighlight">\(\lambda\)</span>. If not specified <span class="math notranslate nohighlight">\(\lambda\)</span> is
+computed from <cite>regularization</cite>,
+specifying <cite>regularization</cite> instead of <cite>_lambda</cite> is generally recommended as it
+automatically adjusts based on graph density. Default is None.</p></li>
+<li><p><strong>init</strong> (<em>array</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – Initialize output representation Z with this array if solved through iterative solver.
+<cite>init</cite> is only used when <cite>no_rotation=True</cite> and method is not <cite>small</cite>.
+Default is None.</p></li>
+<li><p><strong>symmetrize</strong> (<em>bool</em><em>, </em><em>optional</em>) – Symmetrize the nearest-neighbors graph by averaging with its transpose. Default is <cite>True</cite>.</p></li>
+<li><p><strong>custom_graph</strong> (<em>sparse matrix</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – If specified, use this user-provided graph instead of constructing nearest-neighbors
+graph from <cite>X</cite>. Default is None.</p></li>
+<li><p><strong>rescale</strong> (<em>bool</em><em>, </em><em>optional</em>) – Rescale each dimension in the output to align with the input. It works with and without
+<cite>no_rotation</cite>. Default is <cite>False</cite></p></li>
+<li><p><strong>refine_iter</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of refinement iterations. Default is <cite>3</cite>.</p></li>
+<li><p><strong>refine_threshold</strong> (<em>float</em><em>, </em><em>optional</em>) – Specify the cutoff for refinement. Unit is IQR (distance between the 25% quantile and the 75% quantile)
+of overall “stress” distribution across all edges. Default is <cite>12</cite>.</p></li>
+<li><p><strong>_refine_threshold</strong> (<em>float</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – Used internally. Default is None.</p></li>
+<li><p><strong>refine_protected_graph</strong> (<em>sparse matrix</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – Sparse matrix of size (n_samples, n_samples).
+Specify edges (any non-zero edges in refine_protected_graph) that will
+not be removed during refinement. Useful for graph construction for complex experimental designs
+like batch design so that edges connecting batches will not be removed. Default is <cite>None</cite>.</p></li>
+<li><p><strong>atol</strong> (<em>tol</em><em>,</em>) – Tolerances for iterative linear solver <cite>norm(residual) &lt;= max(tol*norm(b), atol)</cite>.
+Default is <cite>tol=1e-7, atol=1e-15</cite>.</p></li>
+<li><p><strong>nmslib_params</strong> (<em>dict</em><em>, </em><em>optional</em>) – Parameters given to nmslib createIndex function.
+See <a class="reference external" href="https://github.com/nmslib/nmslib/blob/master/manual/methods.md">https://github.com/nmslib/nmslib/blob/master/manual/methods.md</a> for details.
+Default is <cite>{‘post’: 2}</cite>.</p></li>
+<li><p><strong>n_jobs</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of jobs to run in parallel. Specifying <cite>n_jobs &gt; 1</cite> can speed up computation
+when method is one of <cite>big_nmslib</cite>, <cite>big_nndescent</cite>, or <cite>big_nnumap</cite>. Note that
+when <cite>use_cuda=True</cite> specifying <cite>n_jobs</cite> does not run the jobs in parallel but
+can reduce amount of GPU memory required by splitting the problem and run sequentially.
+Default is 1.</p></li>
+<li><p><strong>n_jobs_nmslib</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of threads used by nmslib. Default is <cite>8</cite>.</p></li>
+<li><p><strong>use_cuda</strong> (<em>bool</em><em>, </em><em>optional</em>) – Use CUDA GPU acceleration. CuPy has to be installed (<a class="reference external" href="https://github.com/cupy/cupy">https://github.com/cupy/cupy</a>)
+and a CUDA-enabled GPU is required. Default is <cite>False</cite>.</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em><em>, </em><em>optional</em>) – Print additional information. Default is <cite>False</cite>.</p></li>
+<li><p><strong>return_all</strong> (<em>bool</em><em>, </em><em>optional</em>) – Return a tuple of (Z, W, graph). Default is <cite>False</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>Z</strong> (<em>array, (optional) W: array, (optional) Graph: sparse matrix</em>)</p></li>
+<li><p><strong>* Z</strong> (<em>Embedding of the input data.</em>)</p></li>
+<li><p><strong>* W</strong> (Linear operator on the feature space, returned if <cite>return_all==True</cite>.)</p></li>
+<li><p><strong>* graph</strong> (The graph used for GraphDR embedding, returned if <cite>return_all==True</cite>.)</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="quasildr.graphdr.knn_graph">
+<code class="sig-prename descclassname">quasildr.graphdr.</code><code class="sig-name descname">knn_graph</code><span class="sig-paren">(</span><em class="sig-param">X</em>, <em class="sig-param">n_neighbors=15</em>, <em class="sig-param">space='l2'</em>, <em class="sig-param">space_params=None</em>, <em class="sig-param">method='hnsw'</em>, <em class="sig-param">num_threads=8</em>, <em class="sig-param">params={'post': 2}</em>, <em class="sig-param">verbose=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/quasildr/graphdr.html#knn_graph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#quasildr.graphdr.knn_graph" title="Permalink to this definition">¶</a></dt>
+<dd><p>Construct an approximate K-nearest neighbors graph with nmslib.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<em>array</em><em>, </em><em>shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – A input 2D array to construct KNN graph on. Each row represent a sample.</p></li>
+<li><p><strong>n_neighbors</strong> (<em>int</em><em>, </em><em>optional</em>) – Default is <cite>15</cite>. The number of nearest neighbors per sample.</p></li>
+<li><p><strong>space</strong> (<em>string</em><em>, </em><em>optional</em>) – <p>Default is <cite>l2</cite>. The metric/non-metric distance functions to use to compute distances.
+Note that l2 corresponds to Euclidean distance.
+see <a class="reference external" href="https://github.com/nmslib/nmslib/blob/master/manual/manual.pdf">https://github.com/nmslib/nmslib/blob/master/manual/manual.pdf</a></p>
+<blockquote>
+<div><ul>
+<li><p>bit_hamming</p></li>
+<li><p>l1</p></li>
+<li><p>l1_sparse</p></li>
+<li><p>l2, euclidean</p></li>
+<li><p>l2_sparse</p></li>
+<li><p>linf</p></li>
+<li><p>linf_sparse</p></li>
+<li><p>lp:p=…</p></li>
+<li><p>lp_sparse:p=…</p></li>
+<li><p>angulardist, angulardist sparse, angulardist sparse fast</p></li>
+<li><p>jsmetrslow, jsmetrfast, jsmetrfastapprox</p></li>
+<li><p>leven</p></li>
+<li><p>sqfd minus func, sqfd heuristic func:alpha=…, sqfd gaussian func:alpha=…</p></li>
+<li><p>jsdivslow, jsdivfast, jsdivfastapprox</p></li>
+<li><p>cosinesimil, cosine, cosinesimil sparse</p></li>
+<li><p>normleven</p></li>
+<li><p>kldivfast</p></li>
+<li><p>kldivgenslow, kldivgenfast, kldivgenfastrq</p></li>
+<li><p>itakurasaitoslow, itakurasaitofast, itakurasaitofastrq</p></li>
+<li><p>negdotprod_sparse</p></li>
+<li><p>querynorm_negdotprod_sparse</p></li>
+<li><p>renyi_diverg</p></li>
+<li><p>ab_diverg</p></li>
+</ul>
+</div></blockquote>
+</p></li>
+<li><p><strong>space_params</strong> (<em>dict</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – Parameters for configuring the space.</p></li>
+<li><p><strong>method</strong> (<em>str</em>) – The nmslib method to use. Default is <cite>hnsw</cite>.</p></li>
+<li><p><strong>num_threads</strong> (<em>int</em><em>, </em><em>optional</em>) – Default is <cite>8</cite>. Number of threads to run nmslib with.</p></li>
+<li><p><strong>params</strong> (<em>dict</em><em>, </em><em>optional</em>) – Default is <cite>{‘post’: 2}</cite>. Input parameters to nmslib index construction.
+See <a class="reference external" href="https://github.com/nmslib/nmslib/blob/master/manual/methods.md">https://github.com/nmslib/nmslib/blob/master/manual/methods.md</a> for details.</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em><em>, </em><em>optional</em>) – Default is False. Print extra information.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Sparse matrix representing the constructed KNN graph.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>scipy.sparse.csr_matrix</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="structdr.html" class="btn btn-neutral float-right" title="quasildr.structdr" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="Tutorials.html" class="btn btn-neutral float-left" title="Tutorials" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Jian Zhou
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,5 +1,5 @@
 Tutorials
 ------------
 
-Tutorials are available through the github repository https://github.com/FunctionLab/quasildr/tutorials. 
+Tutorials are available through the github repository https://github.com/jzthree/quasildr/tutorials. 
 

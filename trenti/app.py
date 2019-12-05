@@ -51,7 +51,7 @@ from sklearn.mixture.gaussian_mixture import _compute_precision_cholesky
 from sklearn.neighbors import NearestNeighbors
 from sklearn.preprocessing import StandardScaler
 
-import quasildr.dridge as scms2
+import quasildr.structdr as scms2
 from quasildr import utils
 from quasildr.graphdr import *
 

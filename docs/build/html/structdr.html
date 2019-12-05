@@ -1,0 +1,601 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>quasildr.structdr &mdash; Quasildr 0.1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="quasildr.utils" href="utils.html" />
+    <link rel="prev" title="quasildr.graphdr" href="graphdr.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="main.html" class="icon icon-home"> Quasildr
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Introduction</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Tutorials.html">Tutorials</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Python API</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="graphdr.html">quasildr.graphdr</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">quasildr.structdr</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">quasildr.utils</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="main.html">Quasildr</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="main.html">Docs</a> &raquo;</li>
+        
+      <li>quasildr.structdr</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/structdr.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-quasildr.structdr">
+<span id="quasildr-structdr"></span><h1>quasildr.structdr<a class="headerlink" href="#module-quasildr.structdr" title="Permalink to this headline">¶</a></h1>
+<p>This module implements nonparametric ridge estimation and relevant
+functions.  The main class is <cite>Scms</cite> which provides ridge estimation
+and bootstrap functions.</p>
+<p><strong>Classes</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#quasildr.structdr.Scms" title="quasildr.structdr.Scms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Scms</span></code></a>(data, bw[, min_radius])</p></td>
+<td><p>An implementation of nonparametric ridge estimation.</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Functions</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#quasildr.structdr.bootstrap_resample" title="quasildr.structdr.bootstrap_resample"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bootstrap_resample</span></code></a>(X[, n])</p></td>
+<td><p>Bootstrap resample an array_like</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#quasildr.structdr.multilevel_compression" title="quasildr.structdr.multilevel_compression"><code class="xref py py-obj docutils literal notranslate"><span class="pre">multilevel_compression</span></code></a>(data[, n, threshold, k])</p></td>
+<td><p>Iteratively combine nearest neighbor pairs below distance threshold.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#quasildr.structdr.vdist" title="quasildr.structdr.vdist"><code class="xref py py-obj docutils literal notranslate"><span class="pre">vdist</span></code></a>(a, b)</p></td>
+<td><p>This function is similar to cdist but returning vectors rather than norm of vectors</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="class">
+<dt id="quasildr.structdr.Scms">
+<em class="property">class </em><code class="sig-prename descclassname">quasildr.structdr.</code><code class="sig-name descname">Scms</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">bw</em>, <em class="sig-param">min_radius=10</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/quasildr/structdr.html#Scms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#quasildr.structdr.Scms" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>An implementation of nonparametric ridge estimation.
+The main algorithm implemented is subspace constrained mean-shift (SCMS).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>array</em><em> or </em><em>list</em>) – <ul>
+<li><p>if <cite>data</cite> is a 2D array of size (N, D). Regular KDE is used.</p></li>
+<li><p>if <cite>data</cite> is a list. <cite>data</cite> is interpreted as compressed data as given by</p></li>
+</ul>
+<p><cite>ridge_estimation.multilevel_compression</cite> function.
+Multi-level KDE is used. Different levels one data point corresponds to 1, 2, 4, 8, 16, …
+regular datapoints.</p>
+</p></li>
+<li><p><strong>bw</strong> (<em>float</em>) – Gaussian kernel bandwidth for KDE.</p></li>
+<li><p><strong>min_radius</strong> (<em>int</em>) – Set data-point specific minimum bandwidth to be the distance to its <cite>min_radius</cite>-th nearest neighbor.</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Methods</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#quasildr.structdr.Scms.boostrap_trajectory" title="quasildr.structdr.Scms.boostrap_trajectory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">boostrap_trajectory</span></code></a>([n_bootstrap, n_jobs, …])</p></td>
+<td><p>Construct confidence set of density ridge positions through bootstrap.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#quasildr.structdr.Scms.bootstrap_landmark" title="quasildr.structdr.Scms.bootstrap_landmark"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bootstrap_landmark</span></code></a>(X[, n_bootstrap, method, …])</p></td>
+<td><p>Experimental function.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#quasildr.structdr.Scms.inverse_density_sampling" title="quasildr.structdr.Scms.inverse_density_sampling"><code class="xref py py-obj docutils literal notranslate"><span class="pre">inverse_density_sampling</span></code></a>(X[, n_samples, …])</p></td>
+<td><p>Extract a subset of data points to represent the whole data.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#quasildr.structdr.Scms.reset_bw" title="quasildr.structdr.Scms.reset_bw"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset_bw</span></code></a>([bw, min_radius])</p></td>
+<td><p>Reset bandwidth.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#quasildr.structdr.Scms.scms" title="quasildr.structdr.Scms.scms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scms</span></code></a>(X[, n_iterations, threshold, tol, …])</p></td>
+<td><p>Performs subspace constrained mean shift on the entire data set using a Gaussian kernel with bandwidth of bw.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#quasildr.structdr.Scms.scms_update" title="quasildr.structdr.Scms.scms_update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scms_update</span></code></a>(X[, method, stepsize, …])</p></td>
+<td><p>Compute the constrained mean shift update of the point at x.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="quasildr.structdr.Scms.bw">
+<code class="sig-name descname">bw</code><a class="headerlink" href="#quasildr.structdr.Scms.bw" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="quasildr.structdr.Scms.adaptive_bw">
+<code class="sig-name descname">adaptive_bw</code><a class="headerlink" href="#quasildr.structdr.Scms.adaptive_bw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Kernel bandwidth specified for each data point. This is the bandwidth directly used in the algorithm.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="quasildr.structdr.Scms.params">
+<code class="sig-name descname">params</code><a class="headerlink" href="#quasildr.structdr.Scms.params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save parameters used in running Scms.scms(…) for bootstrap.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="quasildr.structdr.Scms.boostrap_trajectory">
+<code class="sig-name descname">boostrap_trajectory</code><span class="sig-paren">(</span><em class="sig-param">n_bootstrap=25</em>, <em class="sig-param">n_jobs=1</em>, <em class="sig-param">copy_bw=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/quasildr/structdr.html#Scms.boostrap_trajectory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#quasildr.structdr.Scms.boostrap_trajectory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Construct confidence set of density ridge positions through bootstrap. For each bootstrap sample,
+distance to its nearest neighbors in the original ridge estimate is recorded. The bootstrap runs
+will copy the parameters of the previous <cite>scms</cite> call, therefore <cite>scms</cite> has to be executed
+before this function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n_bootstrap</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of bootstrap runs. Default is 25.</p></li>
+<li><p><strong>n_jobs</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of jobs to run in parallel. Default is 1. Only specify <cite>n_jobs&gt;1</cite> if <cite>n_jobs=1</cite> is used
+when running <cite>scms</cite>.</p></li>
+<li><p><strong>copy_bw</strong> (<em>bool</em><em>, </em><em>optional</em>) – If true, the point-specific kernel bandwidths are unchanged after resampling.
+This option only has an effect is <cite>self.min_radius &gt; 0</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>boostrap_n</strong> (<em>array, shape (n_samples, n_bootstrap)</em>) – 2D array. Bootstrap nearest neighbor distances for each ridge position.</p></li>
+<li><p><strong>boostrap_s</strong> (<em>array, shape (n_samples, n_bootstrap)</em>) – 2D array. Bootstrap point-wise distances for each ridge position. Experimental.</p></li>
+<li><p><strong>boostrap_ifilters</strong> (<em>array, shape (n_samples, n_bootstrap)</em>) – 2D array. Bootstrap resample indices.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="quasildr.structdr.Scms.bootstrap_landmark">
+<code class="sig-name descname">bootstrap_landmark</code><span class="sig-paren">(</span><em class="sig-param">X</em>, <em class="sig-param">n_bootstrap=20</em>, <em class="sig-param">method='LocInv'</em>, <em class="sig-param">smooth_bootstrap=False</em>, <em class="sig-param">copy_bw=True</em>, <em class="sig-param">n_jobs=4</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/quasildr/structdr.html#Scms.bootstrap_landmark"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#quasildr.structdr.Scms.bootstrap_landmark" title="Permalink to this definition">¶</a></dt>
+<dd><p>Experimental function. Work in progress.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="quasildr.structdr.Scms.inverse_density_sampling">
+<code class="sig-name descname">inverse_density_sampling</code><span class="sig-paren">(</span><em class="sig-param">X</em>, <em class="sig-param">n_samples=2000</em>, <em class="sig-param">n_jobs=1</em>, <em class="sig-param">batch_size=16</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/quasildr/structdr.html#Scms.inverse_density_sampling"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#quasildr.structdr.Scms.inverse_density_sampling" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract a subset of data points to represent the whole data. Data points
+from high density areas are most likely to be subsampled and those from
+low density areas are preserved.  This is efficiently implemented with a
+trick of sorting the data by log density + Gumbel noise.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<em>2D array</em>) – Input data points</p></li>
+<li><p><strong>n_samples</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of sub-sampled data points. Default is <cite>2000</cite>.</p></li>
+<li><p><strong>n_jobs</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of jobs to run in parallel. Default is <cite>1</cite>.</p></li>
+<li><p><strong>batch_size</strong> (<em>int</em><em>, </em><em>optional</em>) – Batch size. Set this to a number number to reduce memory usage. Default is <cite>16</cite></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>indices</strong> – Subsample indices corresponding to input <cite>X</cite>.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>1D array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="quasildr.structdr.Scms.reset_bw">
+<code class="sig-name descname">reset_bw</code><span class="sig-paren">(</span><em class="sig-param">bw=None</em>, <em class="sig-param">min_radius=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/quasildr/structdr.html#Scms.reset_bw"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#quasildr.structdr.Scms.reset_bw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reset bandwidth.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bw</strong> (<em>float</em>) – Gaussian kernel bandwidth for KDE.</p></li>
+<li><p><strong>min_radius</strong> (<em>int</em>) – Set data-point specific minimum bandwidth to be the distance to its <cite>min_radius</cite>-th nearest neighbor.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="quasildr.structdr.Scms.scms">
+<code class="sig-name descname">scms</code><span class="sig-paren">(</span><em class="sig-param">X</em>, <em class="sig-param">n_iterations=50</em>, <em class="sig-param">threshold=0</em>, <em class="sig-param">tol=1e-07</em>, <em class="sig-param">method='LocInv'</em>, <em class="sig-param">stepsize=0.5</em>, <em class="sig-param">ridge_dimensionality=1</em>, <em class="sig-param">relaxation=0</em>, <em class="sig-param">n_jobs=1</em>, <em class="sig-param">batch_size=16</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/quasildr/structdr.html#Scms.scms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#quasildr.structdr.Scms.scms" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performs subspace constrained mean shift on the entire data set using
+a Gaussian kernel with bandwidth of bw.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<em>array</em>) – 2D array. Input data points.</p></li>
+<li><p><strong>n_iterations</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of iterations for running the algorithm</p></li>
+<li><p><strong>threshold</strong> (<em>float</em><em>, </em><em>optional</em>) – Filter out data points below a probability density threshold.
+The threshold value is specified relative to the maximum density.</p></li>
+<li><p><strong>tol</strong> (<em>float</em><em>, </em><em>optional</em>) – Tolerance for assessing convergence, stop if <cite>max(abs(new_pos - pos)) &lt; tol</cite>.</p></li>
+<li><p><strong>method</strong> (<em>str {'GradientP'|'GradientLogP'|'MSP'|'MSLogP'|'InvCov'}</em><em>, </em><em>optional</em>) – <ul>
+<li><dl class="simple">
+<dt>GradientP</dt><dd><p>Projected gradient update based on Hessian of probability density function p.
+Update is specified by projected gradient of p * step size.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>GradientLogP</dt><dd><p>Projected gradient update based on Hessian of log probability density function log(p).
+Update is specified by projected gradient of log(p) * step size.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>MSP</dt><dd><p>Projected mean-shift update based on Hessian of probability density function p.
+Update is specified by projected mean shift update * step size.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>MSLogP or InvCov (equivalent)</dt><dd><p>Projected mean-shift update based on Hessian of probability density function log p.
+Update is specified by projected mean shift update * step size.</p>
+</dd>
+</dl>
+</li>
+</ul>
+<p>Default is ‘InvCov’.</p>
+</p></li>
+<li><p><strong>stepsize</strong> (<em>float</em><em>, </em><em>optional</em>) – Step size. Default is 0.5</p></li>
+<li><p><strong>ridge_dimensionality</strong> (<em>int</em><em>, </em><em>optional</em>) – Ridge dimensionality. Default is 1.</p></li>
+<li><p><strong>relaxation</strong> (<em>float</em><em> [</em><em>0</em><em>,</em><em>1</em><em>]</em><em>, </em><em>optional</em>) – Relax the ridge dimensionality based on eigen gap corresponding to the ridge_dimensionality.
+Typically used with <cite>ridge_dimensionality=1</cite>. All point are projected to one-dimensional ridges
+(trajectories) when <cite>relaxation=0</cite>. All points are projected to two-dimensional ridges
+(surfaces) when <cite>relaxation=1</cite>. Default is 0.</p></li>
+<li><p><strong>n_jobs</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of jobs to run in parallel. Default is 1.</p></li>
+<li><p><strong>batch_size</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of data points to process in a batch. Reduce this number can decrease memory usage.
+Default is 500.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>pos</strong> (<em>array</em>) – Updated data points postions.</p></li>
+<li><p><strong>ifilter</strong> (<em>array</em>) – Indices of returned positions (useful when <cite>threshold &gt; 0</cite> so part of the input are filtered).</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="quasildr.structdr.Scms.scms_update">
+<code class="sig-name descname">scms_update</code><span class="sig-paren">(</span><em class="sig-param">X</em>, <em class="sig-param">method='LocInv'</em>, <em class="sig-param">stepsize=0.01</em>, <em class="sig-param">ridge_dimensionality=1</em>, <em class="sig-param">relaxation=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/quasildr/structdr.html#Scms.scms_update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#quasildr.structdr.Scms.scms_update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the constrained mean shift update of the point at x.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<em>array</em>) – 2D array. Input data points.</p></li>
+<li><p><strong>method</strong> (<em>str {'Gradient'|'GradientLogp'|'SuRF'|'LocInv'}</em><em>, </em><em>optional</em>) – <ul>
+<li><dl class="simple">
+<dt>Gradient</dt><dd><p>Projected gradient update based on Hessian of probability density function p.
+Update is specified by projected gradient of p * step size.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>GradientLogP</dt><dd><p>Projected gradient update based on Hessian of log probability density function log(p).
+Update is specified by projected gradient of log(p) * step size.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>SuRF</dt><dd><p>Projected mean-shift update based on Hessian of probability density function p.
+Update is specified by projected mean shift update * step size.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>LocInv</dt><dd><p>Projected mean-shift update based on Hessian of probability density function log p.
+Update is specified by projected mean shift update * step size.</p>
+</dd>
+</dl>
+</li>
+</ul>
+<p>Default is ‘LocInv’.</p>
+</p></li>
+<li><p><strong>stepsize</strong> (<em>float</em><em>, </em><em>optional</em>) – Step size.</p></li>
+<li><p><strong>ridge_dimensionality</strong> (<em>int</em><em>, </em><em>optional</em>) – Ridge dimensionality.</p></li>
+<li><p><strong>relaxation</strong> (<em>float</em><em> [</em><em>0</em><em>,</em><em>1</em><em>]</em><em>, </em><em>optional</em>) – Relax the ridge dimensionality based on eigen gap corresponding to the ridge_dimensionality.
+Typically used with <cite>ridge_dimensionality=1</cite>. All point are projected to one-dimensional ridges
+(trajectories) when <cite>relaxation=0</cite>. All points are projected to two-dimensional ridges
+(surfaces) when <cite>relaxation=1</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>update</strong> (<em>2D array</em>) – SCMS update.</p></li>
+<li><p><strong>relax_bool</strong> (<em>1D array</em>) – Indicate whether the ridge dimensionality of a particular point was increased by 1 relative to
+what <cite>ridge_dimensionality</cite> specified. The amount of relaxation is controlled by <cite>relaxation</cite> argument.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="quasildr.structdr.bootstrap_resample">
+<code class="sig-prename descclassname">quasildr.structdr.</code><code class="sig-name descname">bootstrap_resample</code><span class="sig-paren">(</span><em class="sig-param">X</em>, <em class="sig-param">n=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/quasildr/structdr.html#bootstrap_resample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#quasildr.structdr.bootstrap_resample" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bootstrap resample an array_like</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<em>array_like</em>) – data to resample</p></li>
+<li><p><strong>n</strong> (<em>int</em><em>, </em><em>optional</em>) – length of resampled array, equal to len(X) if n==None</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p>Bootstrap resampled array</p></li>
+<li><p>1D array of indices corresponding to input.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>array_like, numpy.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="quasildr.structdr.multilevel_compression">
+<code class="sig-prename descclassname">quasildr.structdr.</code><code class="sig-name descname">multilevel_compression</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">n=5000</em>, <em class="sig-param">threshold=None</em>, <em class="sig-param">k=20</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/quasildr/structdr.html#multilevel_compression"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#quasildr.structdr.multilevel_compression" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iteratively combine nearest neighbor pairs below distance threshold.
+This function can be used to reduce the number of data points to represent the whole dataset
+without greatly affect the density estimation quality. Most of the data points in low density
+areas will be unaffected and data points in high density areas will be combined and averaged.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>array</em>) – 2D array of size (N, D)</p></li>
+<li><p><strong>n</strong> (<em>int</em><em>, </em><em>optional</em>) – Choose the distance threshold by the n-th largest k-NN distance; must be smaller than <cite>N x k</cite>.</p></li>
+<li><p><strong>threshold</strong> (<em>float</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – The distance threshold for combining nearest neighbor pairs. Override <cite>N</cite> when given.</p></li>
+<li><p><strong>k</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of nearesest neigbors for KNN graph. Choose larger k for better approximation,
+smaller for better speed. Use at least 2.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><dl class="simple">
+<dt>list of level 0, level 1, level 2, … data points. As each level a data point corresponds to</dt><dd><p>2^0, 2^1, 2^2, … original data points.</p>
+</dd>
+</dl>
+</li>
+<li><p>list of input data indices corresponding to level-0,1,2,… data points.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tuple(list, list)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="quasildr.structdr.vdist">
+<code class="sig-prename descclassname">quasildr.structdr.</code><code class="sig-name descname">vdist</code><span class="sig-paren">(</span><em class="sig-param">a</em>, <em class="sig-param">b</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/quasildr/structdr.html#vdist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#quasildr.structdr.vdist" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is similar to cdist but returning vectors rather than norm of vectors
+implemented via virtual copies of a and b</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>a</strong><strong>,</strong><strong>b</strong> (<em>np.ndarray</em>) – 2D arrays of size (M,D), (N,D) for which differences for all pairwise combinations
+of rows in the two arrays will be computed. The number of columns have to the same
+between a and b.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>3D array of size (N, M, D), containing all pairwise differences of rows in a and b.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="utils.html" class="btn btn-neutral float-right" title="quasildr.utils" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="graphdr.html" class="btn btn-neutral float-left" title="quasildr.graphdr" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Jian Zhou
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

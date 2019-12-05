@@ -24,7 +24,7 @@ import quasildr.graphdr import graphdr
 Z = graphdr(X_pca, regularization=500)
 
 #NRE
-import quasildr.dridge import Scms
+import quasildr.structdr import Scms
 Z = Z / Z[:,0].std()
 s = Scms(Z, bw=0.1, min_radius = 10)
 T = s.scms(Z)
@@ -53,9 +53,9 @@ We provide commandline tools for quick access to most commonly used quasildr fun
 python run_graphdr.py ./example/Dentate_Gyrus.spliced_data.gz --pca --plot --log --transpose --max_dim 50 --refine_iter 4 --reg 500 --no_rotation --anno_file ./example/Dentate_Gyrus.anno.gz --anno_column ClusterName 
 ```
 
-* run_dridge.py
+* run_structdr.py
 ```
- python run_dridge.py --input ./example/Dentate_Gyrus.spliced_data.gz.dim50_k10_reg500_n4t12_pca_no_rotation_log_scale_transpose.drgraph --anno_file ./example/Dentate_Gyrus.anno.gz --anno_column ClusterName  --output ./example/Dentate_Gyrus.spliced_data.gz.dim50_k10_reg500_n4t12_pca_no_rotation_log_scale_transpose.drgraph
+ python run_structdr.py --input ./example/Dentate_Gyrus.spliced_data.gz.dim50_k10_reg500_n4t12_pca_no_rotation_log_scale_transpose.drgraph --anno_file ./example/Dentate_Gyrus.anno.gz --anno_column ClusterName  --output ./example/Dentate_Gyrus.spliced_data.gz.dim50_k10_reg500_n4t12_pca_no_rotation_log_scale_transpose.drgraph
 ```
 
 ## Graphical Interface

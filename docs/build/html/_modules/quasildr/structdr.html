@@ -1,0 +1,1060 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>quasildr.structdr &mdash; Quasildr 0.1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../main.html" class="icon icon-home"> Quasildr
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Introduction</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../Tutorials.html">Tutorials</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Python API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../graphdr.html">quasildr.graphdr</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../structdr.html">quasildr.structdr</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../utils.html">quasildr.utils</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../main.html">Quasildr</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../main.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>quasildr.structdr</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for quasildr.structdr</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module implements nonparametric ridge estimation and relevant</span>
+<span class="sd">functions.  The main class is `Scms` which provides ridge estimation</span>
+<span class="sd">and bootstrap functions.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">multiprocess</span> <span class="k">import</span> <span class="n">Pool</span>
+<span class="kn">from</span> <span class="nn">numpy.core.umath_tests</span> <span class="k">import</span> <span class="n">matrix_multiply</span>
+<span class="kn">from</span> <span class="nn">numpy.lib.index_tricks</span> <span class="k">import</span> <span class="n">as_strided</span>
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="k">import</span> <span class="n">linalg</span>
+<span class="kn">from</span> <span class="nn">scipy.spatial.distance</span> <span class="k">import</span> <span class="n">cdist</span>
+<span class="kn">from</span> <span class="nn">scipy.special</span> <span class="k">import</span> <span class="n">logsumexp</span>
+<span class="kn">from</span> <span class="nn">sklearn.neighbors</span> <span class="k">import</span> <span class="n">NearestNeighbors</span>
+
+<span class="kn">from</span> <span class="nn">.external</span> <span class="k">import</span> <span class="n">neighbors</span>
+
+
+<div class="viewcode-block" id="vdist"><a class="viewcode-back" href="../../structdr.html#quasildr.structdr.vdist">[docs]</a><span class="k">def</span> <span class="nf">vdist</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function is similar to cdist but returning vectors rather than norm of vectors</span>
+<span class="sd">    implemented via virtual copies of a and b</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a,b : np.ndarray</span>
+<span class="sd">        2D arrays of size (M,D), (N,D) for which differences for all pairwise combinations</span>
+<span class="sd">        of rows in the two arrays will be computed. The number of columns have to the same</span>
+<span class="sd">        between a and b.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    ----------</span>
+<span class="sd">    numpy.array</span>
+<span class="sd">        3D array of size (N, M, D), containing all pairwise differences of rows in a and b.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">as_strided</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">strides</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">strides</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">a</span><span class="o">.</span><span class="n">strides</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+                      <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span> <span class="o">-</span> \
+           <span class="n">as_strided</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">strides</span><span class="o">=</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">strides</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">0</span><span class="p">,</span> <span class="n">b</span><span class="o">.</span><span class="n">strides</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+                      <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">b</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span></div>
+
+
+<div class="viewcode-block" id="bootstrap_resample"><a class="viewcode-back" href="../../structdr.html#quasildr.structdr.bootstrap_resample">[docs]</a><span class="k">def</span> <span class="nf">bootstrap_resample</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Bootstrap resample an array_like</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    X : array_like</span>
+<span class="sd">      data to resample</span>
+<span class="sd">    n : int, optional</span>
+<span class="sd">      length of resampled array, equal to len(X) if n==None</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    array_like, numpy.array</span>
+<span class="sd">        * Bootstrap resampled array</span>
+<span class="sd">        * 1D array of indices corresponding to input.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">n</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+
+    <span class="n">resample_i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">samples</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">resample_i</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">samples</span><span class="p">,</span> <span class="n">resample_i</span></div>
+
+
+<div class="viewcode-block" id="multilevel_compression"><a class="viewcode-back" href="../../structdr.html#quasildr.structdr.multilevel_compression">[docs]</a><span class="k">def</span> <span class="nf">multilevel_compression</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">5000</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">20</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Iteratively combine nearest neighbor pairs below distance threshold.</span>
+<span class="sd">    This function can be used to reduce the number of data points to represent the whole dataset</span>
+<span class="sd">    without greatly affect the density estimation quality. Most of the data points in low density</span>
+<span class="sd">    areas will be unaffected and data points in high density areas will be combined and averaged.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data : array</span>
+<span class="sd">        2D array of size (N, D)</span>
+<span class="sd">    n : int, optional</span>
+<span class="sd">        Choose the distance threshold by the n-th largest k-NN distance; must be smaller than `N x k`.</span>
+<span class="sd">    threshold : float or None, optional</span>
+<span class="sd">        The distance threshold for combining nearest neighbor pairs. Override `N` when given.</span>
+<span class="sd">    k : int, optional</span>
+<span class="sd">        Number of nearesest neigbors for KNN graph. Choose larger k for better approximation,</span>
+<span class="sd">        smaller for better speed. Use at least 2.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    ----------</span>
+<span class="sd">    tuple(list, list)</span>
+<span class="sd">        * list of level 0, level 1, level 2, ... data points. As each level a data point corresponds to</span>
+<span class="sd">            2^0, 2^1, 2^2, ... original data points.</span>
+<span class="sd">        * list of input data indices corresponding to level-0,1,2,... data points.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">c</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">neighbors</span><span class="o">.</span><span class="n">neighbors</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">n_neighbors</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">metric</span><span class="o">=</span><span class="s1">&#39;euclidean&#39;</span><span class="p">)</span>
+
+    <span class="n">c</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">nonzero</span><span class="p">()</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">data</span><span class="p">[</span><span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">:],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">isorted</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+
+    <span class="n">_</span><span class="p">,</span> <span class="n">iisorted</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">isorted</span><span class="p">],</span> <span class="n">return_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">source_i</span> <span class="o">=</span> <span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">isorted</span><span class="p">[</span><span class="n">iisorted</span><span class="p">]]</span>
+    <span class="n">target_i</span> <span class="o">=</span> <span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">isorted</span><span class="p">[</span><span class="n">iisorted</span><span class="p">]]</span>
+    <span class="n">source_ik</span> <span class="o">=</span> <span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">isorted</span><span class="p">]</span>
+    <span class="n">target_ik</span> <span class="o">=</span> <span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">isorted</span><span class="p">]</span>
+    <span class="n">dk</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="n">isorted</span><span class="p">]</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="n">isorted</span><span class="p">[</span><span class="n">iisorted</span><span class="p">]]</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">source_i</span><span class="p">)</span> <span class="o">==</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">threshold</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">threshold</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="o">-</span><span class="n">d</span><span class="p">)[</span><span class="n">n</span><span class="p">]</span>
+
+    <span class="n">solo_index</span> <span class="o">=</span> <span class="n">source_i</span><span class="p">[</span><span class="n">d</span> <span class="o">&gt;</span> <span class="n">threshold</span><span class="p">]</span>
+    <span class="n">source_ik</span> <span class="o">=</span> <span class="n">source_ik</span><span class="p">[</span><span class="n">dk</span> <span class="o">&lt;=</span> <span class="n">threshold</span><span class="p">]</span>
+    <span class="n">target_ik</span> <span class="o">=</span> <span class="n">target_ik</span><span class="p">[</span><span class="n">dk</span> <span class="o">&lt;=</span> <span class="n">threshold</span><span class="p">]</span>
+    <span class="n">dk</span> <span class="o">=</span> <span class="n">dk</span><span class="p">[</span><span class="n">dk</span> <span class="o">&lt;=</span> <span class="n">threshold</span><span class="p">]</span>
+
+    <span class="n">i</span> <span class="o">=</span> <span class="p">(</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">source_ik</span><span class="p">,</span> <span class="n">solo_index</span><span class="p">))</span> <span class="o">*</span> <span class="p">(</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">target_ik</span><span class="p">,</span> <span class="n">solo_index</span><span class="p">))</span>
+    <span class="n">source_ik</span> <span class="o">=</span> <span class="n">source_ik</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+    <span class="n">target_ik</span> <span class="o">=</span> <span class="n">target_ik</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+    <span class="n">dk</span> <span class="o">=</span> <span class="n">dk</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+    <span class="n">pairs_to_combine</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">source_ik</span><span class="p">,</span> <span class="n">target_ik</span><span class="p">])</span>
+    <span class="n">pairs_to_combine_done</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">while</span> <span class="n">pairs_to_combine</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">pairs_to_combine_flat</span> <span class="o">=</span> <span class="n">pairs_to_combine</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">pairs_to_combine_flat</span><span class="p">,</span> <span class="n">return_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="n">pairs_to_combine_flat</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">pairs_to_combine_flat</span><span class="p">[:]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="n">pairs_to_combine_flat</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">temp</span>
+        <span class="n">pairs_to_combine_working</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">pairs_to_combine_flat</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">pairs_to_combine_flat</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),</span> <span class="mi">2</span><span class="p">))</span>
+        <span class="n">pairs_to_combine_working</span> <span class="o">=</span> <span class="n">pairs_to_combine_working</span><span class="p">[</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">pairs_to_combine_working</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="p">:]</span>
+        <span class="n">pairs_to_combine_done</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pairs_to_combine_working</span><span class="p">)</span>
+        <span class="n">pairs_to_combine_working</span> <span class="o">=</span> <span class="n">pairs_to_combine_working</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+        <span class="n">pairs_to_combine</span> <span class="o">=</span> <span class="n">pairs_to_combine</span><span class="p">[:,</span> <span class="p">(</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">pairs_to_combine</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:],</span> <span class="n">pairs_to_combine_working</span><span class="p">))</span> <span class="o">*</span> <span class="p">(</span>
+            <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">pairs_to_combine</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:],</span> <span class="n">pairs_to_combine_working</span><span class="p">))]</span>
+
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">retry_index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">setdiff1d</span><span class="p">(</span><span class="n">source_ik</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">pairs_to_combine_done</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">retry_index</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">break</span>
+        <span class="n">c_r</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">neighbors</span><span class="o">.</span><span class="n">neighbors</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">retry_index</span><span class="p">,</span> <span class="p">:],</span> <span class="n">n_neighbors</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">retry_index</span><span class="p">)),</span>
+                                     <span class="n">metric</span><span class="o">=</span><span class="s1">&#39;euclidean&#39;</span><span class="p">)</span>
+        <span class="n">c_r</span> <span class="o">=</span> <span class="n">c_r</span><span class="o">.</span><span class="n">nonzero</span><span class="p">()</span>
+        <span class="n">d_r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">retry_index</span><span class="p">,</span> <span class="p">:][</span><span class="n">c_r</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">data</span><span class="p">[</span><span class="n">retry_index</span><span class="p">,</span> <span class="p">:][</span><span class="n">c_r</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">:],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">isorted</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">d_r</span><span class="p">)</span>
+        <span class="n">source_ik_r</span> <span class="o">=</span> <span class="n">c_r</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">isorted</span><span class="p">]</span>
+        <span class="n">target_ik_r</span> <span class="o">=</span> <span class="n">c_r</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">isorted</span><span class="p">]</span>
+        <span class="n">dk_r</span> <span class="o">=</span> <span class="n">d_r</span><span class="p">[</span><span class="n">isorted</span><span class="p">]</span>
+
+        <span class="n">source_ik_r</span> <span class="o">=</span> <span class="n">source_ik_r</span><span class="p">[</span><span class="n">dk_r</span> <span class="o">&lt;</span> <span class="n">threshold</span><span class="p">]</span>
+        <span class="n">target_ik_r</span> <span class="o">=</span> <span class="n">target_ik_r</span><span class="p">[</span><span class="n">dk_r</span> <span class="o">&lt;</span> <span class="n">threshold</span><span class="p">]</span>
+        <span class="n">dk_r</span> <span class="o">=</span> <span class="n">dk_r</span><span class="p">[</span><span class="n">dk_r</span> <span class="o">&lt;</span> <span class="n">threshold</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">source_ik_r</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">break</span>
+        <span class="n">pairs_to_combine</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">retry_index</span><span class="p">[</span><span class="n">source_ik_r</span><span class="p">],</span> <span class="n">retry_index</span><span class="p">[</span><span class="n">target_ik_r</span><span class="p">]])</span>
+        <span class="k">while</span> <span class="n">pairs_to_combine</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">pairs_to_combine_flat</span> <span class="o">=</span> <span class="n">pairs_to_combine</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">pairs_to_combine_flat</span><span class="p">,</span> <span class="n">return_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">temp</span> <span class="o">=</span> <span class="n">pairs_to_combine_flat</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">pairs_to_combine_flat</span><span class="p">[:]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="n">pairs_to_combine_flat</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">temp</span>
+            <span class="n">pairs_to_combine_working</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">pairs_to_combine_flat</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">pairs_to_combine_flat</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),</span> <span class="mi">2</span><span class="p">))</span>
+            <span class="n">pairs_to_combine_working</span> <span class="o">=</span> <span class="n">pairs_to_combine_working</span><span class="p">[</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">pairs_to_combine_working</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="p">:]</span>
+            <span class="n">pairs_to_combine_done</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pairs_to_combine_working</span><span class="p">)</span>
+            <span class="n">pairs_to_combine_working</span> <span class="o">=</span> <span class="n">pairs_to_combine_working</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+            <span class="n">pairs_to_combine</span> <span class="o">=</span> <span class="n">pairs_to_combine</span><span class="p">[:,</span> <span class="p">(</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">pairs_to_combine</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:],</span> <span class="n">pairs_to_combine_working</span><span class="p">))</span> <span class="o">*</span> <span class="p">(</span>
+                <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">pairs_to_combine</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:],</span> <span class="n">pairs_to_combine_working</span><span class="p">))]</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">pairs_to_combine_done</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">solo_data</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">solo_data</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">pairs_to_combine_done</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">pairs_to_combine_done</span><span class="p">)</span>
+
+        <span class="n">solo_index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">solo_index</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">setdiff1d</span><span class="p">(</span><span class="n">source_ik</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">pairs_to_combine_done</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">())])</span>
+        <span class="n">solo_data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">solo_index</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="n">pair_data</span> <span class="o">=</span> <span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">pairs_to_combine_done</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">:]</span> <span class="o">+</span> <span class="n">data</span><span class="p">[</span><span class="n">pairs_to_combine_done</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">:])</span> <span class="o">/</span> <span class="mf">2.0</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">pair_data</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">50</span><span class="p">:</span>
+            <span class="n">collapsed_index</span> <span class="o">=</span> <span class="p">[[</span><span class="n">solo_index</span><span class="p">],</span> <span class="p">[</span><span class="n">pairs_to_combine_done</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">pairs_to_combine_done</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]]]</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">solo_data</span><span class="p">,</span> <span class="n">pair_data</span><span class="p">],</span> <span class="n">collapsed_index</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">coarse_data</span><span class="p">,</span> <span class="n">coarse_index</span> <span class="o">=</span> <span class="n">multilevel_compression</span><span class="p">(</span><span class="n">pair_data</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">threshold</span><span class="p">)</span>
+            <span class="n">collapsed_index</span> <span class="o">=</span> <span class="p">[[</span><span class="n">solo_index</span><span class="p">]]</span> <span class="o">+</span> <span class="p">[</span>
+                <span class="p">[</span><span class="n">pairs_to_combine_done</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">ind</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">pairs_to_combine_done</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">ind</span><span class="p">]</span> <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span>
+                <span class="n">coarse_index</span><span class="p">]</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">solo_data</span><span class="p">]</span> <span class="o">+</span> <span class="n">coarse_data</span><span class="p">,</span> <span class="n">collapsed_index</span></div>
+
+
+<div class="viewcode-block" id="Scms"><a class="viewcode-back" href="../../structdr.html#quasildr.structdr.Scms">[docs]</a><span class="k">class</span> <span class="nc">Scms</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An implementation of nonparametric ridge estimation.</span>
+<span class="sd">    The main algorithm implemented is subspace constrained mean-shift (SCMS).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data : array or list</span>
+<span class="sd">        * if `data` is a 2D array of size (N, D). Regular KDE is used.</span>
+<span class="sd">        * if `data` is a list. `data` is interpreted as compressed data as given by</span>
+<span class="sd">        `ridge_estimation.multilevel_compression` function.</span>
+<span class="sd">        Multi-level KDE is used. Different levels one data point corresponds to 1, 2, 4, 8, 16, ...</span>
+<span class="sd">        regular datapoints.</span>
+
+<span class="sd">    bw : float</span>
+<span class="sd">        Gaussian kernel bandwidth for KDE.</span>
+<span class="sd">    min_radius: int</span>
+<span class="sd">        Set data-point specific minimum bandwidth to be the distance to its `min_radius`-th nearest neighbor.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    bw : float</span>
+<span class="sd">    adaptive_bw : array</span>
+<span class="sd">        Kernel bandwidth specified for each data point. This is the bandwidth directly used in the algorithm.</span>
+<span class="sd">    params : dict</span>
+<span class="sd">        Save parameters used in running Scms.scms(...) for bootstrap.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">bw</span><span class="p">,</span> <span class="n">min_radius</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bw</span> <span class="o">=</span> <span class="n">bw</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">min_radius</span> <span class="o">=</span> <span class="n">min_radius</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_set_adaptive_bandwidth</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">min_radius</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">multilevel</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">multilevel</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="c1"># self.p = np.exp(self._kernel_density_estimate(data, output_onlylogp=True))</span>
+        <span class="c1"># self.maxp = np.max(self.p)</span>
+
+<div class="viewcode-block" id="Scms.inverse_density_sampling"><a class="viewcode-back" href="../../structdr.html#quasildr.structdr.Scms.inverse_density_sampling">[docs]</a>    <span class="k">def</span> <span class="nf">inverse_density_sampling</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">n_samples</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">16</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Extract a subset of data points to represent the whole data. Data points</span>
+<span class="sd">        from high density areas are most likely to be subsampled and those from</span>
+<span class="sd">        low density areas are preserved.  This is efficiently implemented with a</span>
+<span class="sd">        trick of sorting the data by log density + Gumbel noise.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X : 2D array</span>
+<span class="sd">            Input data points</span>
+<span class="sd">        n_samples : int, optional</span>
+<span class="sd">            Number of sub-sampled data points. Default is `2000`.</span>
+<span class="sd">        n_jobs : int, optional</span>
+<span class="sd">            Number of jobs to run in parallel. Default is `1`.</span>
+<span class="sd">        batch_size : int, optional</span>
+<span class="sd">            Batch size. Set this to a number number to reduce memory usage. Default is `16`</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        indices : 1D array</span>
+<span class="sd">            Subsample indices corresponding to input `X`.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">n_jobs</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">logp</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_density_estimate</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">output_onlylogp</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                 <span class="k">for</span> <span class="n">pos</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">array_split</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">batch_size</span><span class="p">))]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">Pool</span><span class="p">(</span><span class="n">n_jobs</span><span class="p">)</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
+                <span class="n">logp</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
+                    <span class="k">lambda</span> <span class="n">pos</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_density_estimate</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">output_onlylogp</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">array_split</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span><span class="n">batch_size</span> <span class="o">*</span> <span class="n">n_jobs</span><span class="p">))))</span>
+        <span class="n">logp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">logp</span><span class="p">)</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="o">-</span><span class="n">logp</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">gumbel</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">logp</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="o">-</span><span class="n">s</span><span class="p">)[:</span><span class="n">n_samples</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Scms.reset_bw"><a class="viewcode-back" href="../../structdr.html#quasildr.structdr.Scms.reset_bw">[docs]</a>    <span class="k">def</span> <span class="nf">reset_bw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bw</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">min_radius</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reset bandwidth.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        bw : float</span>
+<span class="sd">            Gaussian kernel bandwidth for KDE.</span>
+<span class="sd">        min_radius: int</span>
+<span class="sd">            Set data-point specific minimum bandwidth to be the distance to its `min_radius`-th nearest neighbor.</span>
+
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">bw</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bw</span> <span class="o">=</span> <span class="n">bw</span>
+        <span class="k">if</span> <span class="n">min_radius</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">min_radius</span> <span class="o">=</span> <span class="n">min_radius</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_radius</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_set_adaptive_bandwidth</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">min_radius</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">adaptive_bw</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">bw</span></div>
+
+    <span class="k">def</span> <span class="nf">_set_adaptive_bandwidth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">K</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">K</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">nbrs</span> <span class="o">=</span> <span class="n">NearestNeighbors</span><span class="p">(</span><span class="n">n_neighbors</span><span class="o">=</span><span class="n">K</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">adaptive_bw</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nbrs</span><span class="o">.</span><span class="n">kneighbors</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)[</span><span class="mi">0</span><span class="p">][:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">bw</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">adaptive_bw</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">bw</span>
+
+    <span class="k">def</span> <span class="nf">_density_estimate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">output_onlylogp</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Estimate density and relevant quantities for data points specified by X.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X : array</span>
+<span class="sd">            2D array. Input to density estimation.</span>
+<span class="sd">        output_onlylogp : bool</span>
+<span class="sd">            If true, returns logp, else returns p, g, h, msu.</span>
+
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        p : array</span>
+<span class="sd">            1D array.  Unnormalized probability density. The probability density</span>
+<span class="sd">            is not normalized due to numerical stability. Exact log probability</span>
+<span class="sd">            density is returned if `output_onlylogp=True`.</span>
+<span class="sd">        g : array, optional</span>
+<span class="sd">            2D array. Gradient of the probability density function.</span>
+<span class="sd">        h : array, optional</span>
+<span class="sd">            3D array. Hessian of the probability density function.</span>
+<span class="sd">        msu :</span>
+<span class="sd">            2D array. Meanshift update based on the probability density function.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">multilevel</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">output_onlylogp</span><span class="p">:</span>
+                <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_multilevel_kernel_density_estimate</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">output_onlylogp</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">p</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">msu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_multilevel_kernel_density_estimate</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">output_onlylogp</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">output_onlylogp</span><span class="p">:</span>
+                <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_kernel_density_estimate</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">output_onlylogp</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">p</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">msu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_kernel_density_estimate</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">output_onlylogp</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">output_onlylogp</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">p</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">p</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">msu</span>
+
+    <span class="k">def</span> <span class="nf">_kernel_density_estimate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">output_onlylogp</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Estimate density and relevant quantities for data points specified by X</span>
+<span class="sd">        with kernel density estimation.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X : array</span>
+<span class="sd">            2D array including multiple data points. Input to density estimation.</span>
+<span class="sd">        output_onlylogp : bool</span>
+<span class="sd">            If true, returns logp, else returns p, g, h, msu.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        p : array</span>
+<span class="sd">            1D array.  Unnormalized probability density. The probability density</span>
+<span class="sd">            is not normalized due to numerical stability. Exact log probability</span>
+<span class="sd">            density is returned if `output_onlylogp=True`.</span>
+<span class="sd">        g : array, optional</span>
+<span class="sd">            2D array. Gradient of the probability density function.</span>
+<span class="sd">        h : array, optional</span>
+<span class="sd">            3D array. Hessian of the probability density function.</span>
+<span class="sd">        msu :</span>
+<span class="sd">            2D array. Meanshift update based on the probability density function.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># the number of data points and the dimensionality</span>
+        <span class="n">n</span><span class="p">,</span> <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span>
+
+        <span class="c1"># and evaluate the kernel at each distance</span>
+        <span class="n">D</span> <span class="o">=</span> <span class="n">cdist</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">X</span><span class="p">)</span>
+
+        <span class="c1"># prevent numerical overflow due to large exponentials</span>
+        <span class="n">logc</span> <span class="o">=</span> <span class="o">-</span><span class="n">d</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">adaptive_bw</span><span class="p">))</span> <span class="o">-</span> <span class="n">d</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+        <span class="n">C</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">adaptive_bw</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">adaptive_bw</span><span class="p">))</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="n">d</span><span class="p">)</span> <span class="o">*</span> \
+            <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span> <span class="o">/</span> <span class="mf">2.</span> <span class="o">*</span> <span class="p">(</span><span class="n">D</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">adaptive_bw</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">output_onlylogp</span><span class="p">:</span>
+            <span class="c1"># return the kernel density estimate</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> <span class="o">+</span> <span class="n">logc</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># gradient of p</span>
+            <span class="n">u</span> <span class="o">=</span> <span class="n">vdist</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">X</span><span class="p">)</span>
+            <span class="n">g</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">C</span> <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">adaptive_bw</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span><span class="o">.</span><span class="n">T</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span> <span class="o">*</span> <span class="n">u</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+            <span class="c1"># hessian of p</span>
+            <span class="n">Z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+            <span class="n">h</span> <span class="o">=</span> <span class="n">matrix_multiply</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">C</span> <span class="o">/</span> <span class="p">(</span><span class="n">n</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">adaptive_bw</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span> <span class="o">**</span> <span class="mi">4</span><span class="p">))</span><span class="o">.</span><span class="n">T</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">transpose</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span> <span class="n">u</span><span class="p">)</span> <span class="o">-</span> \
+                <span class="n">as_strided</span><span class="p">(</span><span class="n">Z</span><span class="p">,</span> <span class="n">strides</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">Z</span><span class="o">.</span><span class="n">strides</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">Z</span><span class="o">.</span><span class="n">strides</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">C</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">Z</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">Z</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span> <span class="o">*</span> \
+                <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">C</span> <span class="o">/</span> <span class="p">(</span><span class="n">n</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">adaptive_bw</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">])</span>
+            <span class="c1"># for computation of msu = Cp * g</span>
+            <span class="n">Cp</span> <span class="o">=</span> <span class="mf">1.</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">C</span> <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">adaptive_bw</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="c1"># return the kernel density estimate</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">Cp</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span> <span class="o">*</span> <span class="n">g</span>
+
+    <span class="k">def</span> <span class="nf">_multilevel_kernel_density_estimate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">output_onlylogp</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">normalized</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Estimate density and relevant quantities for data points specified by X</span>
+<span class="sd">        with kernel density estimation and multi-level data representation.</span>
+<span class="sd">        Data point-specific bandwidth (self.adaptive_bw) is not supported and self.bw</span>
+<span class="sd">        is used instead.</span>
+
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X : array</span>
+<span class="sd">            2D array. Input to density estimation.</span>
+<span class="sd">        output_onlylogp : bool</span>
+<span class="sd">            If true, returns logp, else returns p, g, h, msu.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        p : array</span>
+<span class="sd">            1D array.  Unnormalized probability density. The probability density</span>
+<span class="sd">            is not normalized due to numerical stability. Exact log probability</span>
+<span class="sd">            density is returned if `output_onlylogp=True`.</span>
+<span class="sd">        g : array, optional</span>
+<span class="sd">            2D array. Gradient of the probability density function.</span>
+<span class="sd">        h : array, optional</span>
+<span class="sd">            3D array. Hessian of the probability density function.</span>
+<span class="sd">        msu :</span>
+<span class="sd">            2D array. Meanshift update based on the probability density function.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># the number of data points and the dimensionality</span>
+        <span class="n">npgh</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
+            <span class="n">n</span><span class="p">,</span> <span class="n">d</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span>
+            <span class="c1"># and evaluate the kernel at each distance</span>
+            <span class="n">D</span> <span class="o">=</span> <span class="n">cdist</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">X</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">normalized</span><span class="p">:</span>
+                <span class="c1"># prevent numerical overflow due to large exponentials</span>
+                <span class="n">logc</span> <span class="o">=</span> <span class="o">-</span><span class="n">d</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bw</span><span class="p">)</span> <span class="o">-</span> <span class="n">d</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Warning: use unnormalized probablity.&quot;</span><span class="p">)</span>
+                <span class="n">logc</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">C</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span> <span class="o">/</span> <span class="mf">2.</span> <span class="o">*</span> <span class="p">(</span><span class="n">D</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">bw</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">output_onlylogp</span><span class="p">:</span>
+                <span class="c1"># return the kernel density estimate</span>
+                <span class="n">npgh</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> <span class="o">+</span> <span class="n">logc</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># gradient of p</span>
+                <span class="n">u</span> <span class="o">=</span> <span class="n">vdist</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">X</span><span class="p">)</span>
+                <span class="n">g</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">C</span> <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bw</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span><span class="o">.</span><span class="n">T</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span> <span class="o">*</span> <span class="n">u</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+                <span class="c1"># hessian of p</span>
+                <span class="n">Z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+                <span class="n">h</span> <span class="o">=</span> <span class="n">matrix_multiply</span><span class="p">((</span><span class="n">C</span> <span class="o">/</span> <span class="p">(</span><span class="n">n</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">bw</span> <span class="o">**</span> <span class="mi">4</span><span class="p">))</span><span class="o">.</span><span class="n">T</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">transpose</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span> <span class="n">u</span><span class="p">)</span> <span class="o">-</span> \
+                    <span class="n">as_strided</span><span class="p">(</span><span class="n">Z</span><span class="p">,</span> <span class="n">strides</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">Z</span><span class="o">.</span><span class="n">strides</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">Z</span><span class="o">.</span><span class="n">strides</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">C</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">Z</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">Z</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span> <span class="o">*</span> \
+                    <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">C</span> <span class="o">/</span> <span class="p">(</span><span class="n">n</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">bw</span> <span class="o">**</span> <span class="mi">2</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">])</span>
+                <span class="n">Cp</span> <span class="o">=</span> <span class="mf">1.</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">C</span> <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bw</span> <span class="o">**</span> <span class="mi">2</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+                <span class="n">npgh</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">Cp</span><span class="p">))</span>
+
+            <span class="k">if</span> <span class="n">output_onlylogp</span><span class="p">:</span>
+                <span class="n">ns</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="n">n</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">**</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">npgh</span><span class="p">)])</span>
+                <span class="n">ws</span> <span class="o">=</span> <span class="n">ns</span> <span class="o">/</span> <span class="n">ns</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+                <span class="n">logps</span> <span class="o">=</span> <span class="p">[(</span><span class="n">logp</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">ws</span><span class="p">[</span><span class="n">i</span><span class="p">]))[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">logp</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">npgh</span><span class="p">)]</span>
+                <span class="n">logps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">logps</span><span class="p">)</span>
+                <span class="n">logps</span> <span class="o">=</span> <span class="n">logsumexp</span><span class="p">(</span><span class="n">logps</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+                <span class="k">return</span> <span class="n">logps</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ns</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="n">n</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">**</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">npgh</span><span class="p">)])</span>
+                <span class="n">ws</span> <span class="o">=</span> <span class="n">ns</span> <span class="o">/</span> <span class="n">ns</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+                <span class="n">ps</span><span class="p">,</span> <span class="n">gs</span><span class="p">,</span> <span class="n">hs</span><span class="p">,</span> <span class="n">cps</span> <span class="o">=</span> <span class="n">npgh</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">:]</span>
+                <span class="n">ps</span> <span class="o">=</span> <span class="n">ps</span> <span class="o">*</span> <span class="n">ws</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">gs</span> <span class="o">=</span> <span class="n">gs</span> <span class="o">*</span> <span class="n">ws</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">hs</span> <span class="o">=</span> <span class="n">hs</span> <span class="o">*</span> <span class="n">ws</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">cps</span> <span class="o">=</span> <span class="n">cps</span> <span class="o">*</span> <span class="n">ws</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">cp</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">npgh</span><span class="p">[</span><span class="mi">1</span><span class="p">:]):</span>
+                    <span class="n">ps</span> <span class="o">=</span> <span class="n">ps</span> <span class="o">+</span> <span class="n">p</span> <span class="o">*</span> <span class="n">ws</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                    <span class="n">gs</span> <span class="o">=</span> <span class="n">gs</span> <span class="o">+</span> <span class="n">g</span> <span class="o">*</span> <span class="n">ws</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                    <span class="n">hs</span> <span class="o">=</span> <span class="n">hs</span> <span class="o">+</span> <span class="n">h</span> <span class="o">*</span> <span class="n">ws</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                    <span class="n">cps</span> <span class="o">=</span> <span class="n">cps</span> <span class="o">+</span> <span class="n">cps</span> <span class="o">*</span> <span class="n">ws</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+                <span class="k">return</span> <span class="n">ps</span><span class="p">,</span> <span class="n">gs</span><span class="p">,</span> <span class="n">hs</span><span class="p">,</span> <span class="n">cps</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span> <span class="o">*</span> <span class="n">gs</span>
+
+    <span class="k">def</span> <span class="nf">_nlocal_inv_cov</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes the hessian of log density function.</span>
+<span class="sd">        This function also returns other density estimation related</span>
+<span class="sd">        quantities.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X : array</span>
+<span class="sd">            2D array. Input data points.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        negative_local_inverse_covariance : array</span>
+<span class="sd">            3D array. Hessian of log probability density function (negative local</span>
+<span class="sd">            inverse covariance).</span>
+<span class="sd">        p : array</span>
+<span class="sd">            1D array.  Unnormalized probability density. The probability density</span>
+<span class="sd">            is not normalized due to numerical stability. Exact log probability</span>
+<span class="sd">            density is returned if `output_onlylogp=True`.</span>
+<span class="sd">        g : array</span>
+<span class="sd">            2D array. Gradient of the probability density function.</span>
+<span class="sd">        h : array</span>
+<span class="sd">            3D array. Hessian of the probability density function.</span>
+<span class="sd">        msu :</span>
+<span class="sd">            2D array. Meanshift update based on the probability density function.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">p</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">msu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_density_estimate</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mf">1.</span> <span class="o">/</span> <span class="n">p</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span> <span class="o">*</span> <span class="n">h</span> <span class="o">-</span> <span class="mf">1.</span> <span class="o">/</span> <span class="n">p</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">matrix_multiply</span><span class="p">(</span>
+            <span class="n">g</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">],</span> <span class="n">g</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span><span class="o">.</span><span class="n">transpose</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">))),</span> <span class="n">p</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">msu</span>
+
+<div class="viewcode-block" id="Scms.scms_update"><a class="viewcode-back" href="../../structdr.html#quasildr.structdr.Scms.scms_update">[docs]</a>    <span class="k">def</span> <span class="nf">scms_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;LocInv&#39;</span><span class="p">,</span> <span class="n">stepsize</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">ridge_dimensionality</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">relaxation</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute the constrained mean shift update of the point at x.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X : array</span>
+<span class="sd">            2D array. Input data points.</span>
+<span class="sd">        method : str {&#39;Gradient&#39;|&#39;GradientLogp&#39;|&#39;SuRF&#39;|&#39;LocInv&#39;}, optional</span>
+<span class="sd">            * Gradient</span>
+<span class="sd">                Projected gradient update based on Hessian of probability density function p.</span>
+<span class="sd">                Update is specified by projected gradient of p * step size.</span>
+<span class="sd">            * GradientLogP</span>
+<span class="sd">                Projected gradient update based on Hessian of log probability density function log(p).</span>
+<span class="sd">                Update is specified by projected gradient of log(p) * step size.</span>
+<span class="sd">            * SuRF</span>
+<span class="sd">                Projected mean-shift update based on Hessian of probability density function p.</span>
+<span class="sd">                Update is specified by projected mean shift update * step size.</span>
+<span class="sd">            * LocInv</span>
+<span class="sd">                Projected mean-shift update based on Hessian of probability density function log p.</span>
+<span class="sd">                Update is specified by projected mean shift update * step size.</span>
+<span class="sd">            Default is &#39;LocInv&#39;.</span>
+<span class="sd">        stepsize : float, optional</span>
+<span class="sd">            Step size.</span>
+<span class="sd">        ridge_dimensionality : int, optional</span>
+<span class="sd">            Ridge dimensionality.</span>
+<span class="sd">        relaxation : float [0,1], optional</span>
+<span class="sd">            Relax the ridge dimensionality based on eigen gap corresponding to the ridge_dimensionality.</span>
+<span class="sd">            Typically used with `ridge_dimensionality=1`. All point are projected to one-dimensional ridges</span>
+<span class="sd">            (trajectories) when `relaxation=0`. All points are projected to two-dimensional ridges</span>
+<span class="sd">            (surfaces) when `relaxation=1`.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        ----------</span>
+<span class="sd">        update : 2D array</span>
+<span class="sd">            SCMS update.</span>
+<span class="sd">        relax_bool : 1D array</span>
+<span class="sd">            Indicate whether the ridge dimensionality of a particular point was increased by 1 relative to</span>
+<span class="sd">            what `ridge_dimensionality` specified. The amount of relaxation is controlled by `relaxation` argument.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;GradientP&#39;</span><span class="p">:</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">msu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_density_estimate</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+            <span class="n">eigvals</span><span class="p">,</span> <span class="n">eigvecs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigh</span><span class="p">(</span><span class="o">-</span><span class="n">h</span><span class="p">)</span>
+            <span class="n">eigvals</span> <span class="o">=</span> <span class="o">-</span><span class="n">eigvals</span>
+            <span class="n">update</span> <span class="o">=</span> <span class="n">g</span> <span class="o">*</span> <span class="n">stepsize</span>
+
+        <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;GradientLogP&#39;</span><span class="p">:</span>
+            <span class="n">h</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">msu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nlocal_inv_cov</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+            <span class="n">g</span> <span class="o">=</span> <span class="n">g</span> <span class="o">/</span> <span class="n">p</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
+
+            <span class="n">eigvals</span><span class="p">,</span> <span class="n">eigvecs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigh</span><span class="p">(</span><span class="o">-</span><span class="n">h</span><span class="p">)</span>
+            <span class="n">eigvals</span> <span class="o">=</span> <span class="o">-</span><span class="n">eigvals</span>
+            <span class="n">update</span> <span class="o">=</span> <span class="n">g</span> <span class="o">*</span> <span class="n">stepsize</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;MSP&#39;</span><span class="p">:</span>
+                <span class="c1"># h equals hessian of p(x)</span>
+                <span class="n">p</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">msu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_density_estimate</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+                <span class="n">eigvals</span><span class="p">,</span> <span class="n">eigvecs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigh</span><span class="p">(</span><span class="o">-</span><span class="n">h</span><span class="p">)</span>
+                <span class="n">eigvals</span> <span class="o">=</span> <span class="o">-</span><span class="n">eigvals</span>
+            <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;LocInv&#39;</span> <span class="ow">or</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;MSLogP&#39;</span><span class="p">:</span>
+                <span class="c1"># h equals negative hessian of log(p(x)), or &quot;local inverse covariance&quot;</span>
+                <span class="n">h</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">msu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nlocal_inv_cov</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+                <span class="n">eigvals</span><span class="p">,</span> <span class="n">eigvecs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigh</span><span class="p">(</span><span class="o">-</span><span class="n">h</span><span class="p">)</span>
+                <span class="n">eigvals</span> <span class="o">=</span> <span class="o">-</span><span class="n">eigvals</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Method has to be one of Gradient, GradientLogp, SuRF or LocInv.&#39;</span><span class="p">)</span>
+
+            <span class="n">update</span> <span class="o">=</span> <span class="n">msu</span>
+            <span class="n">update</span> <span class="o">=</span> <span class="n">update</span> <span class="o">*</span> <span class="n">stepsize</span>
+
+        <span class="k">if</span> <span class="n">ridge_dimensionality</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">relax_bool</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">update</span><span class="p">,</span> <span class="n">relax_bool</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">eigvecs</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:</span><span class="n">ridge_dimensionality</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="c1"># sort the eigenvectors by decreasing eigenvalue</span>
+            <span class="k">if</span> <span class="n">relaxation</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">ridge_dimensionality</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">relax_bool</span> <span class="o">=</span> <span class="p">(</span><span class="n">eigvals</span><span class="p">[:,</span> <span class="n">ridge_dimensionality</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">eigvals</span><span class="p">[:,</span> <span class="n">ridge_dimensionality</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span>
+                        <span class="n">eigvals</span><span class="p">[:,</span> <span class="n">ridge_dimensionality</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">eigvals</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">&lt;</span> <span class="n">relaxation</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">relax_bool</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+            <span class="n">eigvecs</span><span class="p">[</span><span class="n">relax_bool</span><span class="p">,</span> <span class="p">:,</span> <span class="n">ridge_dimensionality</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+
+            <span class="k">return</span> <span class="n">matrix_multiply</span><span class="p">(</span><span class="n">matrix_multiply</span><span class="p">(</span><span class="n">eigvecs</span><span class="p">,</span> <span class="n">eigvecs</span><span class="o">.</span><span class="n">transpose</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">))),</span> <span class="n">update</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">])[:,</span>
+                   <span class="p">:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">relax_bool</span></div>
+
+<div class="viewcode-block" id="Scms.scms"><a class="viewcode-back" href="../../structdr.html#quasildr.structdr.Scms.scms">[docs]</a>    <span class="k">def</span> <span class="nf">scms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">n_iterations</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-7</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;LocInv&#39;</span><span class="p">,</span> <span class="n">stepsize</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">ridge_dimensionality</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+             <span class="n">relaxation</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">16</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Performs subspace constrained mean shift on the entire data set using</span>
+<span class="sd">        a Gaussian kernel with bandwidth of bw.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X : array</span>
+<span class="sd">            2D array. Input data points.</span>
+<span class="sd">        n_iterations : int, optional</span>
+<span class="sd">            The number of iterations for running the algorithm</span>
+<span class="sd">        threshold : float, optional</span>
+<span class="sd">            Filter out data points below a probability density threshold.</span>
+<span class="sd">            The threshold value is specified relative to the maximum density.</span>
+<span class="sd">        tol : float, optional</span>
+<span class="sd">            Tolerance for assessing convergence, stop if `max(abs(new_pos - pos)) &lt; tol`.</span>
+<span class="sd">        method : str {&#39;GradientP&#39;|&#39;GradientLogP&#39;|&#39;MSP&#39;|&#39;MSLogP&#39;|&#39;InvCov&#39;}, optional</span>
+<span class="sd">            * GradientP</span>
+<span class="sd">                Projected gradient update based on Hessian of probability density function p.</span>
+<span class="sd">                Update is specified by projected gradient of p * step size.</span>
+<span class="sd">            * GradientLogP</span>
+<span class="sd">                Projected gradient update based on Hessian of log probability density function log(p).</span>
+<span class="sd">                Update is specified by projected gradient of log(p) * step size.</span>
+<span class="sd">            * MSP</span>
+<span class="sd">                Projected mean-shift update based on Hessian of probability density function p.</span>
+<span class="sd">                Update is specified by projected mean shift update * step size.</span>
+<span class="sd">            * MSLogP or InvCov (equivalent)</span>
+<span class="sd">                Projected mean-shift update based on Hessian of probability density function log p.</span>
+<span class="sd">                Update is specified by projected mean shift update * step size.</span>
+<span class="sd">            Default is &#39;InvCov&#39;.</span>
+<span class="sd">        stepsize : float, optional</span>
+<span class="sd">            Step size. Default is 0.5</span>
+<span class="sd">        ridge_dimensionality : int, optional</span>
+<span class="sd">            Ridge dimensionality. Default is 1.</span>
+<span class="sd">        relaxation : float [0,1], optional</span>
+<span class="sd">            Relax the ridge dimensionality based on eigen gap corresponding to the ridge_dimensionality.</span>
+<span class="sd">            Typically used with `ridge_dimensionality=1`. All point are projected to one-dimensional ridges</span>
+<span class="sd">            (trajectories) when `relaxation=0`. All points are projected to two-dimensional ridges</span>
+<span class="sd">            (surfaces) when `relaxation=1`. Default is 0.</span>
+<span class="sd">        n_jobs : int, optional</span>
+<span class="sd">            Number of jobs to run in parallel. Default is 1.</span>
+<span class="sd">        batch_size : int, optional</span>
+<span class="sd">            Number of data points to process in a batch. Reduce this number can decrease memory usage.</span>
+<span class="sd">            Default is 500.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        ----------</span>
+<span class="sd">        pos : array</span>
+<span class="sd">            Updated data points postions.</span>
+<span class="sd">        ifilter : array</span>
+<span class="sd">            Indices of returned positions (useful when `threshold &gt; 0` so part of the input are filtered).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;X&#39;</span><span class="p">:</span> <span class="n">X</span><span class="p">,</span> <span class="s1">&#39;n_iterations&#39;</span><span class="p">:</span> <span class="n">n_iterations</span><span class="p">,</span> <span class="s1">&#39;threshold&#39;</span><span class="p">:</span> <span class="n">threshold</span><span class="p">,</span> <span class="s1">&#39;tol&#39;</span><span class="p">:</span> <span class="n">tol</span><span class="p">,</span> <span class="s1">&#39;method&#39;</span><span class="p">:</span> <span class="n">method</span><span class="p">,</span>
+                       <span class="s1">&#39;stepsize&#39;</span><span class="p">:</span> <span class="n">stepsize</span><span class="p">,</span> <span class="s1">&#39;ridge_dimensionality&#39;</span><span class="p">:</span> <span class="n">ridge_dimensionality</span><span class="p">,</span>
+                       <span class="s1">&#39;relaxation&#39;</span><span class="p">:</span> <span class="n">relaxation</span><span class="p">}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">data_copy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">threshold</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_kernel_density_estimate</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">output_onlylogp</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+            <span class="n">maxp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_kernel_density_estimate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">output_onlylogp</span><span class="o">=</span><span class="kc">True</span><span class="p">)))</span>
+            <span class="n">ifilter</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">p</span> <span class="o">&gt;=</span> <span class="p">(</span><span class="n">maxp</span> <span class="o">*</span> <span class="n">threshold</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ifilter</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="n">pos</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">ifilter</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="k">if</span> <span class="n">n_jobs</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">Pool</span><span class="p">(</span><span class="n">n_jobs</span><span class="p">)</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_iterations</span><span class="p">):</span>
+                    <span class="n">pos_old</span> <span class="o">=</span> <span class="n">pos</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                    <span class="k">if</span> <span class="n">X</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">pos</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+                    <span class="n">updates</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
+                        <span class="k">lambda</span> <span class="n">pos</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">scms_update</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span> <span class="n">stepsize</span><span class="o">=</span><span class="n">stepsize</span><span class="p">,</span>
+                                                     <span class="n">ridge_dimensionality</span><span class="o">=</span><span class="n">ridge_dimensionality</span><span class="p">,</span> <span class="n">relaxation</span><span class="o">=</span><span class="n">relaxation</span><span class="p">),</span>
+                        <span class="n">np</span><span class="o">.</span><span class="n">array_split</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">pos</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span><span class="n">batch_size</span> <span class="o">*</span> <span class="n">n_jobs</span><span class="p">))))</span>
+
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">updates</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="n">update</span> <span class="o">=</span> <span class="n">updates</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">relax_bool</span> <span class="o">=</span> <span class="n">updates</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">update</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">updates</span><span class="p">])</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">relax_bool</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">i</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">updates</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+                    <span class="n">pos</span> <span class="o">=</span> <span class="n">pos</span> <span class="o">+</span> <span class="n">update</span>
+                    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">pos_old</span> <span class="o">-</span> <span class="n">pos</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span> <span class="o">&lt;</span> <span class="n">tol</span><span class="p">:</span>
+                        <span class="k">break</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_iterations</span><span class="p">):</span>
+                <span class="n">pos_old</span> <span class="o">=</span> <span class="n">pos</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">X</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">pos</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+                <span class="n">updates</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span>
+                    <span class="k">lambda</span> <span class="n">pos</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">scms_update</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span> <span class="n">stepsize</span><span class="o">=</span><span class="n">stepsize</span><span class="p">,</span>
+                                                 <span class="n">ridge_dimensionality</span><span class="o">=</span><span class="n">ridge_dimensionality</span><span class="p">,</span> <span class="n">relaxation</span><span class="o">=</span><span class="n">relaxation</span><span class="p">),</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">array_split</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">pos</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">batch_size</span> <span class="p">))))</span>
+
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">updates</span><span class="p">)</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>
+                    <span class="n">update</span> <span class="o">=</span> <span class="n">updates</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">relax_bool</span> <span class="o">=</span> <span class="n">updates</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">update</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">updates</span><span class="p">])</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">relax_bool</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">i</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">updates</span><span class="p">],</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+                <span class="n">pos</span> <span class="o">=</span> <span class="n">pos</span> <span class="o">+</span> <span class="n">update</span>
+                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">pos_old</span> <span class="o">-</span> <span class="n">pos</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span> <span class="o">&lt;</span> <span class="n">tol</span><span class="p">:</span>
+                    <span class="k">break</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data_copy</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ridge</span> <span class="o">=</span> <span class="n">pos</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ifilter</span> <span class="o">=</span> <span class="n">ifilter</span>
+        <span class="k">return</span> <span class="n">pos</span><span class="p">,</span> <span class="n">ifilter</span></div>
+
+
+<div class="viewcode-block" id="Scms.boostrap_trajectory"><a class="viewcode-back" href="../../structdr.html#quasildr.structdr.Scms.boostrap_trajectory">[docs]</a>    <span class="k">def</span> <span class="nf">boostrap_trajectory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_bootstrap</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">copy_bw</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Construct confidence set of density ridge positions through bootstrap. For each bootstrap sample,</span>
+<span class="sd">        distance to its nearest neighbors in the original ridge estimate is recorded. The bootstrap runs</span>
+<span class="sd">        will copy the parameters of the previous `scms` call, therefore `scms` has to be executed</span>
+<span class="sd">        before this function.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        n_bootstrap : int, optional</span>
+<span class="sd">            Number of bootstrap runs. Default is 25.</span>
+<span class="sd">        n_jobs : int, optional</span>
+<span class="sd">            Number of jobs to run in parallel. Default is 1. Only specify `n_jobs&gt;1` if `n_jobs=1` is used</span>
+<span class="sd">            when running `scms`.</span>
+<span class="sd">        copy_bw : bool, optional</span>
+<span class="sd">            If true, the point-specific kernel bandwidths are unchanged after resampling.</span>
+<span class="sd">            This option only has an effect is `self.min_radius &gt; 0`.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        ----------</span>
+<span class="sd">        boostrap_n : array, shape (n_samples, n_bootstrap)</span>
+<span class="sd">            2D array. Bootstrap nearest neighbor distances for each ridge position.</span>
+<span class="sd">        boostrap_s : array, shape (n_samples, n_bootstrap)</span>
+<span class="sd">            2D array. Bootstrap point-wise distances for each ridge position. Experimental.</span>
+<span class="sd">        boostrap_ifilters : array, shape (n_samples, n_bootstrap)</span>
+<span class="sd">            2D array. Bootstrap resample indices.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">==</span> <span class="p">{}:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Run scms first before bootstrap!&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_radius</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Boostrap with adaptive bandwidth may not satisfy the theoritical properties&#39;</span>
+                          <span class="s1">&#39; proved in Chen et al. 2015, Ann. Statist.. Use min_radius=0 to be consistent &#39;</span>
+                          <span class="s1">&#39;with Chen et al. 2015 algorithm.&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">bootstrap_distances_n</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bootstrap_distances_s</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bootstrap_ifilters</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bootstrap_ridges</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">def</span> <span class="nf">boostrap</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="n">bdata</span><span class="p">,</span> <span class="n">bi</span> <span class="o">=</span> <span class="n">bootstrap_resample</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="n">Scms</span><span class="p">(</span><span class="n">bdata</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bw</span><span class="p">,</span> <span class="n">min_radius</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">min_radius</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">copy_bw</span><span class="p">:</span>
+                <span class="n">b</span><span class="o">.</span><span class="n">adaptive_bw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">adaptive_bw</span><span class="p">[</span><span class="n">bi</span><span class="p">]</span>
+
+            <span class="n">_ridge</span><span class="p">,</span> <span class="n">_ifilter</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">scms</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">)</span>
+            <span class="n">binaryfilter</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+            <span class="n">binaryfilter</span><span class="p">[</span><span class="n">_ifilter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+            <span class="n">a</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+            <span class="n">b</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+
+            <span class="n">a</span><span class="p">[</span><span class="n">_ifilter</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">_ridge</span>
+            <span class="n">b</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">ifilter</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ridge</span>
+            <span class="n">dists</span> <span class="o">=</span> <span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">a</span> <span class="o">-</span> <span class="n">b</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)[</span><span class="bp">self</span><span class="o">.</span><span class="n">ifilter</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">NearestNeighbors</span><span class="p">(</span><span class="n">n_neighbors</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">algorithm</span><span class="o">=</span><span class="s1">&#39;ball_tree&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">_ridge</span><span class="p">)</span><span class="o">.</span><span class="n">kneighbors</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ridge</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> \
+                   <span class="n">dists</span><span class="p">,</span> <span class="n">binaryfilter</span><span class="p">,</span> <span class="n">_ridge</span>
+
+        <span class="k">with</span> <span class="n">Pool</span><span class="p">(</span><span class="n">n_jobs</span><span class="p">)</span> <span class="k">as</span> <span class="n">p</span><span class="p">:</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">boostrap</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_bootstrap</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">dist_n</span><span class="p">,</span> <span class="n">dist_s</span><span class="p">,</span> <span class="n">ifilter</span><span class="p">,</span> <span class="n">ridge</span> <span class="ow">in</span> <span class="n">res</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">bootstrap_distances_n</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dist_n</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">bootstrap_distances_s</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dist_s</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">bootstrap_ifilters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ifilter</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">bootstrap_ridges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ridge</span><span class="p">)</span>
+
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">bootstrap_distances_n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bootstrap_distances_n</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bootstrap_distances_s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bootstrap_distances_s</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bootstrap_ifilters</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bootstrap_ifilters</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bootstrap_distances_n</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bootstrap_distances_s</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bootstrap_ifilters</span></div>
+        <span class="c1"># return scoreatpercentile(self.bootstrap_distances_n, percentile_confidence, axis=1),</span>
+        <span class="c1">#       scoreatpercentile(self.bootstrap_distances_s, percentile_confidence, axis=1)</span>
+
+<div class="viewcode-block" id="Scms.bootstrap_landmark"><a class="viewcode-back" href="../../structdr.html#quasildr.structdr.Scms.bootstrap_landmark">[docs]</a>    <span class="k">def</span> <span class="nf">bootstrap_landmark</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">n_bootstrap</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;LocInv&#39;</span><span class="p">,</span> <span class="n">smooth_bootstrap</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">copy_bw</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="mi">4</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Experimental function. Work in progress.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">landmarks</span> <span class="o">=</span> <span class="n">X</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;LocInv&#39;</span> <span class="ow">or</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;GradientLogP&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">landmarks_h</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">landmarks_p</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">landmarks_g</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nlocal_inv_cov</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">landmarks</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">landmarks_p</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">landmarks_g</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">landmarks_h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_kernel_density_estimate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">landmarks</span><span class="p">)</span>
+
+        <span class="c1"># use megative of h because eigh sort eigen values in ascending order</span>
+        <span class="n">eigvals</span><span class="p">,</span> <span class="n">eigvecs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigh</span><span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">landmarks_h</span><span class="p">)</span>
+        <span class="n">eigvals</span> <span class="o">=</span> <span class="o">-</span><span class="n">eigvals</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">landmarks_h_eigvecs</span> <span class="o">=</span> <span class="n">eigvecs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">landmarks_h_eigvals</span> <span class="o">=</span> <span class="n">eigvals</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">landmarks_bootstrap_p</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">landmarks_bootstrap_g</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">landmarks_bootstrap_h</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">landmarks_bootstrap_g_proj</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">landmarks_bootstrap_h_proj</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">landmarks_bootstrap_h_dir</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">def</span> <span class="nf">boostrap</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">smooth_bootstrap</span><span class="p">:</span>
+                <span class="n">b</span> <span class="o">=</span> <span class="n">Scms</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">adaptive_bw</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bw</span><span class="p">,</span>
+                         <span class="n">min_radius</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">min_radius</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">copy_bw</span><span class="p">:</span>
+                    <span class="n">b</span><span class="o">.</span><span class="n">adaptive_bw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">adaptive_bw</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">bdata</span><span class="p">,</span> <span class="n">bi</span> <span class="o">=</span> <span class="n">bootstrap_resample</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+                <span class="n">b</span> <span class="o">=</span> <span class="n">Scms</span><span class="p">(</span><span class="n">bdata</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bw</span><span class="p">,</span> <span class="n">min_radius</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">min_radius</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">copy_bw</span><span class="p">:</span>
+                    <span class="n">b</span><span class="o">.</span><span class="n">adaptive_bw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">adaptive_bw</span><span class="p">[</span><span class="n">bi</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;LocInv&#39;</span> <span class="ow">or</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;GradientLogP&#39;</span><span class="p">:</span>
+                <span class="n">bh</span><span class="p">,</span> <span class="n">bp</span><span class="p">,</span> <span class="n">bg</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">_nlocal_inv_cov</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">landmarks</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">bp</span><span class="p">,</span> <span class="n">bg</span><span class="p">,</span> <span class="n">bh</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">_kernel_density_estimate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">landmarks</span><span class="p">)</span>
+
+            <span class="n">gproj</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">landmarks_g</span> <span class="o">*</span> <span class="n">bg</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">landmarks_g</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">hproj</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span>
+                <span class="n">matrix_multiply</span><span class="p">(</span><span class="n">bh</span><span class="o">.</span><span class="n">transpose</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span> <span class="bp">self</span><span class="o">.</span><span class="n">landmarks_h_eigvecs</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">landmarks_h_eigvecs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">bp</span><span class="p">,</span> <span class="n">bg</span><span class="p">,</span> <span class="n">bh</span><span class="p">,</span> <span class="n">gproj</span><span class="p">,</span> <span class="n">hproj</span>
+
+        <span class="k">with</span> <span class="n">Pool</span><span class="p">(</span><span class="n">n_jobs</span><span class="p">)</span> <span class="k">as</span> <span class="n">p</span><span class="p">:</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">boostrap</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_bootstrap</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">bp</span><span class="p">,</span> <span class="n">bg</span><span class="p">,</span> <span class="n">bh</span><span class="p">,</span> <span class="n">gproj</span><span class="p">,</span> <span class="n">hproj</span> <span class="ow">in</span> <span class="n">res</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">landmarks_bootstrap_p</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bp</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">landmarks_bootstrap_g</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bg</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">landmarks_bootstrap_h</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bh</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">landmarks_bootstrap_g_proj</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gproj</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">landmarks_bootstrap_h_proj</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hproj</span><span class="p">)</span>
+                <span class="c1"># _, eigvecs = np.linalg.eigh(-bh)</span>
+                <span class="c1"># self.landmarks_bootstrap_h_dir.append(np.abs(np.sum(eigvecs * self.landmarks_h_eigvecs,axis=1)))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">landmarks_bootstrap_g_proj</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">landmarks_bootstrap_g_proj</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">landmarks_bootstrap_h_proj</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dstack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">landmarks_bootstrap_h_proj</span><span class="p">)</span>
+        <span class="c1"># self.landmarks_bootstrap_h_dir = np.dstack(self.landmarks_bootstrap_h_dir)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">landmarks_bootstrap_g_proj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">landmarks_bootstrap_h_proj</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Jian Zhou
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

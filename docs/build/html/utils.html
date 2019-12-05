@@ -1,0 +1,404 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>quasildr.utils &mdash; Quasildr 0.1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="quasildr.structdr" href="structdr.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="main.html" class="icon icon-home"> Quasildr
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Introduction</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Tutorials.html">Tutorials</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Python API</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="graphdr.html">quasildr.graphdr</a></li>
+<li class="toctree-l1"><a class="reference internal" href="structdr.html">quasildr.structdr</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">quasildr.utils</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="main.html">Quasildr</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="main.html">Docs</a> &raquo;</li>
+        
+      <li>quasildr.utils</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/utils.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-quasildr.utils">
+<span id="quasildr-utils"></span><h1>quasildr.utils<a class="headerlink" href="#module-quasildr.utils" title="Permalink to this headline">¶</a></h1>
+<p><strong>Functions</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#quasildr.utils.count_degree" title="quasildr.utils.count_degree"><code class="xref py py-obj docutils literal notranslate"><span class="pre">count_degree</span></code></a>(edge_list, N)</p></td>
+<td><p>Compute degrees of all nodes in a graph.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#quasildr.utils.extract_segments" title="quasildr.utils.extract_segments"><code class="xref py py-obj docutils literal notranslate"><span class="pre">extract_segments</span></code></a>(edge_list, degree)</p></td>
+<td><p>Extract segments from a graph.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#quasildr.utils.extract_structural_backbone" title="quasildr.utils.extract_structural_backbone"><code class="xref py py-obj docutils literal notranslate"><span class="pre">extract_structural_backbone</span></code></a>(t, data, s[, …])</p></td>
+<td><p>Construct simplified graphs connecting data points there have been projected to density ridges.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#quasildr.utils.locCov" title="quasildr.utils.locCov"><code class="xref py py-obj docutils literal notranslate"><span class="pre">locCov</span></code></a>(data, query, bw[, shrinkage])</p></td>
+<td><p>Computes Local Covariance matrices.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#quasildr.utils.make_mst" title="quasildr.utils.make_mst"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_mst</span></code></a>(t)</p></td>
+<td><p>Construct minimum spanning tree.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#quasildr.utils.make_projected_mst" title="quasildr.utils.make_projected_mst"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_projected_mst</span></code></a>(t, data[, radius])</p></td>
+<td><p>Experimental function</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#quasildr.utils.make_trajectory" title="quasildr.utils.make_trajectory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_trajectory</span></code></a>(t[, output_prefix, …])</p></td>
+<td><p>Construct MST, prune minor branches, and segment.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#quasildr.utils.mst" title="quasildr.utils.mst"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mst</span></code></a>(D)</p></td>
+<td><p>Construct minimum spanning tree from dense matrix.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#quasildr.utils.subspace_angles" title="quasildr.utils.subspace_angles"><code class="xref py py-obj docutils literal notranslate"><span class="pre">subspace_angles</span></code></a>(A, B)</p></td>
+<td><p>Fast computation of subspace angles given A and B are orthogonal basis matrices and only accuracy of small angles are of concern.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="function">
+<dt id="quasildr.utils.count_degree">
+<code class="sig-prename descclassname">quasildr.utils.</code><code class="sig-name descname">count_degree</code><span class="sig-paren">(</span><em class="sig-param">edge_list</em>, <em class="sig-param">N</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/quasildr/utils.html#count_degree"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#quasildr.utils.count_degree" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute degrees of all nodes in a graph.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>edge_list</strong> (<em>2D array</em><em> or </em><em>list</em>) – 2D array or list where each row or item has two values indicating start and end indices.</p></li>
+<li><p><strong>N</strong> (<em>int</em>) – Number of nodes in the graph.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>degree</strong> – 1D array containing degrees of each node</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>1D array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="quasildr.utils.extract_segments">
+<code class="sig-prename descclassname">quasildr.utils.</code><code class="sig-name descname">extract_segments</code><span class="sig-paren">(</span><em class="sig-param">edge_list</em>, <em class="sig-param">degree</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/quasildr/utils.html#extract_segments"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#quasildr.utils.extract_segments" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract segments from a graph. It can be used for, for example, paritioning a graph into different branches.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>edge_list</strong> (<em>2D array</em><em> or </em><em>list</em>) – 2D array or list where each row or item has two values indicating start and end indices.</p></li>
+<li><p><strong>degree</strong> (<em>1D array</em>) – 1D array containing the degree of each node. This has to be consistent with edge_list.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>segments</strong> – Partitioned segments represented by a list in which each item is a list containing indices in a segments.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="quasildr.utils.extract_structural_backbone">
+<code class="sig-prename descclassname">quasildr.utils.</code><code class="sig-name descname">extract_structural_backbone</code><span class="sig-paren">(</span><em class="sig-param">t</em>, <em class="sig-param">data</em>, <em class="sig-param">s</em>, <em class="sig-param">max_angle=90</em>, <em class="sig-param">relaxation=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/quasildr/utils.html#extract_structural_backbone"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#quasildr.utils.extract_structural_backbone" title="Permalink to this definition">¶</a></dt>
+<dd><p>Construct simplified graphs connecting data points there have been projected to density ridges.</p>
+<dl class="simple">
+<dt>Two graphs are constructed for different purposes. The first graph (g_simple) is constructed with two major steps:</dt><dd><ol class="arabic simple">
+<li><p>Construct nearest neighbor graph on both ridge positions</p></li>
+</ol>
+</dd>
+</dl>
+<p>and raw data positions and combine. 2. Simplify graph so that each point is only connected to up
+to 2^ridge_dimensionality points with a set of filtering criteria.</p>
+<p>The second graph (g_mst) has two extra steps: 3. If the graph is not fully connected, connect the components by
+nearest neigbors between all pairs of components. 4. Construct a minimum spanning tree of the graph.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>t</strong> (<em>2D array</em>) – Density ridge positions. Typically projected to density ridges with quasildr.dridge.Scms.</p></li>
+<li><p><strong>data</strong> (<em>2D array</em>) – Original data points.</p></li>
+<li><p><strong>s</strong> (<em>object</em>) – <cite>quasildr.dridge.Scms</cite> object which were used to produce t0.</p></li>
+<li><p><strong>max_angle</strong> (<em>float</em><em>, </em><em>optional</em>) – Maximum angle in degree for filtering graph edges. Default is 90.</p></li>
+<li><p><strong>relaxation</strong> (<em>float</em><em>, </em><em>optional</em>) – The relaxation parameter used to produce <cite>t0</cite>. See <cite>quasildr.dridge.Scms.scms</cite> documention.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>g_simple</strong> (<em>sparse matrix</em>) – Simplified graph constructed without explicit shape or connectivity constraints (g_simple)</p></li>
+<li><p><em>and the other one is  from step 2</em></p></li>
+<li><p><strong>g_mst</strong> (<em>sparse matrix</em>) – A tree-shaped graph connecting all points (g_mst). from step 4.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="quasildr.utils.locCov">
+<code class="sig-prename descclassname">quasildr.utils.</code><code class="sig-name descname">locCov</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">query</em>, <em class="sig-param">bw</em>, <em class="sig-param">shrinkage=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/quasildr/utils.html#locCov"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#quasildr.utils.locCov" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes Local Covariance matrices. Data points were weighted with a Gaussian kernel centered at
+the query point</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>2D array</em>) – Array containing data points of shape (N, p).</p></li>
+<li><p><strong>query</strong> (<em>2D array</em>) – Array containing  the query point of shape (1, p)</p></li>
+<li><p><strong>bw</strong> (<em>float</em>) – Gaussian kernel bandwidth</p></li>
+<li><p><strong>shrinkage</strong> (<em>bool</em><em>, </em><em>optional</em>) – Apply OAS shrinkage for computing local covariance. Default is False.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="quasildr.utils.make_mst">
+<code class="sig-prename descclassname">quasildr.utils.</code><code class="sig-name descname">make_mst</code><span class="sig-paren">(</span><em class="sig-param">t</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/quasildr/utils.html#make_mst"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#quasildr.utils.make_mst" title="Permalink to this definition">¶</a></dt>
+<dd><p>Construct minimum spanning tree.
+Takes input from Euclidean space and construct graph based on pairwise distances</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>t</strong> (<em>2D array</em>) – Input data points.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>edge_list</strong> – Edge list of the minimum spanning tree</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>2D array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="quasildr.utils.make_projected_mst">
+<code class="sig-prename descclassname">quasildr.utils.</code><code class="sig-name descname">make_projected_mst</code><span class="sig-paren">(</span><em class="sig-param">t</em>, <em class="sig-param">data</em>, <em class="sig-param">radius=0.1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/quasildr/utils.html#make_projected_mst"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#quasildr.utils.make_projected_mst" title="Permalink to this definition">¶</a></dt>
+<dd><p>Experimental function</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="quasildr.utils.make_trajectory">
+<code class="sig-prename descclassname">quasildr.utils.</code><code class="sig-name descname">make_trajectory</code><span class="sig-paren">(</span><em class="sig-param">t</em>, <em class="sig-param">output_prefix=None</em>, <em class="sig-param">prune_threshold=3</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/quasildr/utils.html#make_trajectory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#quasildr.utils.make_trajectory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Construct MST, prune minor branches, and segment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>t</strong> – </p></li>
+<li><p><strong>output_prefix</strong> – </p></li>
+<li><p><strong>prune_threshold</strong> – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="quasildr.utils.mst">
+<code class="sig-prename descclassname">quasildr.utils.</code><code class="sig-name descname">mst</code><span class="sig-paren">(</span><em class="sig-param">D</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/quasildr/utils.html#mst"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#quasildr.utils.mst" title="Permalink to this definition">¶</a></dt>
+<dd><p>Construct minimum spanning tree from dense matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>D</strong> (<em>array</em><em> or </em><em>sparse matrix</em>) – Edge data in 2D square array or matrix format. Non-zero values represent edges.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>edge_list</strong> – Edge list of the minimum spanning tree</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>2D array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="quasildr.utils.subspace_angles">
+<code class="sig-prename descclassname">quasildr.utils.</code><code class="sig-name descname">subspace_angles</code><span class="sig-paren">(</span><em class="sig-param">A</em>, <em class="sig-param">B</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/quasildr/utils.html#subspace_angles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#quasildr.utils.subspace_angles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fast computation of subspace angles given A and B are orthogonal basis matrices and
+only accuracy of small angles are of concern. Large angle are not numerically accurate.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>B</strong> (<em>A</em><em>,</em>) – Array containing data points of shape (n, p, p).</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="structdr.html" class="btn btn-neutral float-left" title="quasildr.structdr" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Jian Zhou
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

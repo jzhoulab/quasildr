@@ -26,7 +26,7 @@ pip install quasildr
 Selene can also be installed from source.
 First, download the latest commits from the source repository:
 ```
-git clone https://github.com/FunctionLab/quasildr.git
+git clone https://github.com/jzthree/quasildr.git
 ```
 
 If you would like to locally install Selene, you can run

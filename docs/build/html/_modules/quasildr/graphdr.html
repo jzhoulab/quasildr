@@ -1,0 +1,993 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>quasildr.graphdr &mdash; Quasildr 0.1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../main.html" class="icon icon-home"> Quasildr
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Introduction</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../Tutorials.html">Tutorials</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Python API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../graphdr.html">quasildr.graphdr</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../structdr.html">quasildr.structdr</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../utils.html">quasildr.utils</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../main.html">Quasildr</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../main.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>quasildr.graphdr</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for quasildr.graphdr</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module implements the quaslinear representation method GraphDR and relevant</span>
+<span class="sd">functions. The method is implemented in the graphdr function. A scikit-learn</span>
+<span class="sd">Estimator-like interface to graphdr is also provided through the GraphDR class.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">from</span> <span class="nn">sklearn.neighbors</span> <span class="k">import</span> <span class="n">kneighbors_graph</span>
+<span class="kn">from</span> <span class="nn">scipy.sparse</span> <span class="k">import</span> <span class="n">csgraph</span><span class="p">,</span> <span class="n">csr_matrix</span>
+<span class="kn">import</span> <span class="nn">scipy</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">scipy.sparse</span> <span class="k">import</span> <span class="n">issparse</span>
+<span class="kn">from</span> <span class="nn">sklearn.decomposition</span> <span class="k">import</span> <span class="n">PCA</span>
+<span class="kn">from</span> <span class="nn">multiprocess</span> <span class="k">import</span> <span class="n">Pool</span>
+<span class="kn">from</span> <span class="nn">sklearn.base</span> <span class="k">import</span> <span class="n">BaseEstimator</span>
+
+<span class="kn">from</span> <span class="nn">.external</span> <span class="k">import</span> <span class="n">neighbors</span>
+
+
+<div class="viewcode-block" id="knn_graph"><a class="viewcode-back" href="../../graphdr.html#quasildr.graphdr.knn_graph">[docs]</a><span class="k">def</span> <span class="nf">knn_graph</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">n_neighbors</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">space</span><span class="o">=</span><span class="s1">&#39;l2&#39;</span><span class="p">,</span> <span class="n">space_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;hnsw&#39;</span><span class="p">,</span> <span class="n">num_threads</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;post&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">},</span>
+              <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Construct an approximate K-nearest neighbors graph with nmslib.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    X : array, shape (n_samples, n_features)</span>
+<span class="sd">        A input 2D array to construct KNN graph on. Each row represent a sample.</span>
+<span class="sd">    n_neighbors : int, optional</span>
+<span class="sd">        Default is `15`. The number of nearest neighbors per sample.</span>
+<span class="sd">    space : string, optional</span>
+<span class="sd">        Default is `l2`. The metric/non-metric distance functions to use to compute distances.</span>
+<span class="sd">        Note that l2 corresponds to Euclidean distance.</span>
+<span class="sd">        see https://github.com/nmslib/nmslib/blob/master/manual/manual.pdf</span>
+<span class="sd">            * bit_hamming</span>
+<span class="sd">            * l1</span>
+<span class="sd">            * l1_sparse</span>
+<span class="sd">            * l2, euclidean</span>
+<span class="sd">            * l2_sparse</span>
+<span class="sd">            * linf</span>
+<span class="sd">            * linf_sparse</span>
+<span class="sd">            * lp:p=...</span>
+<span class="sd">            * lp_sparse:p=...</span>
+<span class="sd">            * angulardist, angulardist sparse, angulardist sparse fast</span>
+<span class="sd">            * jsmetrslow, jsmetrfast, jsmetrfastapprox</span>
+<span class="sd">            * leven</span>
+<span class="sd">            * sqfd minus func, sqfd heuristic func:alpha=..., sqfd gaussian func:alpha=...</span>
+<span class="sd">            * jsdivslow, jsdivfast, jsdivfastapprox</span>
+<span class="sd">            * cosinesimil, cosine, cosinesimil sparse</span>
+<span class="sd">            * normleven</span>
+<span class="sd">            * kldivfast</span>
+<span class="sd">            * kldivgenslow, kldivgenfast, kldivgenfastrq</span>
+<span class="sd">            * itakurasaitoslow, itakurasaitofast, itakurasaitofastrq</span>
+<span class="sd">            * negdotprod_sparse</span>
+<span class="sd">            * querynorm_negdotprod_sparse</span>
+<span class="sd">            * renyi_diverg</span>
+<span class="sd">            * ab_diverg</span>
+<span class="sd">    space_params : dict or None, optional</span>
+<span class="sd">        Parameters for configuring the space.</span>
+<span class="sd">    method : str</span>
+<span class="sd">        The nmslib method to use. Default is `hnsw`.</span>
+<span class="sd">    num_threads : int, optional</span>
+<span class="sd">        Default is `8`. Number of threads to run nmslib with.</span>
+<span class="sd">    params : dict, optional</span>
+<span class="sd">        Default is `{&#39;post&#39;: 2}`. Input parameters to nmslib index construction.</span>
+<span class="sd">        See https://github.com/nmslib/nmslib/blob/master/manual/methods.md for details.</span>
+<span class="sd">    verbose: bool, optional</span>
+<span class="sd">        Default is False. Print extra information.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    scipy.sparse.csr_matrix</span>
+<span class="sd">        Sparse matrix representing the constructed KNN graph.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="kn">import</span> <span class="nn">nmslib</span>
+    <span class="k">if</span> <span class="n">space</span> <span class="o">==</span> <span class="s1">&#39;euclidean&#39;</span><span class="p">:</span>
+        <span class="n">space</span> <span class="o">=</span> <span class="s1">&#39;l2&#39;</span>
+    <span class="k">elif</span> <span class="n">space</span> <span class="o">==</span> <span class="s1">&#39;manhattan&#39;</span><span class="p">:</span>
+        <span class="n">space</span> <span class="o">=</span> <span class="s1">&#39;l1&#39;</span>
+    <span class="k">elif</span> <span class="n">space</span> <span class="o">==</span> <span class="s1">&#39;cosine&#39;</span><span class="p">:</span>
+        <span class="n">space</span> <span class="o">=</span> <span class="s1">&#39;cosinesimil&#39;</span>
+
+    <span class="n">index</span> <span class="o">=</span> <span class="n">nmslib</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span> <span class="n">space</span><span class="o">=</span><span class="n">space</span><span class="p">,</span> <span class="n">space_params</span><span class="o">=</span><span class="n">space_params</span><span class="p">)</span>
+    <span class="n">index</span><span class="o">.</span><span class="n">addDataPointBatch</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+    <span class="n">index</span><span class="o">.</span><span class="n">createIndex</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">print_progress</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">neighbors</span> <span class="o">=</span> <span class="n">index</span><span class="o">.</span><span class="n">knnQueryBatch</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">n_neighbors</span><span class="p">,</span> <span class="n">num_threads</span><span class="o">=</span><span class="n">num_threads</span><span class="p">)</span>
+
+    <span class="n">ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">neighbors</span><span class="p">])</span>
+    <span class="n">sind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">ind</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">ind</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">tind</span> <span class="o">=</span> <span class="n">ind</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+    <span class="n">g</span> <span class="o">=</span> <span class="n">csr_matrix</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">ind</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">ind</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="p">(</span><span class="n">sind</span><span class="p">,</span> <span class="n">tind</span><span class="p">)),</span> <span class="p">(</span><span class="n">ind</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ind</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+    <span class="k">return</span> <span class="n">g</span></div>
+
+
+<div class="viewcode-block" id="cg"><a class="viewcode-back" href="../../graphdr.html#quasildr.graphdr.cg">[docs]</a><span class="k">def</span> <span class="nf">cg</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">x0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-7</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-15</span><span class="p">,</span> <span class="n">use_cuda</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Solve X in linear equation AX = B when A is sparse with conjugate gradient method.</span>
+<span class="sd">    Support GPU with use_cuda=True.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    A : sparse matrix or array</span>
+<span class="sd">        A N-by-N matrix of the linear system.</span>
+<span class="sd">    B : array</span>
+<span class="sd">        Right hand side of the linear system.</span>
+<span class="sd">    x0 : array or None, optional</span>
+<span class="sd">        If specified, initialize the solution with x0.</span>
+<span class="sd">    tol, atol : float, optional</span>
+<span class="sd">        Tolerances for convergence `norm(residual) &lt;= max(tol*norm(b), atol)`.</span>
+<span class="sd">        Default is `tol=1e-7, atol=1e-15`.</span>
+<span class="sd">    use_cuda : bool, optional</span>
+<span class="sd">        Use GPU acceleration with CUDA. A GPU supporting CUDA is needed and CuPy</span>
+<span class="sd">        package need to be installed.</span>
+<span class="sd">        Default is `False`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    ----------</span>
+<span class="sd">    array</span>
+<span class="sd">        The solution to X.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">use_cuda</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">cupy</span>
+        <span class="n">alg</span> <span class="o">=</span> <span class="n">cupy</span>
+        <span class="n">A</span> <span class="o">=</span> <span class="n">alg</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+        <span class="n">B</span> <span class="o">=</span> <span class="n">alg</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">B</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">alg</span> <span class="o">=</span> <span class="n">np</span>
+
+    <span class="n">atol</span> <span class="o">=</span> <span class="n">alg</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">alg</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">alg</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">B</span> <span class="o">*</span> <span class="n">B</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span> <span class="o">*</span> <span class="n">tol</span><span class="p">,</span> <span class="n">atol</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">x0</span><span class="p">:</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="n">alg</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">A</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">B</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="n">x0</span>
+    <span class="n">R</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">X</span><span class="p">)</span> <span class="o">-</span> <span class="n">B</span>
+    <span class="n">P</span> <span class="o">=</span> <span class="o">-</span> <span class="n">R</span>
+    <span class="n">r_k_norms</span> <span class="o">=</span> <span class="n">alg</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">R</span> <span class="o">*</span> <span class="n">R</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">AP</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">P</span><span class="p">)</span>
+        <span class="n">alphas</span> <span class="o">=</span> <span class="n">r_k_norms</span> <span class="o">/</span> <span class="n">alg</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">P</span> <span class="o">*</span> <span class="n">AP</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">X</span> <span class="o">+=</span> <span class="n">alphas</span><span class="p">[</span><span class="n">alg</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span> <span class="o">*</span> <span class="n">P</span>
+        <span class="n">R</span> <span class="o">+=</span> <span class="n">alphas</span><span class="p">[</span><span class="n">alg</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span> <span class="o">*</span> <span class="n">AP</span>
+        <span class="n">r_kplus1_norms</span> <span class="o">=</span> <span class="n">alg</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">R</span> <span class="o">*</span> <span class="n">R</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">betas</span> <span class="o">=</span> <span class="n">r_kplus1_norms</span> <span class="o">/</span> <span class="n">r_k_norms</span>
+        <span class="n">r_k_norms</span> <span class="o">=</span> <span class="n">r_kplus1_norms</span>
+        <span class="k">if</span> <span class="n">alg</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">alg</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">r_kplus1_norms</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">atol</span><span class="p">):</span>
+            <span class="k">break</span>
+        <span class="n">P</span> <span class="o">=</span> <span class="n">betas</span><span class="p">[</span><span class="n">alg</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span> <span class="o">*</span> <span class="n">P</span> <span class="o">-</span> <span class="n">R</span>
+    <span class="k">return</span> <span class="n">X</span><span class="o">.</span><span class="n">get</span><span class="p">()</span> <span class="k">if</span> <span class="n">use_cuda</span> <span class="k">else</span> <span class="n">X</span></div>
+
+
+
+<div class="viewcode-block" id="GraphDR"><a class="viewcode-back" href="../../graphdr.html#quasildr.graphdr.GraphDR">[docs]</a><span class="k">class</span> <span class="nc">GraphDR</span><span class="p">(</span><span class="n">BaseEstimator</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Quasilinear data representation that preserves interpretability of a</span>
+<span class="sd">    linear space.</span>
+
+<span class="sd">    This class provides a scikit-learn type interface that wraps around</span>
+<span class="sd">    the graphdr function.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    n_neighbors : int, optional</span>
+<span class="sd">        Number of nearest neigbors to compute per sample. Default is `10`.</span>
+<span class="sd">    regularization : float, optional</span>
+<span class="sd">        Regularization parameter determines the weight on the graph shrinkage term</span>
+<span class="sd">        relative to the reconstruction error term. A smaller regularization parameter</span>
+<span class="sd">        leads to output that are more similar to a linear representation. A larger</span>
+<span class="sd">        regularization parameter provides more contraction based on the graph. Default is `100`.</span>
+<span class="sd">    n_components : int or None, optional</span>
+<span class="sd">        Number of dimensions in the output. Specify a n_components smaller than the input</span>
+<span class="sd">        dimension when `no_rotation=True` can reduce the amount of computation.</span>
+<span class="sd">        Default is `None`.</span>
+<span class="sd">    no_rotation : bool, optional</span>
+<span class="sd">        :math:`W` is fixed to identity matrix so that the output is not rotated</span>
+<span class="sd">        relative to input. no_rotation can also speed up the computation for large</span>
+<span class="sd">        input when `n_components` is also specified, because only the required top</span>
+<span class="sd">        `n_components` are computed. If `no_rotation=True`, you may consider preprocessing</span>
+<span class="sd">        the input with another linear dimensionality reduction method like PCA.</span>
+<span class="sd">        Default is `False`.</span>
+<span class="sd">    metric : str, optional</span>
+<span class="sd">        distance metric for constructing nearest_neighbors graph. Note that here</span>
+<span class="sd">        `metric` can be non-metric distance function. The allowed values depend on</span>
+<span class="sd">        the `method` specified. As three nearest neighbors algorithms are supported,</span>
+<span class="sd">        and these algorithms support different distance metrics. Default is `euclidean`.</span>
+<span class="sd">        * &#39;small&#39; :</span>
+<span class="sd">            Use sklearn.neighbors.kneighbors_graph</span>
+<span class="sd">            Supported values are</span>
+<span class="sd">                * euclidean</span>
+<span class="sd">                * manhattan</span>
+<span class="sd">                * chebyshev</span>
+<span class="sd">                * minkowski</span>
+<span class="sd">                * wminkowski</span>
+<span class="sd">                * seuclidean</span>
+<span class="sd">                * mahalanobis</span>
+<span class="sd">                * hamming</span>
+<span class="sd">                * canberra</span>
+<span class="sd">                * braycurtis</span>
+<span class="sd">            See https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.DistanceMetric.html</span>
+<span class="sd">        * &#39;big_nndescent&#39; or &#39;big_nnumap&#39; :</span>
+<span class="sd">            umap.nndescent. Supported values are</span>
+<span class="sd">                * euclidean</span>
+<span class="sd">                * manhattan</span>
+<span class="sd">                * chebyshev</span>
+<span class="sd">                * minkowski</span>
+<span class="sd">                * canberra</span>
+<span class="sd">                * braycurtis</span>
+<span class="sd">                * mahalanobis</span>
+<span class="sd">                * wminkowski</span>
+<span class="sd">                * seuclidean</span>
+<span class="sd">                * cosine</span>
+<span class="sd">                * correlation</span>
+<span class="sd">                * haversine</span>
+<span class="sd">                * hamming</span>
+<span class="sd">                * jaccard</span>
+<span class="sd">                * dice</span>
+<span class="sd">                * russelrao</span>
+<span class="sd">                * kulsinski</span>
+<span class="sd">                * rogerstanimoto</span>
+<span class="sd">                * sokalmichener</span>
+<span class="sd">                * sokalsneath</span>
+<span class="sd">                * yule</span>
+<span class="sd">        * &#39;big_nmslib&#39; :</span>
+<span class="sd">        nmslib. See https://github.com/nmslib/nmslib/blob/master/manual/manual.pdf for details:</span>
+<span class="sd">                * bit_hamming</span>
+<span class="sd">                * l1</span>
+<span class="sd">                * l1_sparse</span>
+<span class="sd">                * l2, euclidean</span>
+<span class="sd">                * l2_sparse</span>
+<span class="sd">                * linf</span>
+<span class="sd">                * linf_sparse</span>
+<span class="sd">                * lp:p=...</span>
+<span class="sd">                * lp_sparse:p=...</span>
+<span class="sd">                * angulardist, angulardist sparse, angulardist sparse fast</span>
+<span class="sd">                * jsmetrslow, jsmetrfast, jsmetrfastapprox</span>
+<span class="sd">                * leven</span>
+<span class="sd">                * sqfd minus func, sqfd heuristic func:alpha=..., sqfd gaussian func:alpha=...</span>
+<span class="sd">                * jsdivslow, jsdivfast, jsdivfastapprox</span>
+<span class="sd">                * cosinesimil, cosine, cosinesimil sparse</span>
+<span class="sd">                * normleven</span>
+<span class="sd">                * kldivfast</span>
+<span class="sd">                * kldivgenslow, kldivgenfast, kldivgenfastrq</span>
+<span class="sd">                * itakurasaitoslow, itakurasaitofast, itakurasaitofastrq</span>
+<span class="sd">                * negdotprod_sparse</span>
+<span class="sd">                * querynorm_negdotprod_sparse</span>
+<span class="sd">                * renyi_diverg</span>
+<span class="sd">                * ab_diverg</span>
+<span class="sd">    metric_params: dict, optional</span>
+<span class="sd">        Some distance metrics requires additional arguments which can be provided as</span>
+<span class="sd">        a dictionary. Default is `{}`.</span>
+<span class="sd">    method: str, optional {&#39;auto&#39;, &#39;small&#39;, &#39;big_nmslib&#39;, &#39;big_umap&#39;, &#39;big_nndescent&#39;}</span>
+<span class="sd">        Method to use. Different algorithms strongly affect the computation speed.</span>
+<span class="sd">        Optimal choices are dependent on the input size. Default is `auto`.</span>
+<span class="sd">        * &#39;auto&#39;</span>
+<span class="sd">            Choose automatically based on input size. Recommended for most uses.</span>
+<span class="sd">        * &#39;small&#39;</span>
+<span class="sd">            For input of small size, it is affordable to compute nearest-neigbors exactly</span>
+<span class="sd">            and use matrix inversion in the algorithm.</span>
+<span class="sd">        * &#39;big_nmslib&#39;</span>
+<span class="sd">            For input of large size. If NMSlib is installed, it is the fastest algorithm that</span>
+<span class="sd">            is supported.</span>
+<span class="sd">        * &#39;big_nndescent&#39;</span>
+<span class="sd">            For input of large size. The NN-Descent algorithm implemented in the the umap package.</span>
+<span class="sd">            Do not require external libraries.</span>
+<span class="sd">        * &#39;big_nnumap&#39;</span>
+<span class="sd">            For input of large size. Do not require external libraries.</span>
+<span class="sd">    _lambda : float or None, optional</span>
+<span class="sd">        Regularization parameter :math:`\\lambda`. If not specified :math:`\\lambda` is</span>
+<span class="sd">        computed from `regularization`,</span>
+<span class="sd">        specifying `regularization` instead of `_lambda` is generally recommended as it</span>
+<span class="sd">        automatically adjusts based on graph density. Default is None.</span>
+<span class="sd">    symmetrize : bool, optional</span>
+<span class="sd">        Symmetrize the nearest-neighbors graph by averaging with its transpose. Default is `True`.</span>
+<span class="sd">    rescale : bool, optional</span>
+<span class="sd">        Rescale each dimension in the output to align with the input. It works with and without</span>
+<span class="sd">        `no_rotation`. Default is `False`</span>
+<span class="sd">    refine_iter : int, optional</span>
+<span class="sd">        Number of refinement iterations. Default is `3`.</span>
+<span class="sd">    refine_threshold : float, optional</span>
+<span class="sd">        Specify the cutoff for refinement. Unit is IQR (distance between the 25% quantile and the 75% quantile)</span>
+<span class="sd">        of overall &quot;stress&quot; distribution across all edges. Default is `12`.</span>
+<span class="sd">    _refine_threshold : float or None, optional</span>
+<span class="sd">        Used internally. Default is None.</span>
+<span class="sd">    tol, atol : float, optional</span>
+<span class="sd">        Tolerances for iterative linear solver `norm(residual) &lt;= max(tol*norm(b), atol)`.</span>
+<span class="sd">        Default is `tol=1e-7, atol=1e-15`.</span>
+<span class="sd">    nmslib_params : dict, optional</span>
+<span class="sd">        Parameters given to nmslib createIndex function.</span>
+<span class="sd">        See https://github.com/nmslib/nmslib/blob/master/manual/methods.md for details.</span>
+<span class="sd">        Default is `{&#39;post&#39;: 2}`.</span>
+<span class="sd">    n_jobs : int, optional</span>
+<span class="sd">        Number of jobs to run in parallel. Specifying `n_jobs &gt; 1` can speed up computation</span>
+<span class="sd">        when method is one of `big_nmslib`, `big_nndescent`, or `big_nnumap`. Note that</span>
+<span class="sd">        when `use_cuda=True` specifying `n_jobs` does not run the jobs in parallel but</span>
+<span class="sd">        can reduce amount of GPU memory required by splitting the problem and run sequentially.</span>
+<span class="sd">        Default is 1.</span>
+<span class="sd">    n_jobs_nmslib : int, optional</span>
+<span class="sd">        Number of threads used by nmslib. Default is `8`.</span>
+<span class="sd">    use_cuda : bool, optional</span>
+<span class="sd">        Use CUDA GPU acceleration. CuPy has to be installed (https://github.com/cupy/cupy)</span>
+<span class="sd">        and a CUDA-enabled GPU is required. Default is `False`.</span>
+<span class="sd">    verbose : bool, optional</span>
+<span class="sd">        Print additional information. Default is `False`.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    embedding_ : array, shape (n_samples, n_components)</span>
+<span class="sd">    W_ : array, shape (n_features, n_components)</span>
+<span class="sd">        Left linear operator in the transformation Z = WXK. W_ is None when `no_rotation=True`.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">n_neighbors</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">regularization</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">n_components</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">no_rotation</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">metric</span><span class="o">=</span><span class="s1">&#39;l2&#39;</span><span class="p">,</span> <span class="n">metric_params</span><span class="o">=</span><span class="p">{},</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span>
+            <span class="n">_lambda</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">symmetrize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">rescale</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">refine_iter</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">refine_threshold</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">_refine_threshold</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">tol</span><span class="o">=</span><span class="mf">1e-7</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-15</span><span class="p">,</span> <span class="n">nmslib_params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;post&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">},</span>
+            <span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_jobs_nmslib</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">use_cuda</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize parameters</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_neighbors</span> <span class="o">=</span> <span class="n">n_neighbors</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span> <span class="o">=</span> <span class="n">n_components</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">regularization</span> <span class="o">=</span> <span class="n">regularization</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lambda</span> <span class="o">=</span> <span class="n">_lambda</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metric</span> <span class="o">=</span> <span class="n">metric</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metric_params</span> <span class="o">=</span> <span class="n">metric_params</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">=</span> <span class="n">method</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">symmetrize</span> <span class="o">=</span> <span class="n">symmetrize</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rescale</span> <span class="o">=</span> <span class="n">rescale</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">no_rotation</span> <span class="o">=</span> <span class="n">no_rotation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">refine_iter</span> <span class="o">=</span> <span class="n">refine_iter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">refine_threshold</span> <span class="o">=</span> <span class="n">refine_threshold</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_refine_threshold</span> <span class="o">=</span> <span class="n">_refine_threshold</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nmslib_params</span> <span class="o">=</span> <span class="n">nmslib_params</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tol</span> <span class="o">=</span> <span class="n">tol</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">atol</span> <span class="o">=</span> <span class="n">atol</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_jobs</span> <span class="o">=</span> <span class="n">n_jobs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_jobs_nmslib</span> <span class="o">=</span> <span class="n">n_jobs_nmslib</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">use_cuda</span> <span class="o">=</span> <span class="n">use_cuda</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">W_</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">_validate_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># TODO</span>
+        <span class="k">pass</span>
+
+<div class="viewcode-block" id="GraphDR.fit"><a class="viewcode-back" href="../../graphdr.html#quasildr.graphdr.GraphDR.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">custom_graph</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">refine_protected_graph</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Fit the model from data in X.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X : array, shape (n_samples, n_features).</span>
+<span class="sd">            X may be a sparse matrix. If self.skip_pca is true, X must be orthogonal.</span>
+<span class="sd">        y : Ignored</span>
+<span class="sd">        custom_graph : sparse matrix, shape (n_samples, n_samples), optional</span>
+<span class="sd">            If provided, use it instead of the graph constructed from X.</span>
+<span class="sd">        init : array, optional</span>
+<span class="sd">            Initialize output representation Z with this array if solved through</span>
+<span class="sd">            iterative solver. `init` is only used when `self.no_rotation=True`</span>
+<span class="sd">            and `self.method` is not `small`.</span>
+<span class="sd">        refine_protected_graph : sparse matrix</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        ----------</span>
+<span class="sd">        self : object</span>
+<span class="sd">            Returns the instance itself.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">graphdr</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">n_neighbors</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_neighbors</span><span class="p">,</span> <span class="n">regularization</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">regularization</span><span class="p">,</span>
+                         <span class="n">metric</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metric</span><span class="p">,</span> <span class="n">metric_params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metric_params</span><span class="p">,</span>
+                         <span class="n">n_components</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">,</span> <span class="n">no_rotation</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">no_rotation</span><span class="p">,</span> <span class="n">_lambda</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_lambda</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="n">init</span><span class="p">,</span>
+                         <span class="n">custom_graph</span><span class="o">=</span><span class="n">custom_graph</span><span class="p">,</span> <span class="n">rescale</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">rescale</span><span class="p">,</span> <span class="n">symmetrize</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">symmetrize</span><span class="p">,</span>
+                         <span class="n">refine_iter</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">refine_iter</span><span class="p">,</span> <span class="n">refine_threshold</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">refine_threshold</span><span class="p">,</span>
+                         <span class="n">_refine_threshold</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_refine_threshold</span><span class="p">,</span> <span class="n">refine_protected_graph</span><span class="o">=</span><span class="n">refine_protected_graph</span><span class="p">,</span>
+                         <span class="n">tol</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tol</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">atom</span><span class="p">,</span> <span class="n">nmslib_params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">nmslib_params</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">,</span>
+                         <span class="n">n_jobs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_jobs</span><span class="p">,</span> <span class="n">n_jobs_nmslib</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_jobs_nmslib</span><span class="p">,</span> <span class="n">use_cuda</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">use_cuda</span><span class="p">,</span>
+                         <span class="n">return_all</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">no_rotation</span><span class="p">:</span>
+            <span class="n">Z</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">output</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">Z</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">output</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">W_</span> <span class="o">=</span> <span class="n">W</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span> <span class="o">=</span> <span class="n">Z</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+<div class="viewcode-block" id="GraphDR.fit_transform"><a class="viewcode-back" href="../../graphdr.html#quasildr.graphdr.GraphDR.fit_transform">[docs]</a>    <span class="k">def</span> <span class="nf">fit_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Fit the model from data in X and transform X.</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X : array, shape (n_samples, n_features)</span>
+<span class="sd">        y : Ignored</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        ---------</span>
+<span class="sd">        Z : array, shape (n_samples, n_components)</span>
+<span class="sd">            Embedding of the input data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span></div></div>
+
+
+<div class="viewcode-block" id="graphdr"><a class="viewcode-back" href="../../graphdr.html#quasildr.graphdr.graphdr">[docs]</a><span class="k">def</span> <span class="nf">graphdr</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">n_neighbors</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">regularization</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">n_components</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">no_rotation</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">metric</span><span class="o">=</span><span class="s1">&#39;euclidean&#39;</span><span class="p">,</span> <span class="n">metric_params</span><span class="o">=</span><span class="p">{},</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span>
+            <span class="n">_lambda</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">symmetrize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">custom_graph</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rescale</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">refine_iter</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">refine_threshold</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span>
+            <span class="n">_refine_threshold</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">refine_protected_graph</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-7</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-15</span><span class="p">,</span>
+            <span class="n">nmslib_params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;post&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">},</span> <span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_jobs_nmslib</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">use_cuda</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">return_all</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Quasilinear data representation that preserves interpretability of a linear space.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    X : array (n_samples, n_features)</span>
+<span class="sd">        The input array.</span>
+<span class="sd">    n_neighbors : int, optional</span>
+<span class="sd">        Number of nearest neigbors to compute per sample. Default is `10`.</span>
+<span class="sd">    regularization : float, optional</span>
+<span class="sd">        Regularization parameter determines the weight on the graph shrinkage term</span>
+<span class="sd">        relative to the reconstruction error term. A smaller regularization parameter</span>
+<span class="sd">        leads to output that are more similar to a linear representation. A larger</span>
+<span class="sd">        regularization parameter provides more contraction based on the graph. Default is `100`.</span>
+<span class="sd">    n_components : int or None, optional</span>
+<span class="sd">        Number of dimensions in the output. Specify a n_components smaller than the input</span>
+<span class="sd">        dimension when `no_rotation=True` can reduce the amount of computation.</span>
+<span class="sd">        Default is `None`.</span>
+<span class="sd">    no_rotation : bool, optional</span>
+<span class="sd">        :param refine_protected_graph:</span>
+<span class="sd">        :math:`W` is fixed to identity matrix so that the output is not rotated</span>
+<span class="sd">        relative to input. no_rotation can also speed up the computation for large</span>
+<span class="sd">        input when `n_components` is also specified, because only the required top</span>
+<span class="sd">        `n_components` are computed. If `no_rotation=True`, you may consider preprocessing</span>
+<span class="sd">        the input with another linear dimensionality reduction method like PCA.</span>
+<span class="sd">        Default is `False`.</span>
+<span class="sd">    metric : str, optional</span>
+<span class="sd">        distance metric for constructing nearest_neighbors graph. Note that here</span>
+<span class="sd">        `metric` can be non-metric distance function. The allowed values depend on</span>
+<span class="sd">        the `method` specified. As three nearest neighbors algorithms are supported,</span>
+<span class="sd">        and these algorithms support different distance metrics. Default is `euclidean`.</span>
+<span class="sd">        * &#39;small&#39;:</span>
+<span class="sd">            Use sklearn.neighbors.kneighbors_graph</span>
+<span class="sd">            Supported values are</span>
+<span class="sd">                * euclidean</span>
+<span class="sd">                * manhattan</span>
+<span class="sd">                * chebyshev</span>
+<span class="sd">                * minkowski</span>
+<span class="sd">                * wminkowski</span>
+<span class="sd">                * seuclidean</span>
+<span class="sd">                * mahalanobis</span>
+<span class="sd">                * hamming</span>
+<span class="sd">                * canberra</span>
+<span class="sd">                * braycurtis</span>
+<span class="sd">            See https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.DistanceMetric.html</span>
+<span class="sd">        * &#39;big_nndescent&#39; or &#39;big_nnumap&#39;:</span>
+<span class="sd">            umap.nndescent. Supported values are</span>
+<span class="sd">                * euclidean</span>
+<span class="sd">                * manhattan</span>
+<span class="sd">                * chebyshev</span>
+<span class="sd">                * minkowski</span>
+<span class="sd">                * canberra</span>
+<span class="sd">                * braycurtis</span>
+<span class="sd">                * mahalanobis</span>
+<span class="sd">                * wminkowski</span>
+<span class="sd">                * seuclidean</span>
+<span class="sd">                * cosine</span>
+<span class="sd">                * correlation</span>
+<span class="sd">                * haversine</span>
+<span class="sd">                * hamming</span>
+<span class="sd">                * jaccard</span>
+<span class="sd">                * dice</span>
+<span class="sd">                * russelrao</span>
+<span class="sd">                * kulsinski</span>
+<span class="sd">                * rogerstanimoto</span>
+<span class="sd">                * sokalmichener</span>
+<span class="sd">                * sokalsneath</span>
+<span class="sd">                * yule</span>
+<span class="sd">        * &#39;big_nmslib&#39;</span>
+<span class="sd">        nmslib. See https://github.com/nmslib/nmslib/blob/master/manual/manual.pdf for details:</span>
+<span class="sd">                * bit_hamming</span>
+<span class="sd">                * l1</span>
+<span class="sd">                * l1_sparse</span>
+<span class="sd">                * l2, euclidean</span>
+<span class="sd">                * l2_sparse</span>
+<span class="sd">                * linf</span>
+<span class="sd">                * linf_sparse</span>
+<span class="sd">                * lp:p=...</span>
+<span class="sd">                * lp_sparse:p=...</span>
+<span class="sd">                * angulardist, angulardist sparse, angulardist sparse fast</span>
+<span class="sd">                * jsmetrslow, jsmetrfast, jsmetrfastapprox</span>
+<span class="sd">                * leven</span>
+<span class="sd">                * sqfd minus func, sqfd heuristic func:alpha=..., sqfd gaussian func:alpha=...</span>
+<span class="sd">                * jsdivslow, jsdivfast, jsdivfastapprox</span>
+<span class="sd">                * cosinesimil, cosine, cosinesimil sparse</span>
+<span class="sd">                * normleven</span>
+<span class="sd">                * kldivfast</span>
+<span class="sd">                * kldivgenslow, kldivgenfast, kldivgenfastrq</span>
+<span class="sd">                * itakurasaitoslow, itakurasaitofast, itakurasaitofastrq</span>
+<span class="sd">                * negdotprod_sparse</span>
+<span class="sd">                * querynorm_negdotprod_sparse</span>
+<span class="sd">                * renyi_diverg</span>
+<span class="sd">                * ab_diverg</span>
+<span class="sd">    metric_params: dict, optional</span>
+<span class="sd">        Some distance metrics requires additional arguments which can be provided as</span>
+<span class="sd">        a dictionary. Default is `{}`.</span>
+<span class="sd">    method: str, optional {&#39;auto&#39;, &#39;small&#39;, &#39;big_nmslib&#39;, &#39;big_umap&#39;, &#39;big_nndescent&#39;}</span>
+<span class="sd">        Method to use. Different algorithms strongly affect the computation speed.</span>
+<span class="sd">        Optimal choices are dependent on the input size. Default is `auto`.</span>
+<span class="sd">        * &#39;auto&#39;</span>
+<span class="sd">            Choose automatically based on input size. Recommended for most uses.</span>
+<span class="sd">        * &#39;small&#39;</span>
+<span class="sd">            For input of small size, it is affordable to compute nearest-neigbors exactly</span>
+<span class="sd">            and use matrix inversion in the algorithm.</span>
+<span class="sd">        * &#39;big_nmslib&#39;</span>
+<span class="sd">            For input of large size. If NMSlib is installed, it is the fastest algorithm that</span>
+<span class="sd">            is supported.</span>
+<span class="sd">        * &#39;big_nndescent&#39;</span>
+<span class="sd">            For input of large size. The NN-Descent algorithm implemented in the the umap package.</span>
+<span class="sd">            Do not require external libraries.</span>
+<span class="sd">        * &#39;big_nnumap&#39;</span>
+<span class="sd">            For input of large size. Do not require external libraries.</span>
+<span class="sd">    _lambda : float or None, optional</span>
+<span class="sd">        Regularization parameter :math:`\\lambda`. If not specified :math:`\\lambda` is</span>
+<span class="sd">        computed from `regularization`,</span>
+<span class="sd">        specifying `regularization` instead of `_lambda` is generally recommended as it</span>
+<span class="sd">        automatically adjusts based on graph density. Default is None.</span>
+<span class="sd">    init : array or None, optional</span>
+<span class="sd">        Initialize output representation Z with this array if solved through iterative solver.</span>
+<span class="sd">        `init` is only used when `no_rotation=True` and method is not `small`.</span>
+<span class="sd">        Default is None.</span>
+<span class="sd">    symmetrize : bool, optional</span>
+<span class="sd">        Symmetrize the nearest-neighbors graph by averaging with its transpose. Default is `True`.</span>
+<span class="sd">    custom_graph : sparse matrix or None, optional</span>
+<span class="sd">        If specified, use this user-provided graph instead of constructing nearest-neighbors</span>
+<span class="sd">        graph from `X`. Default is None.</span>
+<span class="sd">    rescale : bool, optional</span>
+<span class="sd">        Rescale each dimension in the output to align with the input. It works with and without</span>
+<span class="sd">        `no_rotation`. Default is `False`</span>
+<span class="sd">    refine_iter : int, optional</span>
+<span class="sd">        Number of refinement iterations. Default is `3`.</span>
+<span class="sd">    refine_threshold : float, optional</span>
+<span class="sd">        Specify the cutoff for refinement. Unit is IQR (distance between the 25% quantile and the 75% quantile)</span>
+<span class="sd">        of overall &quot;stress&quot; distribution across all edges. Default is `12`.</span>
+<span class="sd">    _refine_threshold : float or None, optional</span>
+<span class="sd">        Used internally. Default is None.</span>
+<span class="sd">    refine_protected_graph : sparse matrix or None, optional</span>
+<span class="sd">        Sparse matrix of size (n_samples, n_samples).</span>
+<span class="sd">        Specify edges (any non-zero edges in refine_protected_graph) that will</span>
+<span class="sd">        not be removed during refinement. Useful for graph construction for complex experimental designs</span>
+<span class="sd">        like batch design so that edges connecting batches will not be removed. Default is `None`.</span>
+<span class="sd">    tol, atol : float, optional</span>
+<span class="sd">        Tolerances for iterative linear solver `norm(residual) &lt;= max(tol*norm(b), atol)`.</span>
+<span class="sd">        Default is `tol=1e-7, atol=1e-15`.</span>
+<span class="sd">    nmslib_params : dict, optional</span>
+<span class="sd">        Parameters given to nmslib createIndex function.</span>
+<span class="sd">        See https://github.com/nmslib/nmslib/blob/master/manual/methods.md for details.</span>
+<span class="sd">        Default is `{&#39;post&#39;: 2}`.</span>
+<span class="sd">    n_jobs : int, optional</span>
+<span class="sd">        Number of jobs to run in parallel. Specifying `n_jobs &gt; 1` can speed up computation</span>
+<span class="sd">        when method is one of `big_nmslib`, `big_nndescent`, or `big_nnumap`. Note that</span>
+<span class="sd">        when `use_cuda=True` specifying `n_jobs` does not run the jobs in parallel but</span>
+<span class="sd">        can reduce amount of GPU memory required by splitting the problem and run sequentially.</span>
+<span class="sd">        Default is 1.</span>
+<span class="sd">    n_jobs_nmslib : int, optional</span>
+<span class="sd">        Number of threads used by nmslib. Default is `8`.</span>
+<span class="sd">    use_cuda : bool, optional</span>
+<span class="sd">        Use CUDA GPU acceleration. CuPy has to be installed (https://github.com/cupy/cupy)</span>
+<span class="sd">        and a CUDA-enabled GPU is required. Default is `False`.</span>
+<span class="sd">    verbose : bool, optional</span>
+<span class="sd">        Print additional information. Default is `False`.</span>
+<span class="sd">    return_all : bool, optional</span>
+<span class="sd">        Return a tuple of (Z, W, graph). Default is `False`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Z: array, (optional) W: array, (optional) Graph: sparse matrix</span>
+<span class="sd">    * Z : Embedding of the input data.</span>
+<span class="sd">    * W : Linear operator on the feature space, returned if `return_all==True`.</span>
+<span class="sd">    * graph : The graph used for GraphDR embedding, returned if `return_all==True`.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;auto&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">10000</span><span class="p">:</span>
+            <span class="n">method</span> <span class="o">=</span> <span class="s1">&#39;small&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="kn">import</span> <span class="nn">nmslib</span>
+                <span class="n">method</span> <span class="o">=</span> <span class="s1">&#39;big_nmslib&#39;</span>
+            <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+                <span class="n">method</span> <span class="o">=</span> <span class="s1">&#39;big_nndescent&#39;</span>
+
+    <span class="n">X_mean</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;small&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">custom_graph</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">graph</span> <span class="o">=</span> <span class="n">kneighbors_graph</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">X</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">n_neighbors</span><span class="p">),</span> <span class="n">metric</span><span class="o">=</span><span class="n">metric</span><span class="p">,</span>
+                                     <span class="n">metric_params</span><span class="o">=</span><span class="n">metric_params</span><span class="p">,</span> <span class="n">include_self</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">graph</span> <span class="o">=</span> <span class="n">custom_graph</span>
+
+        <span class="k">if</span> <span class="n">symmetrize</span><span class="p">:</span>
+            <span class="n">graph</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">graph</span> <span class="o">+</span> <span class="n">graph</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+
+        <span class="n">graphL</span> <span class="o">=</span> <span class="n">csgraph</span><span class="o">.</span><span class="n">laplacian</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">_lambda</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">_lambda</span> <span class="o">=</span> <span class="n">regularization</span> <span class="o">/</span> <span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="o">/</span> <span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="mi">10000</span><span class="p">))</span>
+        <span class="n">G</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="n">_lambda</span> <span class="o">*</span> <span class="n">graphL</span>
+        <span class="k">if</span> <span class="n">issparse</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
+            <span class="n">Ginv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">todense</span><span class="p">())</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">Ginv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">no_rotation</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">n_components</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="p">[:,</span> <span class="p">:</span><span class="n">n_components</span><span class="p">]</span>
+                    <span class="n">X_mean</span> <span class="o">=</span> <span class="n">X_mean</span><span class="p">[:</span><span class="n">n_components</span><span class="p">]</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;n_components value is not valid.&#39;</span><span class="p">)</span>
+            <span class="n">Z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">Ginv</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">C</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">Ginv</span><span class="p">),</span> <span class="n">X</span><span class="p">)</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">W</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigh</span><span class="p">(</span><span class="n">C</span><span class="p">)</span>
+            <span class="n">W</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">W</span><span class="p">)</span>
+            <span class="n">W</span> <span class="o">=</span> <span class="n">W</span><span class="p">[:,</span> <span class="p">::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">n_components</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">W</span> <span class="o">=</span> <span class="n">W</span><span class="p">[:,</span> <span class="p">:</span><span class="n">n_components</span><span class="p">]</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;n_components value is not valid.&#39;</span><span class="p">)</span>
+            <span class="n">Z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">W</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">T</span><span class="p">),</span> <span class="n">Ginv</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+
+        <span class="n">graph</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
+        <span class="n">graph</span><span class="o">.</span><span class="n">eliminate_zeros</span><span class="p">()</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">custom_graph</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;big_nmslib&#39;</span><span class="p">:</span>
+                <span class="n">graph</span> <span class="o">=</span> <span class="n">knn_graph</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">n_neighbors</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">n_neighbors</span><span class="p">),</span> <span class="n">num_threads</span><span class="o">=</span><span class="n">n_jobs_nmslib</span><span class="p">,</span> <span class="n">space</span><span class="o">=</span><span class="n">metric</span><span class="p">,</span>
+                                  <span class="n">params</span><span class="o">=</span><span class="n">nmslib_params</span><span class="p">,</span> <span class="n">space_params</span><span class="o">=</span><span class="n">metric_params</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;big_nnumap&#39;</span><span class="p">:</span>
+                <span class="n">graph</span> <span class="o">=</span> \
+                <span class="n">neighbors</span><span class="o">.</span><span class="n">neighbors</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">n_neighbors</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">n_neighbors</span><span class="p">),</span> <span class="n">metric</span><span class="o">=</span><span class="n">metric</span><span class="p">,</span> <span class="n">metric_kwds</span><span class="o">=</span><span class="n">metric_params</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;big_nndescent&#39;</span><span class="p">:</span>
+                <span class="n">graph</span> <span class="o">=</span> \
+                <span class="n">neighbors</span><span class="o">.</span><span class="n">neighbors</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">n_neighbors</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">n_neighbors</span><span class="p">),</span> <span class="n">metric</span><span class="o">=</span><span class="n">metric</span><span class="p">,</span> <span class="n">metric_kwds</span><span class="o">=</span><span class="n">metric_params</span><span class="p">,</span>
+                                             <span class="n">smoothknn</span><span class="o">=</span><span class="kc">False</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Unrecognized method </span><span class="si">{}</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">method</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">graph</span> <span class="o">=</span> <span class="n">custom_graph</span>
+
+        <span class="k">if</span> <span class="n">symmetrize</span><span class="p">:</span>
+            <span class="n">graph</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">graph</span> <span class="o">+</span> <span class="n">graph</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+
+        <span class="n">graphL</span> <span class="o">=</span> <span class="n">csgraph</span><span class="o">.</span><span class="n">laplacian</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">_lambda</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">_lambda</span> <span class="o">=</span> <span class="n">regularization</span> <span class="o">/</span> <span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="o">/</span> <span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="mi">10000</span><span class="p">))</span>
+
+        <span class="n">G</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="n">_lambda</span> <span class="o">*</span> <span class="n">graphL</span>
+
+        <span class="k">def</span> <span class="nf">msolve</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">use_cuda</span><span class="p">:</span>
+                <span class="n">Z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span>
+                    <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">y</span><span class="p">:</span> <span class="n">cg</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">x0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="n">atol</span><span class="p">,</span> <span class="n">use_cuda</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">n_jobs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)))))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">n_jobs</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">Z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">([</span><span class="n">scipy</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">cg</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">Y</span><span class="p">[:,</span> <span class="n">i</span><span class="p">],</span>
+                                                                     <span class="n">x0</span><span class="o">=</span><span class="n">init</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span> <span class="k">if</span> <span class="n">init</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+                                                                     <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="n">atol</span><span class="p">)[</span><span class="mi">0</span><span class="p">][:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span>
+                                              <span class="nb">range</span><span class="p">(</span><span class="n">Y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])]))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">p</span> <span class="o">=</span> <span class="n">Pool</span><span class="p">(</span><span class="n">n_jobs</span><span class="p">)</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">init</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                            <span class="n">Z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span>
+                                <span class="n">p</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">y</span><span class="p">:</span> <span class="n">cg</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">x0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="n">atol</span><span class="p">,</span> <span class="n">use_cuda</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+                                      <span class="n">np</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">Y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)))))</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">Z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span>
+                                <span class="n">p</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">y</span><span class="p">,</span> <span class="n">init_</span><span class="p">:</span> <span class="n">cg</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">x0</span><span class="o">=</span><span class="n">init_</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="n">atol</span><span class="p">,</span> <span class="n">use_cuda</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+                                      <span class="nb">zip</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">Y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">init</span><span class="p">,</span> <span class="n">init</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))))))</span>
+                        <span class="n">p</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                        <span class="n">p</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+                    <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Caught KeyboardInterrupt, terminating workers&quot;</span><span class="p">)</span>
+                        <span class="n">p</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+                        <span class="n">p</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+                        <span class="k">raise</span>
+            <span class="k">return</span> <span class="n">Z</span>
+
+        <span class="k">if</span> <span class="n">no_rotation</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">n_components</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="p">[:,</span> <span class="p">:</span><span class="n">n_components</span><span class="p">]</span>
+                    <span class="n">X_mean</span> <span class="o">=</span> <span class="n">X_mean</span><span class="p">[:</span><span class="n">n_components</span><span class="p">]</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;n_components value is not valid.&#39;</span><span class="p">)</span>
+            <span class="n">Z</span> <span class="o">=</span> <span class="n">msolve</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="n">init</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">GinvX</span> <span class="o">=</span> <span class="n">msolve</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">X</span><span class="p">)</span>
+            <span class="n">C</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">GinvX</span><span class="p">)</span>
+            <span class="n">lambdas</span><span class="p">,</span> <span class="n">W</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigh</span><span class="p">(</span><span class="n">C</span><span class="p">)</span>
+            <span class="n">W</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">W</span><span class="p">)</span>
+            <span class="n">W</span> <span class="o">=</span> <span class="n">W</span><span class="p">[:,</span> <span class="p">::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">n_components</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">W</span> <span class="o">=</span> <span class="n">W</span><span class="p">[:,</span> <span class="p">:</span><span class="n">n_components</span><span class="p">]</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;n_components value is not valid.&#39;</span><span class="p">)</span>
+            <span class="n">Z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">GinvX</span><span class="p">,</span> <span class="n">W</span><span class="p">)</span>
+
+
+
+
+    <span class="c1"># refine the graph by deleting edges with high stress</span>
+    <span class="k">if</span> <span class="n">refine_iter</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">refine_protected_graph</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">frozen_bool</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">nonzero</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">graph</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">graph</span><span class="o">.</span><span class="n">nonzero</span><span class="p">()[</span><span class="mi">1</span><span class="p">],</span>
+                                  <span class="n">refine_protected_graph</span><span class="o">.</span><span class="n">nonzero</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">refine_protected_graph</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">refine_protected_graph</span><span class="o">.</span><span class="n">nonzero</span><span class="p">()[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">distZ</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">Z</span><span class="p">[</span><span class="n">graph</span><span class="o">.</span><span class="n">nonzero</span><span class="p">()[</span><span class="mi">0</span><span class="p">],</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">Z</span><span class="p">[</span><span class="n">graph</span><span class="o">.</span><span class="n">nonzero</span><span class="p">()[</span><span class="mi">1</span><span class="p">],</span> <span class="p">:])</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">stress</span> <span class="o">=</span> <span class="n">distZ</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Refinement round </span><span class="si">%d</span><span class="s2"> start...&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">refine_iter</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of starting edges: </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">data</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">_refine_threshold</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">q1</span><span class="p">,</span> <span class="n">q3</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">stress</span><span class="p">,</span> <span class="p">[</span><span class="mi">25</span><span class="p">,</span> <span class="mi">75</span><span class="p">])</span>
+            <span class="n">iqr</span> <span class="o">=</span> <span class="n">q3</span> <span class="o">-</span> <span class="n">q1</span>
+            <span class="n">_refine_threshold</span> <span class="o">=</span> <span class="n">q3</span> <span class="o">+</span> <span class="p">(</span><span class="n">iqr</span> <span class="o">*</span> <span class="n">refine_threshold</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">refine_protected_graph</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">graph</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">frozen_bool</span><span class="p">]</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">frozen_bool</span><span class="p">]</span> <span class="o">*</span> <span class="p">((</span><span class="n">stress</span> <span class="o">&lt;</span> <span class="n">_refine_threshold</span><span class="p">)[</span><span class="n">frozen_bool</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">graph</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">data</span> <span class="o">*</span> <span class="p">(</span><span class="n">stress</span> <span class="o">&lt;</span> <span class="n">_refine_threshold</span><span class="p">)</span>
+        <span class="n">graph</span><span class="o">.</span><span class="n">eliminate_zeros</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of refined edges: </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">data</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">))</span>
+
+        <span class="n">n_components</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">csgraph</span><span class="o">.</span><span class="n">connected_components</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
+        <span class="n">component_sizes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">bincount</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">component_sizes</span> <span class="o">&lt;=</span> <span class="mi">5</span><span class="p">):</span>
+            <span class="c1"># largest_component = np.where(component_sizes == component_sizes.max())[0][0]</span>
+            <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Connected components sizes: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">component_sizes</span><span class="p">))</span>
+            <span class="n">large_components</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">component_sizes</span> <span class="o">&gt;</span> <span class="mi">5</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">large_components</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">0.95</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Connected component(s) contains few than 95 percent of all data points. Stop refinement.&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="kn">from</span> <span class="nn">sklearn.neighbors</span> <span class="k">import</span> <span class="n">NearestNeighbors</span>
+                <span class="n">_</span><span class="p">,</span> <span class="n">fillinds</span> <span class="o">=</span> <span class="n">NearestNeighbors</span><span class="p">(</span><span class="n">n_neighbors</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">large_components</span><span class="p">,</span> <span class="p">:])</span><span class="o">.</span><span class="n">kneighbors</span><span class="p">(</span>
+                    <span class="n">X</span><span class="p">[</span><span class="o">~</span><span class="n">large_components</span><span class="p">,</span> <span class="p">:])</span>
+                <span class="n">g_reconnect</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">fillinds</span><span class="p">)),</span> <span class="p">(</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="o">~</span><span class="n">large_components</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">large_components</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="n">fillinds</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]])),</span> <span class="n">graph</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+                <span class="n">graph</span> <span class="o">=</span> <span class="n">graph</span> <span class="o">+</span> <span class="n">g_reconnect</span>
+                <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of reconnection edges: </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">g_reconnect</span><span class="o">.</span><span class="n">data</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">))</span>
+                <span class="n">Z</span> <span class="o">=</span> <span class="n">graphdr</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">custom_graph</span><span class="o">=</span><span class="n">graph</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="n">Z</span><span class="p">,</span> <span class="n">_lambda</span><span class="o">=</span><span class="n">_lambda</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span> <span class="n">refine_iter</span><span class="o">=</span><span class="n">refine_iter</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+                            <span class="n">refine_threshold</span><span class="o">=</span><span class="n">refine_threshold</span><span class="p">,</span> <span class="n">_refine_threshold</span><span class="o">=</span><span class="n">_refine_threshold</span><span class="p">,</span>
+                            <span class="n">no_rotation</span><span class="o">=</span><span class="n">no_rotation</span><span class="p">,</span> <span class="n">rescale</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">n_jobs_nmslib</span><span class="o">=</span><span class="n">n_jobs_nmslib</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">,</span>
+                            <span class="n">use_cuda</span><span class="o">=</span><span class="n">use_cuda</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of reconnection edges: </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">Z</span> <span class="o">=</span> <span class="n">graphdr</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">custom_graph</span><span class="o">=</span><span class="n">graph</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="n">Z</span><span class="p">,</span> <span class="n">_lambda</span><span class="o">=</span><span class="n">_lambda</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span> <span class="n">refine_iter</span><span class="o">=</span><span class="n">refine_iter</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+                        <span class="n">refine_threshold</span><span class="o">=</span><span class="n">refine_threshold</span><span class="p">,</span> <span class="n">_refine_threshold</span><span class="o">=</span><span class="n">_refine_threshold</span><span class="p">,</span>
+                        <span class="n">no_rotation</span><span class="o">=</span><span class="n">no_rotation</span><span class="p">,</span> <span class="n">rescale</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">n_jobs_nmslib</span><span class="o">=</span><span class="n">n_jobs_nmslib</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">,</span>
+                        <span class="n">use_cuda</span><span class="o">=</span><span class="n">use_cuda</span><span class="p">)</span>
+
+
+    <span class="k">if</span> <span class="n">rescale</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">no_rotation</span><span class="p">:</span>
+            <span class="n">scale_factor</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">X</span> <span class="o">*</span> <span class="n">Z</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">-</span> <span class="n">X</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="n">Z</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span>
+                        <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">Z</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">Z</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="n">Z</span> <span class="o">=</span> <span class="n">Z</span> <span class="o">*</span> <span class="n">scale_factor</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="n">Z</span> <span class="o">=</span> <span class="n">Z</span> <span class="o">-</span> <span class="n">Z</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span> <span class="o">+</span> <span class="n">X_mean</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">XW</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">W</span><span class="p">)</span>
+            <span class="n">scale_factor</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">XW</span> <span class="o">*</span> <span class="n">Z</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">-</span> <span class="n">XW</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="n">Z</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span>
+                        <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">Z</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">Z</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="n">Z</span> <span class="o">=</span> <span class="n">Z</span> <span class="o">*</span> <span class="n">scale_factor</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="n">Z</span> <span class="o">=</span> <span class="n">Z</span> <span class="o">-</span> <span class="n">Z</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span>
+
+    <span class="k">if</span> <span class="n">return_all</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">no_rotation</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Z</span><span class="p">,</span> <span class="n">graph</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Z</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">graph</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">Z</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Jian Zhou
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
