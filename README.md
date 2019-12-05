@@ -2,10 +2,10 @@
 
 Quasildr is a python library for quasilinear data representation methods. 
 It mainly implements two methods, a quasilinear data representation or visualization 
-method **GraphDR** and a generalized trajectory extraction and inference method **Nonparametric Ridge 
-Estimation (NRE)**. The Quasildr package is developed for 
+method **GraphDR** and a generalized trajectory extraction and inference method **StructDR** (StructDR is based on nonparametric ridge estimation). The Quasildr package is developed for 
 single-cell omics data analysis, but you can use it on other 
 data types as well. 
+
 
 ## Install
 
@@ -36,6 +36,12 @@ graphical interface for single-cell omics data analysis [Trenti](#graphical-inte
 
 ## Documentation
 See documentation here.
+
+“Quasilinear” approaches: GraphDR - visualization and general-purpose representation
+![Schematic overview of GraphDR](https://github.com/jzthree/quasildr/blob/master/docs/source/_static/GraphDR.png "GraphDR")
+
+“Quasilinear” approaches: StructDR - flexible structure extraction and inference of confidence sets
+![Schematic overview of StructDR](https://github.com/jzthree/quasildr/blob/master/docs/source/_static/StructDR.png "StructDR")
 
 
 ## Commandline tools 
