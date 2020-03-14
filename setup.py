@@ -18,12 +18,13 @@ setup(name="quasildr",
                    "omics data"),
       packages=find_packages(),
       url="https://github.com/jzthree/quasildr",
+      download_url="https://github.com/jzthree/quasildr/archive/v0.1.tar.gz",
       package_data={
       },
       scripts=[
         "run_graphdr.py",
         "run_structdr.py",
-      ]
+      ],
       classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: BSD License",
