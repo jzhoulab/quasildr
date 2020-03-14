@@ -1,7 +1,4 @@
 import os
-
-from Cython.Distutils import build_ext
-import numpy as np
 from setuptools import find_packages
 from setuptools import setup
 
@@ -11,7 +8,7 @@ with open(os.path.join(os.path.dirname(__file__), "README.md"),
     long_description = readme.read()
 
 setup(name="quasildr",
-      version="0.1.0",
+      version="0.1.1",
       long_description=long_description,
       long_description_content_type='text/markdown',
       description=("quasilinear representation methods for single-cell"
