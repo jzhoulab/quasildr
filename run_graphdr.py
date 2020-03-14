@@ -5,9 +5,10 @@
 Run GraphDR.
 
 Usage:
-    run_graphdr <input_file> [--max_dim=<max_dim>] [--anno_file=<anno_file>] [--anno_column=<anno_column>] [--n_neighbors=<n_neighbors>] [--reg=<reg>]
-  [--refine_iter=<refine_iter>] [--refine_threshold=<refine_threshold>] [--metric=<metric>]
-  [--plot] [--pca|--lda] [--no_rotation] [--log] [--transpose] [--scale]
+    run_graphdr <input_file> [--max_dim=<max_dim>] [--anno_file=<anno_file>] [--anno_column=<anno_column>] 
+  [--n_neighbors=<n_neighbors>] [--reg=<reg>] [--refine_iter=<refine_iter>] 
+  [--refine_threshold=<refine_threshold>] [--method=<method>] [--metric=<metric>] 
+  [--no_rotation] [--rescale]  [--plot] [--pca|--lda]  [--log] [--transpose] [--scale] [--suffix=<suffix>]
 
 Options:
   -h --help                                 Show this screen.
@@ -19,14 +20,17 @@ Options:
   --reg=<reg>                               Regularization parameter  [default: 100]
   --refine_iter=<refine_iter>               Refine iteration [default: 0].
   --refine_threshold=<refine_threshold>     Refine threshold [default: 12].
+  --method=<method>                         Method [default: auto].
   --metric=<metric>                         Metric [default: euclidean].
   --no_rotation                             Run GraphDR with --no_rotation option.
+  --rescale                                 Postprocess output by rescaling to match input mean and variance.
   --plot                                    Generate a pdf plot of the first two dims of the representation.
   --pca                                     Preprocess input with PCA.
   --lda                                     Preprocess input with LDA (using `anno_column` in `anno_file` as labels)
   --log                                     Preprocess input with log(1+X) transform.
   --transpose                               Preprocess input by transposing the matrix.
   --scale                                   Preprocess input by scaling to unit variance.
+  --suffix=<suffix>                         Suffix append to output file name [default: ]
 
 """
 
@@ -49,9 +53,10 @@ if __name__ == '__main__':
         "_n"+str(arguments['--refine_iter'])+ "t"+str(arguments['--refine_threshold']) + \
         ("_pca" if arguments['--pca'] else "") + ("_lda" if arguments['--lda'] else "") + \
         ("_no_rotation" if arguments['--no_rotation'] else "") + \
+        ("_rescale" if arguments['--rescale'] else "") + \
         ("_log" if arguments['--log'] else "")+ \
         ("_scale" if arguments['--scale'] else "") + \
-        ("_transpose" if arguments['--transpose'] else "")
+        ("_transpose" if arguments['--transpose'] else "") +  arguments['--suffix']
     data = pd.read_csv(arguments['<input_file>'],sep='\t')
     if isinstance(data.iloc[0,0],str):
         data = data.iloc[:,1:]
@@ -77,7 +82,7 @@ if __name__ == '__main__':
     Z = graphdr(data, n_neighbors= int(arguments['--n_neighbors']),
         regularization=float(arguments['--reg']), refine_iter=int(arguments['--refine_iter']),
         refine_threshold=float(arguments['--refine_threshold']),no_rotation=arguments['--no_rotation'],
-        rescale=True, method='auto', metric=arguments['--metric'])
+        rescale=arguments['--rescale'], method=arguments['--method'], metric=arguments['--metric'])
 
     pd.DataFrame(Z).to_csv(arguments['<input_file>']+ DOCSTR + '.graphdr',
                 sep='\t', index_label=False)
