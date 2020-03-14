@@ -20,12 +20,17 @@ setup(name="quasildr",
       url="https://github.com/jzthree/quasildr",
       package_data={
       },
+      scripts=[
+        "run_graphdr.py",
+        "run_structdr.py",
+      ]
       classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: BSD License",
         "Topic :: Scientific/Engineering :: Bio-Informatics"
       ],
       install_requires=[
+        "docopt",
         "multiprocess",
         "numpy",
         "pandas",
@@ -35,5 +40,6 @@ setup(name="quasildr",
         "seaborn",
         "statsmodels",
         "plotnine",
-        "pynndescent"
+        "pynndescent",
+        "nmslib"
     ])
