@@ -37,7 +37,7 @@ graphical interface for single-cell omics data analysis [Trenti](#graphical-inte
 ## Documentation
 See documentation [here](https://quasildr.readthedocs.io/en/latest/main.html).
 
-# GraphDR - visualization and general-purpose representation: 
+### GraphDR - visualization and general-purpose representation: 
 GraphDR is a nonlinear representation method 
 that preserves the interpretation of a corresponding linear space, while being able to well represent cell
  identities like nonlinear methods. Unlike popular nonlinear methods, GraphDR allows direct 
@@ -47,7 +47,7 @@ that preserves the interpretation of a corresponding linear space, while being a
  can easily scale to even larger datasets.
 ![Schematic overview of GraphDR](https://github.com/jzthree/quasildr/blob/master/docs/source/_static/GraphDR.png "GraphDR")
 
-# StructDR - flexible structure extraction and inference of confidence sets: 
+### StructDR - flexible structure extraction and inference of confidence sets: 
 StructDR is based on nonparametric density ridge estimation (NRE). StructDR is a flexible framework 
 for structure extraction for single-cell data that unifies cluster, trajectory, and surface estimation 
 by casting these problems as identifying 0-, 1-, and 2- dimensional density ridges. StructDR also support
