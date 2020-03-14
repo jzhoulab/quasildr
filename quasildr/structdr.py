@@ -584,7 +584,7 @@ class Scms(object):
                 eigvals, eigvecs = np.linalg.eigh(-h)
                 eigvals = -eigvals
             else:
-                raise ValueError('Method has to be one of Gradient, GradientLogp, SuRF or LocInv.')
+                raise ValueError('Method has to be one of Gradient, GradientLogp, MSP, MSLogP, or LocInv.')
 
             update = msu
             update = update * stepsize
