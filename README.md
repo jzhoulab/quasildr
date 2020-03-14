@@ -23,7 +23,7 @@ An example python snippet that running these methods are below
 import quasildr.graphdr import graphdr
 Z = graphdr(X_pca, regularization=500)
 
-#NRE
+#StructDR
 import quasildr.structdr import Scms
 Z = Z / Z[:,0].std()
 s = Scms(Z, bw=0.1, min_radius = 10)
@@ -37,16 +37,29 @@ graphical interface for single-cell omics data analysis [Trenti](#graphical-inte
 ## Documentation
 See documentation [here](https://quasildr.readthedocs.io/en/latest/main.html).
 
-“Quasilinear” approaches: GraphDR - visualization and general-purpose representation
+# GraphDR - visualization and general-purpose representation: 
+GraphDR is a nonlinear representation method 
+that preserves the interpretation of a corresponding linear space, while being able to well represent cell
+ identities like nonlinear methods. Unlike popular nonlinear methods, GraphDR allows direct 
+ comparison across datasets by applying a common linear transform. GraphDR also supports incorporating 
+ complex experiment design through graph construction (see example from manuscript and ./Manuscript directory). 
+ GraphDR is also very fast. It can process a 1.5 million-cell dataset in 5min (CPU) or 1.5min (CPU) and 
+ can easily scale to even larger datasets.
 ![Schematic overview of GraphDR](https://github.com/jzthree/quasildr/blob/master/docs/source/_static/GraphDR.png "GraphDR")
 
-“Quasilinear” approaches: StructDR - flexible structure extraction and inference of confidence sets
+# StructDR - flexible structure extraction and inference of confidence sets: 
+StructDR is based on nonparametric density ridge estimation (NRE). StructDR is a flexible framework 
+for structure extraction for single-cell data that unifies cluster, trajectory, and surface estimation 
+by casting these problems as identifying 0-, 1-, and 2- dimensional density ridges. StructDR also support
+ adaptively decides ridge dimensionality based on data. When used with linear representation such as PCA, 
+ StructDR allows inference of confidence sets of density ridge positions. This allows, for example, 
+ estimation of uncertainties of the developmental trajectories extracted.
 ![Schematic overview of StructDR](https://github.com/jzthree/quasildr/blob/master/docs/source/_static/StructDR.png "StructDR")
 
 
-## Commandline tools 
+## Command-line tools 
 
-We provide commandline tools for quick access to most commonly used quasildr functions, with typical data preprocessing and post processing options built-in. You can add the `-h` option to access help information to each tool.
+We provide command-line tools for quick access to most commonly used quasildr functions, with typical data preprocessing and post processing options built-in. You can add the `-h` option to access help information to each tool.
 
 * run_graphdr.py
 ```
@@ -55,12 +68,18 @@ python run_graphdr.py ./example/Dentate_Gyrus.spliced_data.gz --pca --plot --log
 
 * run_structdr.py
 ```
- python run_structdr.py --input ./example/Dentate_Gyrus.spliced_data.gz.dim50_k10_reg500_n4t12_pca_no_rotation_log_scale_transpose.drgraph --anno_file ./example/Dentate_Gyrus.anno.gz --anno_column ClusterName  --output ./example/Dentate_Gyrus.spliced_data.gz.dim50_k10_reg500_n4t12_pca_no_rotation_log_scale_transpose.drgraph
+python run_structdr.py --input ./example/Dentate_Gyrus.spliced_data.gz.dim50_k10_reg500_n4t12_pca_no_rotation_log_scale_transpose.drgraph --anno_file ./example/Dentate_Gyrus.anno.gz --anno_column ClusterName  --output ./example/Dentate_Gyrus.spliced_data.gz.dim50_k10_reg500_n4t12_pca_no_rotation_log_scale_transpose.drgraph
 ```
 
-## Graphical Interface
+## Graphical Interface - Trenti
+
+We developed a web-based GUI, Trenti (Trajectory exploration interface), for single cell data visualization and exploratory analysis, supporting GraphDR, StructDR, common dimensionality reduction and clustering methods, and provide a 3D interface for visualization and a gene expression exploration interface.  
+To use Trenti, you need to install additional dependencies:
+`pip install umap-learn dash==1.8.0 dash-colorscales`
 
 For an example, run
 ` python ./trenti/app.py -i ./example/Dentate_Gyrus.data_pca.gz   -f ./example/Dentate_Gyrus.spliced_data.gz -a ./example/Dentate_Gyrus.anno.gz  --samplelimit=5000 --log --mode graphdr`
 
-See `./trenti/README.md` for a further example.
+See [./trenti/README.md](https://github.com/jzthree/quasildr/blob/master/trenti/README.md) for a further example.
+![Screenshot of Trenti](https://github.com/jzthree/quasildr/blob/master/docs/source/_static/Trenti.png "StructDR")
+
