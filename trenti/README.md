@@ -1,7 +1,7 @@
 
 Graphical interface
 
-##TRENTI
+## TRENTI
 
 TRajectory Estimation NavigaTion Interface (TRENTI) is a
 graphical interface for single cell data visualization and exploratory analysis. It starts an local webserver that can be accessed through your browser.
