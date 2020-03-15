@@ -75,6 +75,10 @@ docstr = "niter" + str(opt.niter) + "_ndim" + str(opt.ndim) + "_bw" + str(opt.bw
          "_method" + str(opt.method) + "_stepsize" + str(opt.stepsize) + "_maxangle" + str(opt.maxangle) + "_k" + str(
     opt.k) + opt.suffix + ("_big" if opt.bigdata else "")
 
+outdir = os.path.dirname(opt.output)
+if not os.path.exists(outdir):
+    os.makedirs(outdir)
+
 data = pd.read_csv(opt.input, delimiter='\t')
 data = np.asarray(data)
 data = data / data[:, 0].std(axis=0)
