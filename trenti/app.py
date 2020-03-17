@@ -10,7 +10,7 @@ Options:
     -f FEATURE_FILE, --feature=FEATURE_FILE             feature file
     -a ANNOTATION_FILE, --annotation=ANNOTATION_FILE    annotation file
     -v VELOCITY_FILE, --velocity=VELOCITY_FILE          velocity file (same dimensions as input)
-    -m PROJECTION_MODE, --mode=PROJECTION_MODE          default projection mode (pca or graphdr) [default: graphdr]
+    -m PROJECTION_MODE, --mode=PROJECTION_MODE          default projection mode (pca, graphdr, or none) [default: graphdr]
     -n NETWORK_DATA, --networkdata=NETWORK_DATA         network data (feature or input) [default: feature]
     --samplelimit=<n>                                   sample size limit [default: 100000]
     --port=<n>                                          port [default: 8050]
@@ -106,8 +106,10 @@ if __name__ == "__main__":
             else:
                 input_data = pd.read_csv(arguments['--input'], delimiter='\t', nrows=SAMPLELIMIT + 1, index_col=0)
             input_data = input_data.iloc[:SAMPLELIMIT, :]
-            input_data_sd = np.std(input_data.values, axis=0)
-            input_data = input_data.iloc[:, np.argsort(-input_data_sd)]
+            if input_data.shape[1] <= 3:
+                input_data['z'] = 0
+            #input_data_sd = np.std(input_data.values, axis=0)
+            #input_data = input_data.iloc[:, np.argsort(-input_data_sd)]
             with_user_input_data = True
         except Exception as e:
             print(e)
@@ -822,7 +824,9 @@ if __name__ == "__main__":
                                              {'label': 'Diffusion Map',
                                               'value': 'diffusion_map'},
                                              {'label': 'UMAP',
-                                              'value': 'umap'}],
+                                              'value': 'umap'},
+                                             {'label': 'None',
+                                               'value': 'none'}],
                                          value=arguments['--mode'], ),
                                      html.Div([
                                          html.Button('Run projection', id='run-projection-button',
@@ -1526,14 +1530,14 @@ if __name__ == "__main__":
             return cl_name[0]
 
 
-    @app.callback(
-        Output('annotation_dropdown_div', 'style'),
-        [Input('upload_annotation_label', 'children')])
-    def update_annotation_dropdown_div_style(children):
-        if annotation_data.shape[1] > 1:
-            return {'display': 'block'}
-        else:
-            return {'display': 'none'}
+#    @app.callback(
+#        Output('annotation_dropdown_div', 'style'),
+#        [Input('upload_annotation_label', 'children')])
+#    def update_annotation_dropdown_div_style(children):
+#        if annotation_data.shape[1] > 1:
+#            return {'display': 'block'}
+#        else:
+#            return {'display': 'none'}
 
 
     @app.callback(
@@ -1612,7 +1616,6 @@ if __name__ == "__main__":
         return [c_name]
 
 
-    run_projection_initial_call = True
 
 
     @app.callback(
@@ -1658,11 +1661,14 @@ if __name__ == "__main__":
         global with_velocity_data
         global velocity_data
         global run_projection_initial_call
-
+        
         # prevent it from running during initialization
-        if run_projection_initial_call:
-            run_projection_initial_call = False
+        if n_clicks_run_projection:
+            pass
+        else:
             return []
+        
+        print("Run Projection...")
 
         if 'subset' in dr_checklist:
             index = input_data.index.values
@@ -1684,58 +1690,63 @@ if __name__ == "__main__":
 
         N_PCs = reduce(np.minimum, [len(selectind), MAX_PCS, input_data.shape[0], input_data.shape[1]])
         input_data_pca = PCA(N_PCs)
-        if 'scale' in dr_checklist:
-            input_data_scaler = StandardScaler()
-            data = pd.DataFrame(
-                input_data_pca.fit_transform(input_data_scaler.fit_transform(input_data.values[selectind, :])),
-                index=input_data.index[selectind], columns=['PC' + str(i) for i in range(1, N_PCs + 1)])
-            if with_velocity_input_data:
-                velocity_data = pd.DataFrame(
-                    input_data_pca.transform(velocity_input_data.values[selectind, :] / input_data_scaler.scale_),
-                    index=velocity_input_data.index[selectind], columns=['PC' + str(i) for i in range(1, N_PCs + 1)])
-                with_velocity_data = True
-        else:
-            data = pd.DataFrame(input_data_pca.fit_transform(input_data.values[selectind, :]),
-                                index=input_data.index[selectind], columns=['PC' + str(i) for i in range(1, N_PCs + 1)])
-            if with_velocity_input_data:
-                velocity_data = pd.DataFrame(input_data_pca.transform(velocity_input_data.values[selectind, :]),
-                                             index=velocity_input_data.index[selectind],
-                                             columns=['PC' + str(i) for i in range(1, N_PCs + 1)])
-                with_velocity_data = True
 
-        if 'diffusion_map' == dr_method:
-            D = squareform(pdist(data.values[:, :dr_N_PCs], metric=dr_metric))
-            bws = np.median(D, axis=1)
-            # D = kneighbors_graph(data.values[:,:dr_N_PCs], dr_n_neighbors, mode='distance', n_jobs=n_jobs)
-
-            bw_square_sums = np.add.outer(bws ** 2, bws ** 2)
-            D = np.exp(- D ** 2 / bw_square_sums) * np.sqrt(2 * np.multiply.outer(bws, bws) / bw_square_sums)
-            # make symmetric
-            W = D
-            q = 1.0 / np.asarray(W.sum(axis=0))
-            W = W * q[:, np.newaxis] * q[np.newaxis, :]
-            z = 1.0 / np.sqrt(np.asarray(W.sum(axis=0)))
-            W = W * z[:, np.newaxis] * z[np.newaxis, :]
-            eigvals, eigvecs = np.linalg.eigh(W)
-            # eigvals, eigvecs = eigsh(W, k=N_PCs, which='LM')
-            eigvecs = eigvecs[:, ::-1][:, :N_PCs]
-            data = pd.DataFrame(eigvecs, index=feature_data.columns,
-                                columns=['DC' + str(i) for i in range(1, eigvecs.shape[1] + 1)])
-            projection_mode = 'diffusion_map'
-        elif 'umap' == dr_method:
-            mapped = umap.UMAP(n_components=dr_dim, n_neighbors=dr_n_neighbors, min_dist=dr_min_dist,
-                               metric=dr_metric).fit_transform(data.values[:, :dr_N_PCs])
-            data = pd.DataFrame(mapped, index=feature_data.columns,
-                                columns=['UMAP' + str(i) for i in range(1, mapped.shape[1] + 1)])
-            projection_mode = 'umap'
-        elif 'graphdr' == dr_method:
-            mapped = graphdr(data.values[:, :dr_N_PCs], n_neighbors=dr_n_neighbors, regularization=dr_lambda,
-                             metric=dr_metric)
-            data = pd.DataFrame(mapped, index=feature_data.columns,
-                                columns=['GraphDR' + str(i) for i in range(1, mapped.shape[1] + 1)])
-            projection_mode = 'graphdr'
+        if dr_method == "none":
+            data = input_data.copy()
+            projection_mode = 'none'
         else:
-            projection_mode = 'pca'
+            if 'scale' in dr_checklist:
+                input_data_scaler = StandardScaler()
+                data = pd.DataFrame(
+                    input_data_pca.fit_transform(input_data_scaler.fit_transform(input_data.values[selectind, :])),
+                    index=input_data.index[selectind], columns=['PC' + str(i) for i in range(1, N_PCs + 1)])
+                if with_velocity_input_data:
+                    velocity_data = pd.DataFrame(
+                        input_data_pca.transform(velocity_input_data.values[selectind, :] / input_data_scaler.scale_),
+                        index=velocity_input_data.index[selectind], columns=['PC' + str(i) for i in range(1, N_PCs + 1)])
+                    with_velocity_data = True
+            else:
+                data = pd.DataFrame(input_data_pca.fit_transform(input_data.values[selectind, :]),
+                                    index=input_data.index[selectind], columns=['PC' + str(i) for i in range(1, N_PCs + 1)])
+                if with_velocity_input_data:
+                    velocity_data = pd.DataFrame(input_data_pca.transform(velocity_input_data.values[selectind, :]),
+                                                 index=velocity_input_data.index[selectind],
+                                                 columns=['PC' + str(i) for i in range(1, N_PCs + 1)])
+                    with_velocity_data = True
+
+            if 'diffusion_map' == dr_method:
+                D = squareform(pdist(data.values[:, :dr_N_PCs], metric=dr_metric))
+                bws = np.median(D, axis=1)
+                # D = kneighbors_graph(data.values[:,:dr_N_PCs], dr_n_neighbors, mode='distance', n_jobs=n_jobs)
+    
+                bw_square_sums = np.add.outer(bws ** 2, bws ** 2)
+                D = np.exp(- D ** 2 / bw_square_sums) * np.sqrt(2 * np.multiply.outer(bws, bws) / bw_square_sums)
+                # make symmetric
+                W = D
+                q = 1.0 / np.asarray(W.sum(axis=0))
+                W = W * q[:, np.newaxis] * q[np.newaxis, :]
+                z = 1.0 / np.sqrt(np.asarray(W.sum(axis=0)))
+                W = W * z[:, np.newaxis] * z[np.newaxis, :]
+                eigvals, eigvecs = np.linalg.eigh(W)
+                # eigvals, eigvecs = eigsh(W, k=N_PCs, which='LM')
+                eigvecs = eigvecs[:, ::-1][:, :N_PCs]
+                data = pd.DataFrame(eigvecs, index=feature_data.columns,
+                                    columns=['DC' + str(i) for i in range(1, eigvecs.shape[1] + 1)])
+                projection_mode = 'diffusion_map'
+            elif 'umap' == dr_method:
+                mapped = umap.UMAP(n_components=dr_dim, n_neighbors=dr_n_neighbors, min_dist=dr_min_dist,
+                                   metric=dr_metric).fit_transform(data.values[:, :dr_N_PCs])
+                data = pd.DataFrame(mapped, index=feature_data.columns,
+                                    columns=['UMAP' + str(i) for i in range(1, mapped.shape[1] + 1)])
+                projection_mode = 'umap'
+            elif 'graphdr' == dr_method:
+                mapped = graphdr(data.values[:, :dr_N_PCs], n_neighbors=dr_n_neighbors, regularization=dr_lambda,
+                                 metric=dr_metric)
+                data = pd.DataFrame(mapped, index=feature_data.columns,
+                                    columns=['GraphDR' + str(i) for i in range(1, mapped.shape[1] + 1)])
+                projection_mode = 'graphdr'
+            else:
+                projection_mode = 'pca'
 
         if projection_mode not in ['pca', 'graphdr', 'none']:
             if with_velocity_input_data:
@@ -1792,6 +1803,7 @@ if __name__ == "__main__":
             Input('dummy_dr', 'children'),
             Input('dummy4', 'children')],
         [State('scatter_3d', 'figure'),
+         State('scatter_3d', 'relayoutData'),
          State('ITERATIONS-slider', 'value'),
          State('ndim_dropdown', 'value'),
          State('dimensionality_dropdown', 'value'),
@@ -1807,7 +1819,7 @@ if __name__ == "__main__":
                        colorscale, selected_gene, selectedData1, selectedData2, selectedData3, smooth_radius, conesize,
                        scatter3d_aspect_option, dimx, dimy, dimz, annotation_index, embedding_value, isomap_n_neighbors,
                        annotation_type, label_checklist_value, dummy_dr, dummy4, \
-                       figure, n_iter, ndim_, dim, bw, min_radius, relaxation, step_size, n_jobs, method,
+                       figure, relayoutData, n_iter, ndim_, dim, bw, min_radius, relaxation, step_size, n_jobs, method,
                        display_value):
         global s
         global traj
@@ -2688,11 +2700,21 @@ if __name__ == "__main__":
                          logp_trace + eigengap_trace + segment_traces + order_trace + \
                          knn_traces + annotation_trace + selected_trace + isomap_trace + annotation_label_trace
 
-        figure['layout']['scene'] = dict(xaxis=go.layout.XAxis(title='x | Dim ' + str(dimx + 1)),
-                                         yaxis=go.layout.XAxis(title='y | Dim ' + str(dimy + 1)),
-                                         zaxis=go.layout.XAxis(title='z | Dim ' + str(dimz + 1)),
-                                         aspectmode=scatter3d_aspect_option,
-                                         showlegend=True if selected_gene or len(figure['data']) > 1 else False)
+        if 'scene' not in figure['layout']:
+            figure['layout']['scene']=dict(xaxis= go.layout.XAxis(title='x | Dim ' + str(dimx+1)),
+                yaxis= go.layout.XAxis(title='y | Dim ' + str(dimy+1)),
+                zaxis= go.layout.XAxis(title='z | Dim ' + str(dimz+1)),
+                aspectmode = scatter3d_aspect_option,
+                showlegend = True if  selected_gene or len(figure['data'])>1 else False)
+        else:
+            figure['layout']['scene']['xaxis']['title'] = 'x | Dim ' + str(dimx + 1)
+            figure['layout']['scene']['yaxis']['title'] = 'y | Dim ' + str(dimy + 1),
+            figure['layout']['scene']['zaxis']['title'] = 'z | Dim ' + str(dimz + 1),
+            figure['layout']['scene']['aspectmode'] = scatter3d_aspect_option,
+            figure['layout']['scene']['showlegend'] = True if selected_gene or len(figure['data']) > 1 else False
+            
+        if "scene.camera" in relayoutData:
+            figure['layout']['scene']['camera'] = relayoutData['scene.camera']
 
         return figure
 
@@ -2700,8 +2722,10 @@ if __name__ == "__main__":
     def update_cell_plots(i, j):
         def callback(*selectedDatas):
             index = traj.index
-            dims = selectedDatas[4:]
-            for k in range(1, 4):
+            dims = selectedDatas[5:]
+            relayoutData = selectedDatas[4]
+            dotsize = selectedDatas[3]
+            for k in range(0, 3):
                 if selectedDatas[k]:
                     selected_index = [p['customdata'] for p in selectedDatas[k]['points']]
                 else:
@@ -2724,7 +2748,7 @@ if __name__ == "__main__":
                         'text': traj.index,
                         'hoverinfo': 'text',
                         'mode': 'markers',
-                        'marker': {'size': 3},
+                        'marker': {'size': dotsize},
                         'selectedpoints': match(index, traj.index),
                         'selected': {
                             'marker': {
@@ -2749,6 +2773,17 @@ if __name__ == "__main__":
                     'yaxis': {'title': 'Dim ' + str(dims[j] + 1), 'automargin': True},
                 }
             }
+            if relayoutData:
+                if 'xaxis.range[0]' in relayoutData:
+                    figure['layout']['xaxis']['range'] = [
+                        relayoutData['xaxis.range[0]'],
+                        relayoutData['xaxis.range[1]']
+                    ]
+                if 'yaxis.range[0]' in relayoutData:
+                    figure['layout']['yaxis']['range'] = [
+                        relayoutData['yaxis.range[0]'],
+                        relayoutData['yaxis.range[1]']
+                    ]
 
             return figure
 
@@ -2757,36 +2792,39 @@ if __name__ == "__main__":
 
     app.callback(
         Output('select-sample1', 'figure'),
-        [Input('scatter_3d', 'figure'),
-         Input('select-sample1', 'selectedData'),
+        [Input('select-sample1', 'selectedData'),
          Input('select-sample2', 'selectedData'),
          Input('select-sample3', 'selectedData'),
+         Input('dotsize-slider', 'value'),
          ],
-        [State('x_dropdown', 'value'),
+        [State('select-sample1', 'relayoutData'),
+         State('x_dropdown', 'value'),
          State('y_dropdown', 'value'),
          State('z_dropdown', 'value')]
     )(update_cell_plots(0, 1))
 
     app.callback(
         Output('select-sample2', 'figure'),
-        [Input('scatter_3d', 'figure'),
-         Input('select-sample2', 'selectedData'),
+        [Input('select-sample2', 'selectedData'),
          Input('select-sample1', 'selectedData'),
          Input('select-sample3', 'selectedData'),
+         Input('dotsize-slider', 'value'), 
          ],
-        [State('x_dropdown', 'value'),
+        [State('select-sample2', 'relayoutData'),
+         State('x_dropdown', 'value'),
          State('y_dropdown', 'value'),
          State('z_dropdown', 'value')]
     )(update_cell_plots(0, 2))
 
     app.callback(
         Output('select-sample3', 'figure'),
-        [Input('scatter_3d', 'figure'),
-         Input('select-sample3', 'selectedData'),
+        [Input('select-sample3', 'selectedData'),
          Input('select-sample1', 'selectedData'),
          Input('select-sample2', 'selectedData'),
+         Input('dotsize-slider', 'value'),
          ],
-        [State('x_dropdown', 'value'),
+        [State('select-sample3', 'relayoutData'),
+         State('x_dropdown', 'value'),
          State('y_dropdown', 'value'),
          State('z_dropdown', 'value')]
     )(update_cell_plots(1, 2))
@@ -3270,7 +3308,7 @@ if __name__ == "__main__":
         if not with_velocity_data:
             values = [value for value in values if value != 'show_annotation']
 
-        if len(cl_name) > 0 and cl_name[0] in annotation_data.columns.values:
+        if cl_name is not None and len(cl_name) > 0 and cl_name[0] in annotation_data.columns.values:
             values = values + ['show_annotation']
         return values
 
