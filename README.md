@@ -76,7 +76,7 @@ python run_structdr.py --input ./example/Dentate_Gyrus.spliced_data.gz.dim50_k10
 We developed a web-based GUI, Trenti (Trajectory exploration interface), for single cell data visualization and exploratory analysis, supporting GraphDR, StructDR, common dimensionality reduction and clustering methods, and provide a 3D interface for visualization and a gene expression exploration interface. 
 
 To use Trenti, you need to install additional dependencies:
-`pip install umap-learn dash==1.8.0 dash-colorscales`
+`pip install umap-learn dash==1.9.1 dash-colorscales networkx`
 
 See [./trenti/README.md](https://github.com/jzthree/quasildr/blob/master/trenti/README.md) for details. For a quick-start example, run
 ` python ./trenti/app.py -i ./example/Dentate_Gyrus.data_pca.gz   -f ./example/Dentate_Gyrus.spliced_data.gz -a ./example/Dentate_Gyrus.anno.gz  --samplelimit=5000 --log --mode graphdr`
