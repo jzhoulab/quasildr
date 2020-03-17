@@ -9,7 +9,7 @@ graphical interface for single cell data visualization and exploratory analysis.
 ### Basic Usage
 
 To run, cd to the directory that contains the source, run
-`python app.py -i Dentate_Gyrus.data_pca   -f Dentate_Gyrus.spliced_data -a Dentate_Gyrus.anno -v Dentate_Gyrus.data_pca_v --samplelimit=5000 --log--mode graphdr`
+`python ./app.py -i ../example/Dentate_Gyrus.data_pca.gz -f ../example/Dentate_Gyrus.spliced_data.gz -a ../example/Dentate_Gyrus.anno.gz --samplelimit=5000 --log --mode graphdr`
 
 In your browser go to localhost:8050. 
 
