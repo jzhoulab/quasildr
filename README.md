@@ -9,7 +9,7 @@ data types as well.
 
 ## Install
 
-Run `pip install .` in this directory.
+Run `pip install .` in this directory or use `pip install quasildr`.
 
 
 ## Quick Start
