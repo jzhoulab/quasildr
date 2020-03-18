@@ -1020,89 +1020,48 @@ if __name__ == "__main__":
                                  ],
                                  style={'padding': '1rem 2.2% 0rem 2.2%', 'margin-left': 0, 'display': 'none'},
                                  ),
-                        html.Div(id='scatter_3d_div',
-                                 className="nine columns", children=[
-                                dcc.Graph(
-                                    id='scatter_3d',
-                                    figure=dict(
-                                        data=[
-                                            go.Scatter3d(
-                                                x=traj.iloc[:, 0],
-                                                y=traj.iloc[:, 1],
-                                                z=traj.iloc[:, 2],
-                                                mode='markers',
-                                                marker=dict(
-                                                    size=np.maximum(6 - np.log10(data.shape[0]), 1),
-                                                    color=traj.iloc[:, 0],
-                                                    line=dict(
-                                                        color='rgba(217, 217, 217, 0.14)',
-                                                        width=0
-                                                    ),
-                                                    opacity=0.8,
-                                                    showscale=True,
-                                                    colorscale=list(zip(BINS, DEFAULT_COLORSCALE)),
-                                                    colorbar=dict(len=0.5, yanchor='top', y=0.85),
-                                                )
-                                            ),
-                                        ],
-                                        layout=go.Layout(
-                                            margin=dict(
-                                                l=0,
-                                                r=0,
-                                                b=0,
-                                                t=0
-                                            ),
-                                            legend=dict(orientation='h'),
-                                            paper_bgcolor=BGCOLOR,
-                                            plot_bgcolor=BGCOLOR,
-                                        )
+                        dcc.Loading(id='loading_scatter_3d_div', children=[
+                            html.Div(id='scatter_3d_div',
+                                     className="nine columns", children=[
+                                    dcc.Graph(
+                                        id='scatter_3d',
+                                        figure=dict(
+                                            data=[
+                                                go.Scatter3d(
+                                                    x=traj.iloc[:, 0],
+                                                    y=traj.iloc[:, 1],
+                                                    z=traj.iloc[:, 2],
+                                                    mode='markers',
+                                                    marker=dict(
+                                                        size=np.maximum(6 - np.log10(data.shape[0]), 1),
+                                                        color=traj.iloc[:, 0],
+                                                        line=dict(
+                                                            color='rgba(217, 217, 217, 0.14)',
+                                                            width=0
+                                                        ),
+                                                        opacity=0.8,
+                                                        showscale=True,
+                                                        colorscale=list(zip(BINS, DEFAULT_COLORSCALE)),
+                                                        colorbar=dict(len=0.5, yanchor='top', y=0.85),
+                                                    )
+                                                ),
+                                            ],
+                                            layout=go.Layout(
+                                                margin=dict(
+                                                    l=0,
+                                                    r=0,
+                                                    b=0,
+                                                    t=0
+                                                ),
+                                                legend=dict(orientation='h'),
+                                                paper_bgcolor=BGCOLOR,
+                                                plot_bgcolor=BGCOLOR,
+                                            )
+                                        ),
+                                        style={'height': '55vh'},
                                     ),
-                                    style={'height': '55vh'},
-                                ),
-                                # dcc.Graph(
-                                #     id='gic_plot',
-                                #     figure={
-                                #         'data': ff.create_bullet(pd.DataFrame({'history':[[0,1]],'name':'GIC','marker':[[0]]}),subtitles='name',markers='marker',ranges='history')['data'],
-                                #         'layout': {'annotations': [{'font': {'color': '#0f0f0f', 'size': 13},
-                                #                     'showarrow': False,
-                                #                     'text': 'GIC',
-                                #                     'textangle': 0,
-                                #                     'x': -0.01,
-                                #                     'xanchor': 'right',
-                                #                     'xref': 'paper',
-                                #                     'y': 0.5,
-                                #                     'yanchor': 'middle',
-                                #                     'yref': 'paper'}],
-                                #                 'margin':dict(
-                                #                     l=150,
-                                #                     r=250,
-                                #                     b=0,
-                                #                     t=0
-                                #                 ),
-                                #                 'barmode': 'stack',
-                                #                 'shapes': [],
-                                #                 'showlegend': False,
-                                #                 'height': 15,
-                                #                 'xaxis1': {'anchor': 'y1',
-                                #                     'domain': [0.0, 1.0],
-                                #                     'showgrid': False,
-                                #                 'zeroline': False},
-                                #                 'yaxis1': {'anchor': 'x1',
-                                #                     'domain': [0, 1],
-                                #                     'range': [0, 1],
-                                #                     'showgrid': False,
-                                #                     'showticklabels': False,
-                                #                     'zeroline': False},
-                                #                 'paper_bgcolor':BGCOLOR,
-                                #                 'plot_bgcolor':BGCOLOR}
-                                #     },
-                                #     config={
-                                #         'displayModeBar': False
-                                #     },
-                                #     style={'margin-top':'1rem'}
-                                # )
-                            ], style={'margin-left': '12.5%'}),
-
+                                ], style={'margin-left': '12.5%'}),
+                        ],type="circle"),
                     ]),
             ], className='six columns', style={'margin': 0}),
 
@@ -1110,45 +1069,47 @@ if __name__ == "__main__":
                 html.Div(id='selector_panel', children=[
                     html.P('Cell selector (Lasso select):',
                            style={'display': 'inline-block', 'margin': '0rem 1rem 1rem 1rem'}),
-                    html.Div([
-                        html.Div(
-                            dcc.Graph(
-                                id='select-sample1',
-                                selectedData={'points': [], 'range': None},
-                                figure=dict(
-                                    data=[],
-                                    layout=dict(
-                                        paper_bgcolor=BGCOLOR,
-                                        plot_bgcolor=BGCOLOR,
-                                    )),
-                                style={'height': '28vh'}
-                            ), className="four columns"
-                        ),
-                        html.Div(
-                            dcc.Graph(
-                                id='select-sample2',
-                                selectedData={'points': [], 'range': None},
-                                figure=dict(
-                                    data=[],
-                                    layout=dict(
-                                        paper_bgcolor=BGCOLOR,
-                                        plot_bgcolor=BGCOLOR,
-                                    )),
-                                style={'height': '28vh'}
-                            ), className="four columns"),
-                        html.Div(
-                            dcc.Graph(
-                                id='select-sample3',
-                                selectedData={'points': [], 'range': None},
-                                figure=dict(
-                                    data=[],
-                                    layout=dict(
-                                        paper_bgcolor=BGCOLOR,
-                                        plot_bgcolor=BGCOLOR,
-                                    )),
-                                style={'height': '28vh'}
-                            ), className="four columns")
-                    ], className="row"),
+                    dcc.Loading(id='loading_select_sample_div', children=[
+                        html.Div([
+                            html.Div(
+                                dcc.Graph(
+                                    id='select-sample1',
+                                    selectedData={'points': [], 'range': None},
+                                    figure=dict(
+                                        data=[],
+                                        layout=dict(
+                                            paper_bgcolor=BGCOLOR,
+                                            plot_bgcolor=BGCOLOR,
+                                        )),
+                                    style={'height': '28vh'}
+                                ), className="four columns"
+                            ),
+                            html.Div(
+                                dcc.Graph(
+                                    id='select-sample2',
+                                    selectedData={'points': [], 'range': None},
+                                    figure=dict(
+                                        data=[],
+                                        layout=dict(
+                                            paper_bgcolor=BGCOLOR,
+                                            plot_bgcolor=BGCOLOR,
+                                        )),
+                                    style={'height': '28vh'}
+                                ), className="four columns"),
+                            html.Div(
+                                dcc.Graph(
+                                    id='select-sample3',
+                                    selectedData={'points': [], 'range': None},
+                                    figure=dict(
+                                        data=[],
+                                        layout=dict(
+                                            paper_bgcolor=BGCOLOR,
+                                            plot_bgcolor=BGCOLOR,
+                                        )),
+                                    style={'height': '28vh'}
+                                ), className="four columns")
+                        ], className="row"),
+                    ],type="circle"),
                     html.Div([
                         html.P('Feature selector (Click or drag and use dropdown below):',
                                style={'display': 'inline-block', 'margin': '3rem 1rem 1rem 1rem'}),
@@ -1165,6 +1126,7 @@ if __name__ == "__main__":
                                 value='mean_sd',
                             )], style={'margin-left': '1rem'}),
                     ], style={'display': 'inline-block'}),
+                    dcc.Loading(id='loading_select_feature_div', children=[
                     dcc.Graph(
                         id='select-feature',
                         selectedData={'points': [], 'range': None},
@@ -1177,7 +1139,7 @@ if __name__ == "__main__":
                         ),
                         style={'height': '38vh'}
                         # animate = True
-                    ),
+                    ),], type="circle"),
                     html.P('Type or select feature / gene name:',
                            style={'display': 'inline-block', 'margin': '2rem 1rem 1rem 1rem'}),
                     dcc.Dropdown(
@@ -1661,13 +1623,13 @@ if __name__ == "__main__":
         global with_velocity_data
         global velocity_data
         global run_projection_initial_call
-        
+
         # prevent it from running during initialization
         if n_clicks_run_projection:
             pass
         else:
             return []
-        
+
         print("Run Projection...")
 
         if 'subset' in dr_checklist:
@@ -1718,7 +1680,7 @@ if __name__ == "__main__":
                 D = squareform(pdist(data.values[:, :dr_N_PCs], metric=dr_metric))
                 bws = np.median(D, axis=1)
                 # D = kneighbors_graph(data.values[:,:dr_N_PCs], dr_n_neighbors, mode='distance', n_jobs=n_jobs)
-    
+
                 bw_square_sums = np.add.outer(bws ** 2, bws ** 2)
                 D = np.exp(- D ** 2 / bw_square_sums) * np.sqrt(2 * np.multiply.outer(bws, bws) / bw_square_sums)
                 # make symmetric
@@ -2712,9 +2674,10 @@ if __name__ == "__main__":
             figure['layout']['scene']['zaxis']['title'] = 'z | Dim ' + str(dimz + 1),
             figure['layout']['scene']['aspectmode'] = scatter3d_aspect_option,
             figure['layout']['scene']['showlegend'] = True if selected_gene or len(figure['data']) > 1 else False
-            
-        if "scene.camera" in relayoutData:
-            figure['layout']['scene']['camera'] = relayoutData['scene.camera']
+
+        if relayoutData:
+            if "scene.camera" in relayoutData:
+                figure['layout']['scene']['camera'] = relayoutData['scene.camera']
 
         return figure
 
@@ -2808,7 +2771,7 @@ if __name__ == "__main__":
         [Input('select-sample2', 'selectedData'),
          Input('select-sample1', 'selectedData'),
          Input('select-sample3', 'selectedData'),
-         Input('dotsize-slider', 'value'), 
+         Input('dotsize-slider', 'value'),
          ],
         [State('select-sample2', 'relayoutData'),
          State('x_dropdown', 'value'),
@@ -3648,4 +3611,4 @@ if __name__ == "__main__":
 
 
     if __name__ == '__main__':
-        app.run_server(debug=True, port=arguments['--port'])
+        app.run_server(debug=False, port=arguments['--port'])
