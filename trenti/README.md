@@ -28,33 +28,15 @@ Tip: For all input files, you can append `.T` to the filename, so Trenti will tr
 
 
 ### Brief instructions
-Most functionalities are self-explanatory and so I just try to mention some more high level or hidden points. There are a lot more functionalities that can be accessed through 'Advanced options' that are hidden by default.
+The interface is divided into two parts. The left panel provides the main visualization and method interfaces, it displays the data in 3D, provides various analysis options and you can click on buttons to upload your files (loading the files through command-line is recommended and better supported). The right panels are interactive selective interfaces for selecting genes and cells while displaying useful information at gene or cell levels. There are a lot more functionalities that can be accessed through 'Advanced options' that are hidden by default.
 
 **Basic visualization**
 
-Display gene expression:
-
-Click on a gene on the right, or use the dropdown below or type gene name. Now the gene plot it self reflect expressions in the cells selected in the cell selectors above (default are all cells).
-
-To show annotations overlay:
-
-Visualization -> Check "Annotation" -> Select column display
-
-Show K-nearest neighbor graph:
-
-Visualization -> Check one of the KNN options
 
 
-**Projection**
 
-Dimensionality reductions. PCA or GraphDR are recommended for trajectory analysis.
 
-**Trajectory**
 
-Select number of interations and click `run` button to run. Important parameters are bandwidth / adaptive bandwidth.
-
-**Clustering**
-Note clustering can be ran on both the original data (default), or the trajectory generated.
 
 **Bootstrap**
 Bootstrapped trajectories allow estimating uncertainties of trajectory estimations.
@@ -64,6 +46,23 @@ This shows local covariation of expression (only supports PCA projection mode no
 
 ## Tips:
 
+Basic visualization:
+* **Gene expression explorer**: Click on a gene in the *gene selector interface* (right bottom), or use the dropdown below or type gene name. The *gene selector interface* display useful information about each gene to help the selection. The *gene selector interface* is connected to the *cell selector interface*. When cells are selected in the *cell selector interace*, the *gene selector interface* will be updated to reflect expression values of the cells selected (default are all cells). There are two modes of *gene selector interface*, you can choose between displaying "mean vs. SD" or "mean vs. diff between selected cells and other cells".
+* **Overlay custom annotations with cells**: Visualization -> Check "Annotation" -> Select column to display. You can choose between treating a column as categorical variable or numerical variable. Default is auto.
+* **K-nearest neighbor graph**: Visualization -> Check one of the KNN options
 * To prepare figure for presentation or publication:
 Click on the 'Save' button on toolbar and it will bring up a windows that allows detailed adjustment to the figure. 
 * You can check the "Fullscreen" checkbox to display it on the full page.
+
+Methods interface: 
+* **Projection (Dimensionality Reduction)**:
+Access to data representation methods including GraphDR. PCA or GraphDR are recommended for StructDR density ridge / trajectory analysis.
+
+* **Algorithm (StructDR - Nonparametric Density Ridge estimation)**:
+Select number of iteration and click `run` button to run. Important parameters are bandwidth / adaptive bandwidth.
+
+* **Clustering**:
+Access to multiple common clustering methods. Clustering can be ran on both the original data (default), or the projected data displayed. 
+
+
+
