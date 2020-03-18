@@ -1,9 +1,9 @@
 
-Graphical interface
 
-## TRENTI
 
-TRajectory Estimation NavigaTion Interface (TRENTI) is a
+## 3D Interactive Visualization and Exploration Interface: Trenti
+
+TRajectory Exploration and NavigaTion Interface (Trenti) is a
 graphical interface for single cell data visualization and exploratory analysis. It starts an local webserver that can be accessed through your browser.
 
 ### Basic Usage
@@ -16,17 +16,19 @@ In your browser go to localhost:8050.
 
 
 ### Options
-* `-f`: Feature file.   Gene x Sample / Cell expression matrix. Expect log-normalized values by default. Use `--log` argument if the input is not log-transformed.
-* `-i`: Input file. Sample/Cell x Dims matrix with headers. Dims can be genes, PCs or embedding dimensions. This file will be used for trajectory / clustering / projection analyses, and is typically a PCA transformed matrix, or scaled log expression matrix. If this file not provided we will compute from feature file - however it is highly recommended to provided input file that has been preprocessed (e.g. select highly variable genes, removing batch effect, cell cycle effect, standardize etc.).
-* `-a`: Annotation file. Annotations for visualization.
-* `-v`: Velocity file (experimental - work in progress).  Velocity matrix with the same dimensions as input file.
-* `--SAMPLELIMIT=`: This can be used to load fewer cells from your sample to save some computation time.
-* `--log`: If the feature file is npt .
-Note for all input files, you can append '.T' to transpose the matrix after loading.
+* `-f`: **Feature file**.   Gene x Sample / Cell expression matrix. Expect log-normalized values by default. Use `--log` argument if the input is not log-transformed.
+* `-i`: **Input file**. Sample/Cell x Dims matrix with headers. Dims can be genes, PCs or embedding dimensions. This file will be used for trajectory / clustering / projection analyses, and is typically a PCA transformed matrix, or scaled log expression matrix. If this file not provided we will compute from feature file - however it is highly recommended to provided input file that has been preprocessed (e.g. select highly variable genes, removing batch effect, cell cycle effect, standardize etc.).
+* `-a`: **Annotation file**. Annotations for visualization.
+* `-v`: **Velocity file (experimental - work in progress)**.  Velocity matrix with the same dimensions as input file.
+* `--SAMPLELIMIT=`: Integer. This can be used to load fewer cells from your sample to save some computation time.
+* `--log`: If specified, the feature file will transformed by log(1+count).
+* `--mode`: Should be one of 'graphdr', 'pca', or 'none', specify the transformation to apply to the input file matrix. If 'none', no transformation is applied.
+
+Tip: For all input files, you can append `.T` to the filename, so Trenti will transpose the matrix after loading.
 
 
 ### Brief instructions
-Most functionalities are probably self-explanatory and so I just try to mention some more high level or hidden poinys. Note that most of the functions are in the 'Advanced options' part that are hidden by default.
+Most functionalities are self-explanatory and so I just try to mention some more high level or hidden points. There are a lot more functionalities that can be accessed through 'Advanced options' that are hidden by default.
 
 **Basic visualization**
 
@@ -45,7 +47,7 @@ Visualization -> Check one of the KNN options
 
 **Projection**
 
-Dimensionality reductions. PCA or DRGraph (manuscript in preparation) are recommended for trajectory analysis.
+Dimensionality reductions. PCA or GraphDR are recommended for trajectory analysis.
 
 **Trajectory**
 
@@ -62,7 +64,6 @@ This shows local covariation of expression (only supports PCA projection mode no
 
 ## Tips:
 
-To save as image for presentation or publication:
+* To prepare figure for presentation or publication:
 Click on the 'Save' button on toolbar and it will bring up a windows that allows detailed adjustment to the figure. 
-
-Figure not large enough: You can check the "Fullscreen" checkbox to display it on the full page.
+* You can check the "Fullscreen" checkbox to display it on the full page.
