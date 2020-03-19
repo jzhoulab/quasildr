@@ -439,7 +439,7 @@ class Scms(object):
                 # prevent numerical overflow due to large exponentials
                 logc = -d * np.log(self.bw) - d / 2 * np.log(2 * np.pi)
             else:
-                warnings.warn("Warning: use unnormalized probablity.")
+                warnings.warn("Warning: use unnormalized probablity. This does not affect density ridge-related estimates.")
                 logc = 0
             C = np.exp(-1 / 2. * (D / self.bw) ** 2)
 
@@ -754,9 +754,10 @@ class Scms(object):
             raise ValueError('Run scms first before bootstrap!')
 
         if self.min_radius > 0:
-            warnings.warn('Boostrap with adaptive bandwidth may not satisfy the theoritical properties'
-                          ' proved in Chen et al. 2015, Ann. Statist.. Use min_radius=0 to be consistent '
-                          'with Chen et al. 2015 algorithm.')
+            warnings.warn('Boostrap with adaptive bandwidth (min_radius>0) preserves the '
+                          'adaptive bandwidth and confidence sets contructed should be '
+                          'interpreted as such. Use min_radius=0 to be consistent with '
+                          'Chen et al. 2015 algorithm.')
 
         self.bootstrap_distances_n = []
         self.bootstrap_distances_s = []
