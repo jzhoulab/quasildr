@@ -79,7 +79,7 @@ To use Trenti, you need to install additional dependencies:
 `pip install umap-learn dash==1.9.1 dash-colorscales networkx`
 
 See [./trenti/README.md](https://github.com/jzthree/quasildr/blob/master/trenti/README.md) for details. For a quick-start example, run
-` python ./trenti/app.py -i ./example/Dentate_Gyrus.data_pca.gz   -f ./example/Dentate_Gyrus.spliced_data.gz -a ./example/Dentate_Gyrus.anno.gz  --samplelimit=5000 --log --mode graphdr`
+` python ./trenti/app.py -i ./example/Dentate_Gyrus.data_pca.gz   -f ./example/Dentate_Gyrus.spliced_data.gz -a ./example/Dentate_Gyrus.anno.gz  --samplelimit=5000 --log --mode graphdr` then visit `localhost:8050` in your browser.
 
 ![Screenshot of Trenti](https://github.com/jzthree/quasildr/blob/master/docs/source/_static/Trenti.png "StructDR")
 
