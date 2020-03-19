@@ -15,7 +15,7 @@ setup(name="quasildr",
                    "omics data"),
       packages=find_packages(),
       url="https://github.com/jzthree/quasildr",
-      download_url="https://github.com/jzthree/quasildr/archive/v0.1.tar.gz",
+      download_url="https://github.com/jzthree/quasildr/archive/v0.1.1.tar.gz",
       package_data={
       },
       scripts=[

@@ -1,0 +1,1 @@
+rm structdr.perf.txt; for i in `find ./ -name '*perf.prune.txt'`;do cat $i |tail -n +2 >> structdr.perf.txt;done

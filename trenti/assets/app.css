@@ -142,7 +142,7 @@
   }
 }
 
-._dash-loading-callback {
+/*._dash-loading-callback {
   border: 16px solid #eeeeee;
   border-radius: 50%;
   border-top: 16px solid #3498db;
@@ -161,11 +161,12 @@
   display: flex;
   opacity: 0;
   background-colour: #ffffff;
-  -webkit-animation: fadein 1s linear forwards, spin 2s infinite linear; /* Safari and Chrome */
+  -webkit-animation: fadein 1s linear forwards, spin 2s infinite linear; / Safari and Chrome /
   animation: fadein 1s linear forwards, spin 2s infinite linear;
   animation-delay: 1s;
   -webkit-animation-delay: 1s;
-}
+}*/
+
 
 .colorscalePickerContainer {
   z-index: 2000 !important;
