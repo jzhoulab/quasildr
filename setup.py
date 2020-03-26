@@ -8,14 +8,14 @@ with open(os.path.join(os.path.dirname(__file__), "README.md"),
     long_description = readme.read()
 
 setup(name="quasildr",
-      version="0.1.1",
+      version="0.2.0",
       long_description=long_description,
       long_description_content_type='text/markdown',
       description=("quasilinear representation methods for single-cell"
                    "omics data"),
       packages=find_packages(),
       url="https://github.com/jzthree/quasildr",
-      download_url="https://github.com/jzthree/quasildr/archive/v0.1.1.tar.gz",
+      download_url="https://github.com/jzthree/quasildr/archive/v0.2.0.tar.gz",
       package_data={
       },
       scripts=[
