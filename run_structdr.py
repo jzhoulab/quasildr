@@ -56,7 +56,8 @@ parser.add_option("--batchsize", dest="batchsize", type="int", default=500,
                   help="Decreasing the batch size reduces memory consumption. Default is 500.")
 parser.add_option("--ridge_dimensionality", dest="ridge_dimensionality", type="float", default=1, help="ridge dim")
 parser.add_option("--bigdata", action="store_true", dest="bigdata",
-                  help="Speed up computation for big datasets with multilevel data represention.")
+                  help="Speed up computation for big datasets with multilevel data represention"
+                       " (Experimental feature).")
 parser.add_option("--n_jobs", dest="n_jobs", type="int", default=1, help="number of jobs")
 
 # extract backbones options
