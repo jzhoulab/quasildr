@@ -8,7 +8,7 @@ Usage:
     run_graphdr <input_file> [--max_dim=<max_dim>] [--anno_file=<anno_file>] [--anno_column=<anno_column>] 
   [--n_neighbors=<n_neighbors>] [--reg=<reg>] [--refine_iter=<refine_iter>] 
   [--refine_threshold=<refine_threshold>] [--method=<method>] [--metric=<metric>] 
-  [--no_rotation] [--rescale]  [--plot] [--pca|--lda]  [--log] [--transpose] [--scale] [--suffix=<suffix>]
+  [--no_rotation] [--rescale]  [--plot] [--pca|--lda]  [--log] [--transpose] [--scale] [--output=<output>] [--suffix=<suffix>]
 
 Options:
   -h --help                                 Show this screen.
@@ -30,6 +30,7 @@ Options:
   --log                                     Preprocess input with log(1+X) transform.
   --transpose                               Preprocess input by transposing the matrix.
   --scale                                   Preprocess input by scaling to unit variance.
+  --output=<output>                         Output file prefix, use input_file if not specified [default: ]
   --suffix=<suffix>                         Suffix append to output file name [default: ]
 
 """
@@ -48,6 +49,11 @@ from quasildr.graphdr import *
 if __name__ == '__main__':
     arguments = docopt(__doc__, version='0.01')
     print(arguments)
+    if arguments['--output'] != '':
+        output = arguments['--output']
+    else:
+        output = arguments['<input_file>']
+        
     DOCSTR = ".dim" + str(arguments['--max_dim']) + "_k" + str(arguments['--n_neighbors']) + \
         "_reg" + str(arguments['--reg']) +\
         "_n"+str(arguments['--refine_iter'])+ "t"+str(arguments['--refine_threshold']) + \
@@ -84,7 +90,7 @@ if __name__ == '__main__':
         refine_threshold=float(arguments['--refine_threshold']),no_rotation=arguments['--no_rotation'],
         rescale=arguments['--rescale'], method=arguments['--method'], metric=arguments['--metric'])
 
-    pd.DataFrame(Z).to_csv(arguments['<input_file>']+ DOCSTR + '.graphdr',
+    pd.DataFrame(Z).to_csv(output + DOCSTR + '.graphdr',
                 sep='\t', index_label=False)
 
     if arguments['--plot']:
@@ -98,6 +104,6 @@ if __name__ == '__main__':
                 df = pd.DataFrame({'x': Z[:, 0], 'y': Z[:, 1]})
                 p = ggplot(df, aes('x', 'y')) + geom_point(size=0.1) + theme_minimal()
 
-            p.save(arguments['<input_file>'] + DOCSTR + '.pdf')
+            p.save(output + DOCSTR + '.pdf')
         except ImportError:
             warnings.warn('plotnine needs to be installed for the plotting function.')
