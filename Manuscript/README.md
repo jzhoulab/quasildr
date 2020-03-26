@@ -8,6 +8,9 @@ There are additional dependencies you will need to install for running some of t
 python:
 - scanpy
 - bokeh
+- loompy
+- plotnine
+- plotly
 
 R:
 - tidyverse
