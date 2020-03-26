@@ -92,7 +92,7 @@ if opt.automatic_bw != 0:
 else:
     bw = opt.bw
 
-print(bw)
+print("bw: "+str(bw))
 if opt.anno_file != "":
     anno = pd.read_csv(opt.anno_file, sep='\t')
 
