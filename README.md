@@ -14,9 +14,9 @@ Run `pip install .` in this directory or use `pip install quasildr`.
 
 ## Quick Start
 
-For quick start, see tutorials under `./tutorials/` directory.
+For learning about the package, we recommend checking out the [**tutorials**](https://github.com/jzthree/quasildr/blob/master/tutorials). We provide them in both jupyter notebooks format (you may use nteract https://nteract.io/ to open them) or html files rendered from jupyter notebooks. The visualizations are large so Github does not allow preview, and you need to download it first. For various manuscript examples, checkout jupyter notebooks in the [**Manuscript**](https://github.com/jzthree/quasildr/blob/master/Manuscript) directory.
 
-An example python snippet that running these methods are below
+As a quickest possible introduction, a minimum example python snippet that running these methods are below
 
 ```python
 #GraphDR 
@@ -35,7 +35,7 @@ graphical interface for single-cell omics data analysis [Trenti](#graphical-inte
 
 
 ## Documentation
-See full documentation [here](https://quasildr.readthedocs.io/en/latest/main.html). For a high-level introduction to the features of two main methods in quasildr, GraphDR and StructDR (DR means Data Representation), see below:
+See full documentation [here](https://quasildr.readthedocs.io/en/latest/main.html). For a high-level introduction to two main methods in quasildr, GraphDR and StructDR (DR means Data Representation):
 
 ### GraphDR - visualization and general-purpose representation: 
 GraphDR is a nonlinear representation method 
@@ -57,9 +57,9 @@ by casting these problems as identifying 0-, 1-, and 2- dimensional density ridg
 ![Schematic overview of StructDR](https://github.com/jzthree/quasildr/blob/master/docs/source/_static/StructDR.png "StructDR")
 
 
-## Command-line tools 
+### Command-line tools 
 
-We provide command-line tools for quick access to most commonly used quasildr functions, with typical data preprocessing and post processing options built-in. You can add the `-h` option to access help information to each tool.
+We also provide command-line tools to run those methods without writing any code. Basic single-cell data preprocessing options are provided in `run_graphdr.py`, even though we generally recommend preprocessing single cell data with a dedicated package such as scanpy or Seurat to select highly variable genes and normalize before providing it to GraphDR. You can add the `-h` option to access help information to each tool.
 
 * run_graphdr.py
 ```
@@ -71,7 +71,7 @@ python run_graphdr.py ./example/Dentate_Gyrus.spliced_data.gz --pca --plot --log
 python run_structdr.py --bw 0.1 --automatic_bw 0 --input ./example/Dentate_Gyrus.spliced_data.gz.dim50_k10_reg500_n4t12_pca_no_rotation_log_scale_transpose.graphdr.small.gz  --anno_file ./example/Dentate_Gyrus.anno.small.gz --anno_column ClusterName  --output ./example/Dentate_Gyrus.spliced_data.gz.dim50_k10_reg500_n4t12_pca_no_rotation_log_scale_transpose.graphdr.small.gz
 ```
 
-## Graphical Interface - Trenti
+### Graphical Interface - Trenti
 
 We developed a web-based GUI, Trenti (Trajectory exploration interface), for single cell data visualization and exploratory analysis, supporting GraphDR, StructDR, common dimensionality reduction and clustering methods, and provide a 3D interface for visualization and a gene expression exploration interface. 
 
