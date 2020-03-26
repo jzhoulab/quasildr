@@ -63,12 +63,12 @@ We provide command-line tools for quick access to most commonly used quasildr fu
 
 * run_graphdr.py
 ```
-python run_graphdr.py ./example/Dentate_Gyrus.spliced_data.gz --pca --plot --log --transpose --max_dim 50 --refine_iter 4 --reg 500 --no_rotation --anno_file ./example/Dentate_Gyrus.anno.gz --anno_column ClusterName 
+python run_graphdr.py ./example/Dentate_Gyrus.spliced_data.gz --pca --plot --log --transpose --scale --max_dim 50 --refine_iter 4 --reg 500 --no_rotation --anno_file ./example/Dentate_Gyrus.anno.gz --anno_column ClusterName 
 ```
 
 * run_structdr.py
 ```
-python run_structdr.py --input ./example/Dentate_Gyrus.spliced_data.gz.dim50_k10_reg500_n4t12_pca_no_rotation_log_scale_transpose.drgraph --anno_file ./example/Dentate_Gyrus.anno.gz --anno_column ClusterName  --output ./example/Dentate_Gyrus.spliced_data.gz.dim50_k10_reg500_n4t12_pca_no_rotation_log_scale_transpose.drgraph
+python run_structdr.py --bw 0.1 --automatic_bw 0 --input ./example/Dentate_Gyrus.spliced_data.gz.dim50_k10_reg500_n4t12_pca_no_rotation_log_scale_transpose.graphdr.small.gz  --anno_file ./example/Dentate_Gyrus.anno.small.gz --anno_column ClusterName  --output ./example/Dentate_Gyrus.spliced_data.gz.dim50_k10_reg500_n4t12_pca_no_rotation_log_scale_transpose.graphdr.small.gz
 ```
 
 ## Graphical Interface - Trenti
