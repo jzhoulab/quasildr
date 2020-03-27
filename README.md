@@ -35,7 +35,7 @@ graphical interface for single-cell omics data analysis [Trenti](#graphical-inte
 
 
 ## Documentation
-See full documentation [here](https://quasildr.readthedocs.io/en/latest/main.html). For a high-level introduction to two main methods in quasildr, GraphDR and StructDR (DR means Data Representation):
+See full API documentation [here](https://quasildr.readthedocs.io/en/latest/main.html). For a high-level introduction to two main methods in quasildr, GraphDR and StructDR (DR means Data Representation):
 
 ### GraphDR - visualization and general-purpose representation: 
 GraphDR is a nonlinear representation method 
