@@ -7,6 +7,7 @@ Estimator-like interface to graphdr is also provided through the GraphDR class.
 import os
 
 from sklearn.neighbors import kneighbors_graph
+from sklearn.exceptions import NotFittedError
 from scipy.sparse import csgraph, csr_matrix
 import scipy
 import numpy as np
@@ -307,7 +308,7 @@ class GraphDR(BaseEstimator):
     ----------
     embedding_ : array, shape (n_samples, n_components)
     W_ : array, shape (n_features, n_components)
-        Left linear operator in the transformation Z = WXK. W_ is None when `no_rotation=True`.
+        Right linear operator in the transformation Z = KXW. W_ is None when `no_rotation=True`.
 """
 
     def __init__(
@@ -344,12 +345,13 @@ class GraphDR(BaseEstimator):
 
         self.W_ = None
         self.embedding_ = None
+        self.fitted = False
 
     def _validate_parameters(self):
         # TODO
         pass
 
-    def fit(self, X, y=None, custom_graph=None, init=None, refine_protected_graph=None):
+    def fit(self, X, y=None, custom_graph=None, refine_protected_graph=None):
         """Fit the model from data in X.
 
         Parameters
@@ -359,10 +361,6 @@ class GraphDR(BaseEstimator):
         y : Ignored
         custom_graph : sparse matrix, shape (n_samples, n_samples), optional
             If provided, use it instead of the graph constructed from X.
-        init : array, optional
-            Initialize output representation Z with this array if solved through
-            iterative solver. `init` is only used when `self.no_rotation=True`
-            and `self.method` is not `small`.
         refine_protected_graph : sparse matrix
 
         Returns
@@ -372,24 +370,26 @@ class GraphDR(BaseEstimator):
         """
         output = graphdr(X, n_neighbors=self.n_neighbors, regularization=self.regularization,
                          metric=self.metric, metric_params=self.metric_params,
-                         n_components=self.n_components, no_rotation=self.no_rotation, _lambda=self._lambda, init=init,
+                         n_components=self.n_components, no_rotation=self.no_rotation, _lambda=self._lambda,
                          custom_graph=custom_graph, rescale=self.rescale, symmetrize=self.symmetrize,
                          refine_iter=self.refine_iter, refine_threshold=self.refine_threshold,
                          _refine_threshold=self._refine_threshold, refine_protected_graph=refine_protected_graph,
-                         tol=self.tol, atol=self.atom, nmslib_params=self.nmslib_params, verbose=self.verbose,
+                         tol=self.tol, atol=self.atol, nmslib_params=self.nmslib_params, verbose=self.verbose,
                          n_jobs=self.n_jobs, n_jobs_nmslib=self.n_jobs_nmslib, use_cuda=self.use_cuda,
                          return_all=True)
 
         if self.no_rotation:
             Z, _ = output
+            self.W_ = None
         else:
             Z, W, _ = output
+            self.W_ = W
 
-        self.W_ = W
         self.embedding_ = Z
+        self.fitted = True
         return self
 
-    def fit_transform(self, X, y=None):
+    def fit_transform(self, X, y=None, custom_graph=None, refine_protected_graph=None):
         """Fit the model from data in X and transform X.
         Parameters
         ----------
@@ -401,9 +401,37 @@ class GraphDR(BaseEstimator):
         Z : array, shape (n_samples, n_components)
             Embedding of the input data.
         """
-        self.fit(X, y)
+        self.fit(X, y, custom_graph=custom_graph, refine_protected_graph=refine_protected_graph)
         return self.embedding_
 
+    def transform(self, X, y=None, custom_graph=None, refine_protected_graph=None):
+        """Apply fitted model to transform X.
+        Parameters
+        ----------
+        X : array, shape (n_samples, n_features)
+        y : Ignored
+
+        Returns
+        ---------
+        Z : array, shape (n_samples, n_components)
+            Embedding of the input data.
+        """
+        if not self.fitted:
+            raise NotFittedError('This GraphDR object has not been fitted yet.')
+
+        Z = graphdr(X, n_neighbors=self.n_neighbors, regularization=self.regularization,
+                         metric=self.metric, metric_params=self.metric_params,
+                         n_components=self.n_components, no_rotation=True, _lambda=self._lambda, 
+                         custom_graph=custom_graph, rescale=self.rescale, symmetrize=self.symmetrize,
+                         refine_iter=self.refine_iter, refine_threshold=self.refine_threshold,
+                         _refine_threshold=self._refine_threshold, refine_protected_graph=refine_protected_graph,
+                         tol=self.tol, atol=self.atol, nmslib_params=self.nmslib_params, verbose=self.verbose,
+                         n_jobs=self.n_jobs, n_jobs_nmslib=self.n_jobs_nmslib, use_cuda=self.use_cuda,
+                         return_all=False)
+                         
+        if self.W_ is not None:
+            Z = Z @ self.W_
+        return Z
 
 def graphdr(X, n_neighbors=10, regularization=100, n_components=None, no_rotation=False,
             metric='euclidean', metric_params={}, method='auto',
