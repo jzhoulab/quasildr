@@ -26,7 +26,7 @@ R:
 
 Most analyses are implemented in the format of jupyter notebooks with python and R backends. For rerunning benchmarks you will need to first run a series of bash scripts following the numerical order indicated in the file names. Note that some of the scripts contains a large number of commands that can be parallelized, so you can consider running them in parallel or submit to computer cluster. You may also load our precomputed benchmark results in the jupyter notebook.
 
-Here is a quick index of jupyter notebooks:
+Here is a quick index of jupyter notebooks (note that for pairs of notebooks with name patterns NAME.ipynb and NAME_plot.ipynb, NAME.ipynb need to be run first to generate the data for plotting):
 
 Figure 1: 
 - GraphDR_examples.ipynb
