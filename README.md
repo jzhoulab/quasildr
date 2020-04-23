@@ -9,7 +9,7 @@ data types as well.
 
 ## Install
 
-Run `pip install .` in this directory or use `pip install quasildr`.
+Run `git clone https://github.com/jzthree/quasildr.git; cd quasildr; pip install .` or use `pip install quasildr`.
 
 
 ## Quick Start
