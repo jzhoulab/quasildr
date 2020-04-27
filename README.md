@@ -9,7 +9,7 @@ data types as well.
 
 ## Install
 
-Run `git clone https://github.com/jzthree/quasildr.git; cd quasildr; pip install .` or use `pip install quasildr`.
+Run `conda install -c bioconda quasildr` or use `pip install quasildr`.
 
 
 ## Quick Start
