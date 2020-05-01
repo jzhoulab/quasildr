@@ -9,7 +9,8 @@ data types as well.
 
 ## Install
 
-Run `conda install -c main -c bioconda -c conda-forge quasildr` or use `pip install quasildr` or `git clone https://github.com/jzthree/quasildr;cd quasildr; python setup.py install`.
+Run `conda install -c main -c bioconda -c conda-forge quasildr` 
+or use `pip install quasildr`. You can also `git clone https://github.com/jzthree/quasildr; cd quasildr; python setup.py install`.
 
 
 ## Quick Start
