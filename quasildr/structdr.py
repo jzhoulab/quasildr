@@ -525,7 +525,7 @@ class Scms(object):
         ----------
         X : array
             2D array. Input data points.
-        method : str {'Gradient'|'GradientLogp'|'SuRF'|'LocInv'}, optional
+        method : str {'Gradient'|'GradientLogP'|'SuRF'|'LocInv'}, optional
             * Gradient
                 Projected gradient update based on Hessian of probability density function p.
                 Update is specified by projected gradient of p * step size.
