@@ -315,7 +315,7 @@ class GraphDR(BaseEstimator):
             self,
             n_neighbors=10, regularization=1000, n_components=None, no_rotation=False,
             metric='l2', metric_params={}, method='auto',
-            _lambda=None, symmetrize=True, rescale=True,
+            _lambda=None, symmetrize=True, rescale=False,
             refine_iter=0, refine_threshold=12, _refine_threshold=None,
             tol=1e-7, atol=1e-15, nmslib_params={'post': 2},
             n_jobs=1, n_jobs_nmslib=8, use_cuda=False, verbose=False):
