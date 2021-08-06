@@ -6,16 +6,16 @@ Estimator-like interface to graphdr is also provided through the GraphDR class.
 """
 import os
 
-from sklearn.neighbors import kneighbors_graph
-from sklearn.exceptions import NotFittedError
-from scipy.sparse import csgraph, csr_matrix
 import scipy
 import numpy as np
 
+from scipy.sparse import csgraph, csr_matrix
+from multiprocess import Pool
 from scipy.sparse import issparse
 from sklearn.decomposition import PCA
-from multiprocess import Pool
 from sklearn.base import BaseEstimator
+from sklearn.neighbors import kneighbors_graph
+from sklearn.exceptions import NotFittedError
 
 from .external import neighbors
 
