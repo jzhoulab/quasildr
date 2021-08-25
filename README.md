@@ -1,7 +1,7 @@
-## Quasilinear data representations for single-cell omics data analysis
+## An analytical framework for interpretable and generalizable single-cell data analysis
 
 Quasildr is a python library for quasilinear data representation methods. 
-It implements two methods, a quasilinear data representation or visualization 
+It implements two methods, a data representation or visualization 
 method **GraphDR** and a generalized trajectory extraction and inference method **StructDR** (StructDR is based on nonparametric ridge estimation). The Quasildr package is developed for 
 single-cell omics data analysis, but supports other 
 data types as well. The manuscript is available [**here**](https://www.biorxiv.org/content/10.1101/2020.04.12.022806v1).
