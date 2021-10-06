@@ -38,6 +38,10 @@ graphical interface for single-cell omics data analysis [Trenti](#graphical-inte
 ## Documentation
 See full API documentation [here](https://quasildr.readthedocs.io/en/latest/main.html). For a high-level introduction to two main methods in quasildr, GraphDR and StructDR (DR means Data Representation):
 
+## Update log
+v0.2.2 (10/05/2021): Update the Trenti graphical interface app to use Dash 2.0. Bug fixes for Trenti and speed improvement from Dash 2.0.0.
+Please update to Dash 2.0 if you will use Trenti. 
+
 ### GraphDR - visualization and general-purpose representation: 
 GraphDR is a nonlinear representation method 
 that preserves the interpretation of a corresponding linear space, while being able to well represent cell
@@ -77,7 +81,7 @@ python run_structdr.py --bw 0.1 --automatic_bw 0 --input ./example/Dentate_Gyrus
 We developed a web-based GUI, Trenti (Trajectory exploration interface), for single cell data visualization and exploratory analysis, supporting GraphDR, StructDR, common dimensionality reduction and clustering methods, and provide a 3D interface for visualization and a gene expression exploration interface. 
 
 To use Trenti, you need to install additional dependencies:
-`pip install umap-learn dash==1.9.1 dash-colorscales networkx`
+`pip install umap-learn dash==2.0.0 dash-colorscales networkx`
 
 See [./trenti/README.md](https://github.com/jzthree/quasildr/blob/master/trenti/README.md) for details. For a quick-start example, run
 ` python ./trenti/app.py -i ./example/Dentate_Gyrus.data_pca.gz   -f ./example/Dentate_Gyrus.spliced_data.gz -a ./example/Dentate_Gyrus.anno.gz  --samplelimit=5000 --log --mode graphdr` then visit `localhost:8050` in your browser.
