@@ -1,39 +1,43 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <title>quasildr.graphdr &mdash; Quasildr 0.1.0 documentation</title>
   
 
   
-  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
   
   
 
   
-  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/underscore.js"></script>
-        <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
 </head>
@@ -72,6 +76,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -94,6 +99,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -128,11 +134,13 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../../main.html">Docs</a> &raquo;</li>
+      <li><a href="../../main.html" class="icon icon-home"></a> &raquo;</li>
         
           <li><a href="../index.html">Module code</a> &raquo;</li>
         
@@ -160,15 +168,16 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">os</span>
 
-<span class="kn">from</span> <span class="nn">sklearn.neighbors</span> <span class="kn">import</span> <span class="n">kneighbors_graph</span>
-<span class="kn">from</span> <span class="nn">scipy.sparse</span> <span class="kn">import</span> <span class="n">csgraph</span><span class="p">,</span> <span class="n">csr_matrix</span>
 <span class="kn">import</span> <span class="nn">scipy</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
+<span class="kn">from</span> <span class="nn">scipy.sparse</span> <span class="kn">import</span> <span class="n">csgraph</span><span class="p">,</span> <span class="n">csr_matrix</span>
+<span class="kn">from</span> <span class="nn">multiprocess</span> <span class="kn">import</span> <span class="n">Pool</span>
 <span class="kn">from</span> <span class="nn">scipy.sparse</span> <span class="kn">import</span> <span class="n">issparse</span>
 <span class="kn">from</span> <span class="nn">sklearn.decomposition</span> <span class="kn">import</span> <span class="n">PCA</span>
-<span class="kn">from</span> <span class="nn">multiprocess</span> <span class="kn">import</span> <span class="n">Pool</span>
 <span class="kn">from</span> <span class="nn">sklearn.base</span> <span class="kn">import</span> <span class="n">BaseEstimator</span>
+<span class="kn">from</span> <span class="nn">sklearn.neighbors</span> <span class="kn">import</span> <span class="n">kneighbors_graph</span>
+<span class="kn">from</span> <span class="nn">sklearn.exceptions</span> <span class="kn">import</span> <span class="n">NotFittedError</span>
 
 <span class="kn">from</span> <span class="nn">.external</span> <span class="kn">import</span> <span class="n">neighbors</span>
 
@@ -461,14 +470,14 @@
 <span class="sd">    ----------</span>
 <span class="sd">    embedding_ : array, shape (n_samples, n_components)</span>
 <span class="sd">    W_ : array, shape (n_features, n_components)</span>
-<span class="sd">        Left linear operator in the transformation Z = WXK. W_ is None when `no_rotation=True`.</span>
+<span class="sd">        Right linear operator in the transformation Z = KXW. W_ is None when `no_rotation=True`.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">n_neighbors</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">regularization</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">n_components</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">no_rotation</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
             <span class="n">metric</span><span class="o">=</span><span class="s1">&#39;l2&#39;</span><span class="p">,</span> <span class="n">metric_params</span><span class="o">=</span><span class="p">{},</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span>
-            <span class="n">_lambda</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">symmetrize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">rescale</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">_lambda</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">symmetrize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">rescale</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
             <span class="n">refine_iter</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">refine_threshold</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">_refine_threshold</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
             <span class="n">tol</span><span class="o">=</span><span class="mf">1e-7</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-15</span><span class="p">,</span> <span class="n">nmslib_params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;post&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">},</span>
             <span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_jobs_nmslib</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">use_cuda</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -498,12 +507,13 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">W_</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fitted</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="k">def</span> <span class="nf">_validate_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># TODO</span>
         <span class="k">pass</span>
 
-<div class="viewcode-block" id="GraphDR.fit"><a class="viewcode-back" href="../../graphdr.html#quasildr.graphdr.GraphDR.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">custom_graph</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">refine_protected_graph</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="GraphDR.fit"><a class="viewcode-back" href="../../graphdr.html#quasildr.graphdr.GraphDR.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">custom_graph</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">refine_protected_graph</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Fit the model from data in X.</span>
 
 <span class="sd">        Parameters</span>
@@ -513,10 +523,6 @@
 <span class="sd">        y : Ignored</span>
 <span class="sd">        custom_graph : sparse matrix, shape (n_samples, n_samples), optional</span>
 <span class="sd">            If provided, use it instead of the graph constructed from X.</span>
-<span class="sd">        init : array, optional</span>
-<span class="sd">            Initialize output representation Z with this array if solved through</span>
-<span class="sd">            iterative solver. `init` is only used when `self.no_rotation=True`</span>
-<span class="sd">            and `self.method` is not `small`.</span>
 <span class="sd">        refine_protected_graph : sparse matrix</span>
 
 <span class="sd">        Returns</span>
@@ -526,24 +532,26 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">output</span> <span class="o">=</span> <span class="n">graphdr</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">n_neighbors</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_neighbors</span><span class="p">,</span> <span class="n">regularization</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">regularization</span><span class="p">,</span>
                          <span class="n">metric</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metric</span><span class="p">,</span> <span class="n">metric_params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metric_params</span><span class="p">,</span>
-                         <span class="n">n_components</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">,</span> <span class="n">no_rotation</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">no_rotation</span><span class="p">,</span> <span class="n">_lambda</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_lambda</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="n">init</span><span class="p">,</span>
+                         <span class="n">n_components</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">,</span> <span class="n">no_rotation</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">no_rotation</span><span class="p">,</span> <span class="n">_lambda</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_lambda</span><span class="p">,</span>
                          <span class="n">custom_graph</span><span class="o">=</span><span class="n">custom_graph</span><span class="p">,</span> <span class="n">rescale</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">rescale</span><span class="p">,</span> <span class="n">symmetrize</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">symmetrize</span><span class="p">,</span>
                          <span class="n">refine_iter</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">refine_iter</span><span class="p">,</span> <span class="n">refine_threshold</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">refine_threshold</span><span class="p">,</span>
                          <span class="n">_refine_threshold</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_refine_threshold</span><span class="p">,</span> <span class="n">refine_protected_graph</span><span class="o">=</span><span class="n">refine_protected_graph</span><span class="p">,</span>
-                         <span class="n">tol</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tol</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">atom</span><span class="p">,</span> <span class="n">nmslib_params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">nmslib_params</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">,</span>
+                         <span class="n">tol</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tol</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">atol</span><span class="p">,</span> <span class="n">nmslib_params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">nmslib_params</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">,</span>
                          <span class="n">n_jobs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_jobs</span><span class="p">,</span> <span class="n">n_jobs_nmslib</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_jobs_nmslib</span><span class="p">,</span> <span class="n">use_cuda</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">use_cuda</span><span class="p">,</span>
                          <span class="n">return_all</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">no_rotation</span><span class="p">:</span>
             <span class="n">Z</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">output</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">W_</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">Z</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">output</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">W_</span> <span class="o">=</span> <span class="n">W</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">W_</span> <span class="o">=</span> <span class="n">W</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span> <span class="o">=</span> <span class="n">Z</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fitted</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
-<div class="viewcode-block" id="GraphDR.fit_transform"><a class="viewcode-back" href="../../graphdr.html#quasildr.graphdr.GraphDR.fit_transform">[docs]</a>    <span class="k">def</span> <span class="nf">fit_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="GraphDR.fit_transform"><a class="viewcode-back" href="../../graphdr.html#quasildr.graphdr.GraphDR.fit_transform">[docs]</a>    <span class="k">def</span> <span class="nf">fit_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">custom_graph</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">refine_protected_graph</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Fit the model from data in X and transform X.</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -555,9 +563,37 @@
 <span class="sd">        Z : array, shape (n_samples, n_components)</span>
 <span class="sd">            Embedding of the input data.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">custom_graph</span><span class="o">=</span><span class="n">custom_graph</span><span class="p">,</span> <span class="n">refine_protected_graph</span><span class="o">=</span><span class="n">refine_protected_graph</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_</span></div>
 
+<div class="viewcode-block" id="GraphDR.transform"><a class="viewcode-back" href="../../graphdr.html#quasildr.graphdr.GraphDR.transform">[docs]</a>    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">custom_graph</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">refine_protected_graph</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Apply fitted model to transform X.</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X : array, shape (n_samples, n_features)</span>
+<span class="sd">        y : Ignored</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        ---------</span>
+<span class="sd">        Z : array, shape (n_samples, n_components)</span>
+<span class="sd">            Embedding of the input data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">fitted</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">NotFittedError</span><span class="p">(</span><span class="s1">&#39;This GraphDR object has not been fitted yet.&#39;</span><span class="p">)</span>
+
+        <span class="n">Z</span> <span class="o">=</span> <span class="n">graphdr</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">n_neighbors</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_neighbors</span><span class="p">,</span> <span class="n">regularization</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">regularization</span><span class="p">,</span>
+                         <span class="n">metric</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metric</span><span class="p">,</span> <span class="n">metric_params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metric_params</span><span class="p">,</span>
+                         <span class="n">n_components</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">,</span> <span class="n">no_rotation</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">_lambda</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_lambda</span><span class="p">,</span> 
+                         <span class="n">custom_graph</span><span class="o">=</span><span class="n">custom_graph</span><span class="p">,</span> <span class="n">rescale</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">rescale</span><span class="p">,</span> <span class="n">symmetrize</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">symmetrize</span><span class="p">,</span>
+                         <span class="n">refine_iter</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">refine_iter</span><span class="p">,</span> <span class="n">refine_threshold</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">refine_threshold</span><span class="p">,</span>
+                         <span class="n">_refine_threshold</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_refine_threshold</span><span class="p">,</span> <span class="n">refine_protected_graph</span><span class="o">=</span><span class="n">refine_protected_graph</span><span class="p">,</span>
+                         <span class="n">tol</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tol</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">atol</span><span class="p">,</span> <span class="n">nmslib_params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">nmslib_params</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">,</span>
+                         <span class="n">n_jobs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_jobs</span><span class="p">,</span> <span class="n">n_jobs_nmslib</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_jobs_nmslib</span><span class="p">,</span> <span class="n">use_cuda</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">use_cuda</span><span class="p">,</span>
+                         <span class="n">return_all</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                         
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">W_</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">Z</span> <span class="o">=</span> <span class="n">Z</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">W_</span>
+        <span class="k">return</span> <span class="n">Z</span></div></div>
 
 <div class="viewcode-block" id="graphdr"><a class="viewcode-back" href="../../graphdr.html#quasildr.graphdr.graphdr">[docs]</a><span class="k">def</span> <span class="nf">graphdr</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">n_neighbors</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">regularization</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">n_components</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">no_rotation</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
             <span class="n">metric</span><span class="o">=</span><span class="s1">&#39;euclidean&#39;</span><span class="p">,</span> <span class="n">metric_params</span><span class="o">=</span><span class="p">{},</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span>
@@ -955,20 +991,25 @@
            
           </div>
           <footer>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, Jian Zhou
+        &#169; Copyright 2019, Jian Zhou.
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 
@@ -976,7 +1017,6 @@
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {
