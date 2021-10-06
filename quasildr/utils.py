@@ -14,7 +14,7 @@ from sklearn.neighbors import NearestNeighbors
 
 from .external import neighbors
 
-def locCov(data, query, bw, shrinkage = False):
+def locCov(data, query, bw, min_radius=0, shrinkage = False, cov_data=None):
     """
     Computes Local Covariance matrices. Data points were weighted with a Gaussian kernel centered at
     the query point
@@ -22,37 +22,49 @@ def locCov(data, query, bw, shrinkage = False):
     Parameters
     ----------
     data : 2D array
-        Array containing data points of shape (N, p).
+        Array containing data points of shape (N, p)
     query :  2D array
-        Array containing  the query point of shape (1, p)
+        Array containing the query point of shape (1, p)
     bw : float
         Gaussian kernel bandwidth
+    min_radius : float, optional
+        If specified, clip the bandwidth to the min_radius-th nearest neighbor.
     shrinkage : bool, optional
         Apply OAS shrinkage for computing local covariance. Default is False.
+    cov_data : 2D array, optional
+        Array containing data points of shape (N, p), if specified will replace `data` for covariance
+        calculations, while `data` is still used to define the local neighborhood.
+        
     """
     D = cdist(data, query) # n x 1
+    if min_radius!=0:
+        bw = np.maximum(bw, np.sort(D,axis=0)[min_radius])
     w = np.exp( - 0.5 * (D / bw)**2) # n x 1
 
     #C = np.cov(data.T,ddof=1,aweights=w.flatten())
-    mu = (np.sum(data * w,axis=0)/np.sum(w))[np.newaxis,:] #1 x p
+    if cov_data is not None:
+        assert data.shape[0]==cov_data.shape[0]
+    else:
+        cov_data = data
+    mu = (np.sum(cov_data * w,axis=0)/np.sum(w))[np.newaxis,:] #1 x p
 
-    X = data - mu
+    X = cov_data - mu
     C = np.dot((X*w).T, X)
     effective_N  = np.sum(w)**2/np.sum(w**2)
     C = C / (np.sum(w)*(1-1/effective_N))
     if shrinkage:
         #Apply OAS with sample size replaced by effective_N
-        mu = np.trace(C) / data.shape[1]
+        mu = np.trace(C) / cov_data.shape[1]
 
         # formula from Chen et al.'s **implementation**
         alpha = np.mean(C ** 2)
         num = alpha + mu ** 2
-        den = (effective_N + 1.) * (alpha - (mu ** 2) /  data.shape[1])
+        den = (effective_N + 1.) * (alpha - (mu ** 2) /  cov_data.shape[1])
 
         shrinkage = 1. if den == 0 else min(num / den, 1.)
         print(shrinkage)
         C = (1. - shrinkage) * C
-        C.flat[::data.shape[1] + 1] += shrinkage * mu
+        C.flat[::cov_data.shape[1] + 1] += shrinkage * mu
 
     return C, effective_N
 

@@ -29,14 +29,14 @@ from functools import reduce
 
 import dash
 import dash_colorscales
-import dash_core_components as dcc
-import dash_html_components as html
+
 import multiprocess
 import networkx as nx
 import numpy as np
 import pandas as pd
 import plotly.graph_objs as go
 import umap
+from dash import dcc, html
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
 from docopt import docopt
@@ -78,7 +78,7 @@ if __name__ == "__main__":
     MAX_PCS = 100
     DEFAULT_PCS = 30
     DEFAULT_DR_K = 10
-    DEFAULT_DR_LAMBDA = 10
+    DEFAULT_DR_REG = 100
     COLORPATTERN = re.compile("^#[0-9,A-F,a-f][0-9,A-F,a-f][0-9,A-F,a-f][0-9,A-F,a-f][0-9,A-F,a-f][0-9,A-F,a-f]$")
     ITERATIONS = [1, 5, 10, 20, 40, 80, 160]
     BATCHSIZE = 500
@@ -194,7 +194,7 @@ if __name__ == "__main__":
         if arguments['--mode'] == 'pca':
             projection_mode = 'pca'
         elif arguments['--mode'] == 'graphdr':
-            mapped = graphdr(data.values[:, :DEFAULT_PCS], n_neighbors=DEFAULT_DR_K, regularization=DEFAULT_DR_LAMBDA)
+            mapped = graphdr(data.values[:, :DEFAULT_PCS], n_neighbors=DEFAULT_DR_K, regularization=DEFAULT_DR_REG)
             data = pd.DataFrame(mapped, index=data.index,
                                 columns=['GraphDR' + str(i) for i in range(1, mapped.shape[1] + 1)])
             projection_mode = 'graphdr'
@@ -769,7 +769,7 @@ if __name__ == "__main__":
                                                   'value': 'show_values'},
                                                  {'label': 'Diagnonal',
                                                   'value': 'show_diagonal'}],
-                                             value=['show_diagonal', 'show_values'],
+                                             value=['show_legend', 'show_values'],
                                              labelStyle={},
                                              id='heatmap_checklist',
                                          ),
@@ -913,7 +913,7 @@ if __name__ == "__main__":
                                                           for i in
                                                           [0.1, 0.2, 0.5, 1.0, 2.0, 5.0, 10.0, 20.0, 50.0, 100.0]
                                                       ],
-                                                      value=DEFAULT_DR_LAMBDA,
+                                                      value=DEFAULT_DR_REG,
                                                       clearable=False,
                                                   ), ]),
                                      html.Label('Post processing (Visualize trajectory):',
@@ -1032,6 +1032,7 @@ if __name__ == "__main__":
                                                     y=traj.iloc[:, 1],
                                                     z=traj.iloc[:, 2],
                                                     mode='markers',
+                                                    customdata=traj.index,
                                                     marker=dict(
                                                         size=np.maximum(6 - np.log10(data.shape[0]), 1),
                                                         color=traj.iloc[:, 0],
@@ -2322,6 +2323,7 @@ if __name__ == "__main__":
                                 x=datax[~valid_inds],
                                 y=datay[~valid_inds],
                                 z=dataz[~valid_inds],
+                                customdata=traj.index[~valid_inds],
                                 mode='markers',
                                 marker=dict(
                                     size=dotsize,
@@ -2558,6 +2560,7 @@ if __name__ == "__main__":
                 y=datay,
                 z=dataz,
                 mode='markers',
+                customdata=traj.index,
                 marker=dict(
                     size=dotsize,
                     color=c,
@@ -2662,7 +2665,7 @@ if __name__ == "__main__":
                          logp_trace + eigengap_trace + segment_traces + order_trace + \
                          knn_traces + annotation_trace + selected_trace + isomap_trace + annotation_label_trace
 
-        if 'scene' not in figure['layout']:
+        if 'scene' not in figure['layout'] or 'xaxis' not in figure['layout']['scene']:
             figure['layout']['scene']=dict(xaxis= go.layout.XAxis(title='x | Dim ' + str(dimx+1)),
                 yaxis= go.layout.XAxis(title='y | Dim ' + str(dimy+1)),
                 zaxis= go.layout.XAxis(title='z | Dim ' + str(dimz+1)),
@@ -2985,6 +2988,7 @@ if __name__ == "__main__":
     def cluster_network(clickData, figure, show_options_value, heatmap_precision_options, heatmap_reference_options,
                         heatmap_checklist_value, networkgenes, bw, min_radius, n_pcs):
         global order_inds
+        global effective_N
         if show_options_value == 'show_network_options':
             gene_is = [network_data.index.get_loc(gene) for gene in networkgenes]
 
@@ -3043,7 +3047,10 @@ if __name__ == "__main__":
         [Input('coexp_heatmap', 'figure')]
     )
     def update_effective_n(dummy):
-        return 'Effective sample size: ' + '{: .2f}'.format(effective_N)
+        try:
+            return 'Effective sample size: ' + '{: .2f}'.format(effective_N)
+        except:
+            return ''
 
 
     @app.callback(
@@ -3557,7 +3564,7 @@ if __name__ == "__main__":
                         for i in
                         [0.1, 0.2, 0.5, 1.0, 2.0, 5.0, 10.0, 20.0, 50.0, 100.0, 500.0, 1000.0, 10000.0, 100000.0]
                     ],
-                    value=DEFAULT_DR_LAMBDA,
+                    value=DEFAULT_DR_REG,
                     clearable=False,
                 ),
             ], style={'display': 'block' if dr_method in ['graphdr'] else 'none'}),
