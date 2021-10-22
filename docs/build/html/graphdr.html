@@ -1,39 +1,43 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <title>quasildr.graphdr &mdash; Quasildr 0.1.0 documentation</title>
   
 
   
-  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
   
   
 
   
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="quasildr.structdr" href="structdr.html" />
@@ -74,6 +78,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -96,6 +101,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -130,18 +136,20 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="main.html">Docs</a> &raquo;</li>
+      <li><a href="main.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>quasildr.graphdr</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
             <a href="_sources/graphdr.rst.txt" rel="nofollow"> View page source</a>
           
         
@@ -160,7 +168,7 @@
 <p>This module implements the quaslinear representation method GraphDR and relevant
 functions. The method is implemented in the graphdr function. A scikit-learn
 Estimator-like interface to graphdr is also provided through the GraphDR class.</p>
-<p><strong>Classes</strong></p>
+<p><strong>Classes:</strong></p>
 <table class="longtable docutils align-default">
 <colgroup>
 <col style="width: 10%" />
@@ -172,7 +180,7 @@ Estimator-like interface to graphdr is also provided through the GraphDR class.<
 </tr>
 </tbody>
 </table>
-<p><strong>Functions</strong></p>
+<p><strong>Functions:</strong></p>
 <table class="longtable docutils align-default">
 <colgroup>
 <col style="width: 10%" />
@@ -192,7 +200,7 @@ Estimator-like interface to graphdr is also provided through the GraphDR class.<
 </table>
 <dl class="class">
 <dt id="quasildr.graphdr.GraphDR">
-<em class="property">class </em><code class="sig-prename descclassname">quasildr.graphdr.</code><code class="sig-name descname">GraphDR</code><span class="sig-paren">(</span><em class="sig-param">n_neighbors=10</em>, <em class="sig-param">regularization=1000</em>, <em class="sig-param">n_components=None</em>, <em class="sig-param">no_rotation=False</em>, <em class="sig-param">metric='l2'</em>, <em class="sig-param">metric_params={}</em>, <em class="sig-param">method='auto'</em>, <em class="sig-param">_lambda=None</em>, <em class="sig-param">symmetrize=True</em>, <em class="sig-param">rescale=True</em>, <em class="sig-param">refine_iter=0</em>, <em class="sig-param">refine_threshold=12</em>, <em class="sig-param">_refine_threshold=None</em>, <em class="sig-param">tol=1e-07</em>, <em class="sig-param">atol=1e-15</em>, <em class="sig-param">nmslib_params={'post': 2}</em>, <em class="sig-param">n_jobs=1</em>, <em class="sig-param">n_jobs_nmslib=8</em>, <em class="sig-param">use_cuda=False</em>, <em class="sig-param">verbose=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/quasildr/graphdr.html#GraphDR"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#quasildr.graphdr.GraphDR" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">quasildr.graphdr.</code><code class="sig-name descname">GraphDR</code><span class="sig-paren">(</span><em class="sig-param">n_neighbors=10</em>, <em class="sig-param">regularization=1000</em>, <em class="sig-param">n_components=None</em>, <em class="sig-param">no_rotation=False</em>, <em class="sig-param">metric='l2'</em>, <em class="sig-param">metric_params={}</em>, <em class="sig-param">method='auto'</em>, <em class="sig-param">_lambda=None</em>, <em class="sig-param">symmetrize=True</em>, <em class="sig-param">rescale=False</em>, <em class="sig-param">refine_iter=0</em>, <em class="sig-param">refine_threshold=12</em>, <em class="sig-param">_refine_threshold=None</em>, <em class="sig-param">tol=1e-07</em>, <em class="sig-param">atol=1e-15</em>, <em class="sig-param">nmslib_params={'post': 2}</em>, <em class="sig-param">n_jobs=1</em>, <em class="sig-param">n_jobs_nmslib=8</em>, <em class="sig-param">use_cuda=False</em>, <em class="sig-param">verbose=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/quasildr/graphdr.html#GraphDR"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#quasildr.graphdr.GraphDR" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.base.BaseEstimator</span></code></p>
 <p>Quasilinear data representation that preserves interpretability of a
 linear space.</p>
@@ -363,21 +371,6 @@ and a CUDA-enabled GPU is required. Default is <cite>False</cite>.</p></li>
 </ul>
 </dd>
 </dl>
-<p><strong>Methods</strong></p>
-<table class="longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#quasildr.graphdr.GraphDR.fit" title="quasildr.graphdr.GraphDR.fit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit</span></code></a>(X[, y, custom_graph, init, …])</p></td>
-<td><p>Fit the model from data in X.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#quasildr.graphdr.GraphDR.fit_transform" title="quasildr.graphdr.GraphDR.fit_transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit_transform</span></code></a>(X[, y])</p></td>
-<td><p>Fit the model from data in X and transform X.</p></td>
-</tr>
-</tbody>
-</table>
 <dl class="attribute">
 <dt id="quasildr.graphdr.GraphDR.embedding_">
 <code class="sig-name descname">embedding_</code><a class="headerlink" href="#quasildr.graphdr.GraphDR.embedding_" title="Permalink to this definition">¶</a></dt>
@@ -391,7 +384,7 @@ and a CUDA-enabled GPU is required. Default is <cite>False</cite>.</p></li>
 <dl class="attribute">
 <dt id="quasildr.graphdr.GraphDR.W_">
 <code class="sig-name descname">W_</code><a class="headerlink" href="#quasildr.graphdr.GraphDR.W_" title="Permalink to this definition">¶</a></dt>
-<dd><p>Left linear operator in the transformation Z = WXK. <a href="#id1"><span class="problematic" id="id2">W_</span></a> is None when <cite>no_rotation=True</cite>.</p>
+<dd><p>Right linear operator in the transformation Z = KXW. <a href="#id1"><span class="problematic" id="id2">W_</span></a> is None when <cite>no_rotation=True</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>array, shape (n_features, n_components)</p>
@@ -399,9 +392,27 @@ and a CUDA-enabled GPU is required. Default is <cite>False</cite>.</p></li>
 </dl>
 </dd></dl>
 
+<p><strong>Methods:</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#quasildr.graphdr.GraphDR.fit" title="quasildr.graphdr.GraphDR.fit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit</span></code></a>(X[, y, custom_graph, refine_protected_graph])</p></td>
+<td><p>Fit the model from data in X.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#quasildr.graphdr.GraphDR.fit_transform" title="quasildr.graphdr.GraphDR.fit_transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit_transform</span></code></a>(X[, y, custom_graph, …])</p></td>
+<td><p>Fit the model from data in X and transform X.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#quasildr.graphdr.GraphDR.transform" title="quasildr.graphdr.GraphDR.transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">transform</span></code></a>(X[, y, custom_graph, …])</p></td>
+<td><p>Apply fitted model to transform X.</p></td>
+</tr>
+</tbody>
+</table>
 <dl class="method">
 <dt id="quasildr.graphdr.GraphDR.fit">
-<code class="sig-name descname">fit</code><span class="sig-paren">(</span><em class="sig-param">X</em>, <em class="sig-param">y=None</em>, <em class="sig-param">custom_graph=None</em>, <em class="sig-param">init=None</em>, <em class="sig-param">refine_protected_graph=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/quasildr/graphdr.html#GraphDR.fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#quasildr.graphdr.GraphDR.fit" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">fit</code><span class="sig-paren">(</span><em class="sig-param">X</em>, <em class="sig-param">y=None</em>, <em class="sig-param">custom_graph=None</em>, <em class="sig-param">refine_protected_graph=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/quasildr/graphdr.html#GraphDR.fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#quasildr.graphdr.GraphDR.fit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fit the model from data in X.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -409,9 +420,6 @@ and a CUDA-enabled GPU is required. Default is <cite>False</cite>.</p></li>
 <li><p><strong>X</strong> (<em>array</em><em>, </em><em>shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em><em></em>) – X may be a sparse matrix. If self.skip_pca is true, X must be orthogonal.</p></li>
 <li><p><strong>y</strong> (<em>Ignored</em>) – </p></li>
 <li><p><strong>custom_graph</strong> (<em>sparse matrix</em><em>, </em><em>shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_samples</em><em>)</em><em>, </em><em>optional</em>) – If provided, use it instead of the graph constructed from X.</p></li>
-<li><p><strong>init</strong> (<em>array</em><em>, </em><em>optional</em>) – Initialize output representation Z with this array if solved through
-iterative solver. <cite>init</cite> is only used when <cite>self.no_rotation=True</cite>
-and <cite>self.method</cite> is not <cite>small</cite>.</p></li>
 <li><p><strong>refine_protected_graph</strong> (<em>sparse matrix</em>) – </p></li>
 </ul>
 </dd>
@@ -426,8 +434,26 @@ and <cite>self.method</cite> is not <cite>small</cite>.</p></li>
 
 <dl class="method">
 <dt id="quasildr.graphdr.GraphDR.fit_transform">
-<code class="sig-name descname">fit_transform</code><span class="sig-paren">(</span><em class="sig-param">X</em>, <em class="sig-param">y=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/quasildr/graphdr.html#GraphDR.fit_transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#quasildr.graphdr.GraphDR.fit_transform" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">fit_transform</code><span class="sig-paren">(</span><em class="sig-param">X</em>, <em class="sig-param">y=None</em>, <em class="sig-param">custom_graph=None</em>, <em class="sig-param">refine_protected_graph=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/quasildr/graphdr.html#GraphDR.fit_transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#quasildr.graphdr.GraphDR.fit_transform" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fit the model from data in X and transform X.
+:param X:
+:type X: array, shape (n_samples, n_features)
+:param y:
+:type y: Ignored</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>Z</strong> – Embedding of the input data.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>array, shape (n_samples, n_components)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="quasildr.graphdr.GraphDR.transform">
+<code class="sig-name descname">transform</code><span class="sig-paren">(</span><em class="sig-param">X</em>, <em class="sig-param">y=None</em>, <em class="sig-param">custom_graph=None</em>, <em class="sig-param">refine_protected_graph=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/quasildr/graphdr.html#GraphDR.transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#quasildr.graphdr.GraphDR.transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply fitted model to transform X.
 :param X:
 :type X: array, shape (n_samples, n_features)
 :param y:
@@ -731,29 +757,29 @@ See <a class="reference external" href="https://github.com/nmslib/nmslib/blob/ma
            
           </div>
           <footer>
-  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="structdr.html" class="btn btn-neutral float-right" title="quasildr.structdr" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="Tutorials.html" class="btn btn-neutral float-left" title="Tutorials" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+        <a href="structdr.html" class="btn btn-neutral float-right" title="quasildr.structdr" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="Tutorials.html" class="btn btn-neutral float-left" title="Tutorials" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, Jian Zhou
+        &#169; Copyright 2019, Jian Zhou.
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 
@@ -761,7 +787,6 @@ See <a class="reference external" href="https://github.com/nmslib/nmslib/blob/ma
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {
