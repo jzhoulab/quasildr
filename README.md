@@ -21,11 +21,11 @@ As a quickest possible introduction, a minimum example python snippet that runni
 
 ```python
 #GraphDR 
-import quasildr.graphdr import graphdr
+from quasildr.graphdr import graphdr
 Z = graphdr(X_pca, regularization=500)
 
 #StructDR
-import quasildr.structdr import Scms
+from quasildr.structdr import Scms
 Z = Z / Z[:,0].std()
 s = Scms(Z, bw=0.1, min_radius = 10)
 T = s.scms(Z)
