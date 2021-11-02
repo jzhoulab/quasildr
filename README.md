@@ -89,3 +89,5 @@ See [./trenti/README.md](https://github.com/jzthree/quasildr/blob/master/trenti/
 
 ![Screenshot of Trenti](https://github.com/jzthree/quasildr/blob/master/docs/source/_static/Trenti.png "StructDR")
 
+Note: even though Trenti is a web interface, it is meant to be used as a single user application because multiple users's actions can interfere with each other.
+
