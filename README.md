@@ -34,13 +34,14 @@ T = s.scms(Z)
 If you are analyzing single-cell data, you may consider using our 
 graphical interface for single-cell omics data analysis [Trenti](#graphical-interface).
 
+## Update log
+v0.2.2 (10/05/2021): Update the Trenti graphical interface app to use Dash 2.0. Bug fixes for Trenti and speed improvement from Dash 2.0.0.
+Please update to Dash 2.0 if you will use Trenti. 
+
 
 ## Documentation
 See full API documentation [here](https://quasildr.readthedocs.io/en/latest/main.html). For a high-level introduction to two main methods in quasildr, GraphDR and StructDR (DR means Data Representation):
 
-## Update log
-v0.2.2 (10/05/2021): Update the Trenti graphical interface app to use Dash 2.0. Bug fixes for Trenti and speed improvement from Dash 2.0.0.
-Please update to Dash 2.0 if you will use Trenti. 
 
 ### GraphDR - visualization and general-purpose representation: 
 GraphDR is a nonlinear representation method 
