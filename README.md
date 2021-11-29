@@ -53,6 +53,11 @@ that preserves the interpretation of a corresponding linear space, while being a
  can easily scale to even larger datasets.
 ![Schematic overview of GraphDR](https://github.com/jzthree/quasildr/blob/master/docs/source/_static/GraphDR.png "GraphDR")
 
+Quick tips for GraphDR usage:
+- Use `no_rotation=True` to not apply any rotation to the feature (e.g. gene or PC) dimension. This makes the output directly comparable with the input. For example, you can use it with PCA input so that the output preserves the interpretion of the PC dimensions, or you can use it directly with gene x cell input to keep the ability to apply any linear transformation later (you may still want to construct graph with PCs and provide graphdr with the custom graph - see below).
+- Selection of `regularization` parameter controls the amount of global shrinkage toward neighbors in graph. With lower regularization parameters, the output will be closer to a linear transformation. Higher regularization parameter applies more shrinkage and while the visualization is usually robust to high values of regularization, very high regularization can shrink all the values toward its center of mass (if you apply it to PCA transformed input, you will observe more shrinkage in higher PCs, which is in fact an expected and desired outcome). You should be mindful of this effect if you intend to compare input with output numerically (it usually does not matter for visualization purpose), and we provide a `rescale` to adjust the scale of the output to be more comparable to the input.
+- You can finetune the visualization by controlling the pruning of some of the edges in the graph which is off by default. Checkout documentations about `refine_iter` and `refine_threshold`.
+ 
 ### StructDR - flexible structure extraction and inference of confidence sets: 
 StructDR is based on nonparametric density ridge estimation (NRE). StructDR is a flexible framework 
 for structure extraction for single-cell data that unifies cluster, trajectory, and surface estimation 
