@@ -9,8 +9,7 @@ data types as well. The manuscript is available [**here**](https://www.nature.co
 
 ## Install
 
-You can install with `conda install -c main -c conda-forge -c bioconda quasildr`
-or with `pip install quasildr`. You can also clone the respository and install with `git clone https://github.com/jzthree/quasildr; cd quasildr; python setup.py install`.
+You can install with `pip install quasildr` (or  with `conda install -c main -c conda-forge -c bioconda quasildr`). You can also clone the respository and install with `git clone https://github.com/jzthree/quasildr; cd quasildr; python setup.py install`.
 
 
 ## Quick Start
