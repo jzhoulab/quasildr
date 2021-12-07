@@ -21,7 +21,7 @@ As a quickest possible introduction, a minimum example python snippet that runni
 ```python
 #GraphDR 
 from quasildr.graphdr import graphdr
-Z = graphdr(X_pca, regularization=500)
+Z = graphdr(X_pca, regularization=500, no_rotation=True)
 
 #StructDR
 from quasildr.structdr import Scms
