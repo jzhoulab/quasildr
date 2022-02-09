@@ -313,7 +313,7 @@ class GraphDR(BaseEstimator):
 
     def __init__(
             self,
-            n_neighbors=10, regularization=1000, n_components=None, no_rotation=False,
+            n_neighbors=10, regularization=100, n_components=None, no_rotation=False,
             metric='l2', metric_params={}, method='auto',
             _lambda=None, symmetrize=True, rescale=False,
             refine_iter=0, refine_threshold=12, _refine_threshold=None,
