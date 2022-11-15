@@ -326,7 +326,7 @@ def extract_segments(edge_list, degree):
     Returns
     -------
     segments : list
-        Partitioned segments represented by a list in which each item is a list containing indices in a segments.
+        Partitioned segments represented by a list in which each item is a list containing indices in a segment.
     """
     terminals = np.where((degree != 2) * (degree != 0))[0].tolist()
     edge_dict = {}
@@ -399,13 +399,20 @@ def make_trajectory(t, output_prefix=None, prune_threshold=3):
     Construct MST, prune minor branches, and segment.
 
     Parameters
-    ----------
-    t
-    output_prefix
-    prune_threshold
-
+    -----------
+    t : 2D array
+        Density ridge positions. Typically projected to density ridges with quasildr.dridge.Scms.
+    output_prefix : str
+        Prefix to output file name.
+    prune_threshold : int
+        Branched smaller than this length will be removed. Default is 3. 
+        
     Returns
-    -------
+    -----------
+    segments : list
+        Partitioned segments represented by a list in which each item is a list containing indices in a segment.
+    edge_list : 2D array
+        Edge list of the pruned minimum spanning tree
 
     """
     # initialize trajectory with MST
