@@ -87,10 +87,12 @@ python run_structdr.py --bw 0.1 --automatic_bw 0 --input ./example/Dentate_Gyrus
 - GraphDR supports GPU. You can use it via `use_cuda=True`.
 
 ### Further tips for StructDR:
+- You can extract the order of cells along the trajectories for analysis such as differential expression. `utils.make_trajectory` is serves for this purpose.
 - Choosing the appropriate bandwidths is important. If you use the CLI (run_structdr.py) it implemented an automatic guess for a bandwidth which works for a wide range of datasets, but we recommend you to try a few bandwidth and compare the results. You can specify bandwidth through two parameters a fixed bandwidth by `bw` and an optional adaptive bandwidth controlled by `min_radius`. The `min_radius` parameter (default to 10) set the adaptive bandwidth to be the distance to the min_radius-th nearest neighbor. The final bandwidth is the maximum between the fixed bandwidth and the adaptive bandwidth, therefore you can specify these values get results with completely fixed or completely adaptive bandwidths or a combination of the two.
 - You can project any data to density ridges using the scms method of the object, not just your input data that defines the density ridges.
 - If the mapping between data to the positions in density ridges are important for your application, you can reduce the stepsize to integrate through the (projected) gradient curve more accurately (it can lead to slower convergence though). If you only need to extract the density ridges then it does not matter. The default should still work well for most cases even if you use the mapping though.
 - If you use the confidence set inference, note that it requires the input to be processed in a way that does not introduce extra dependencies among cells. Generally raw data and linear transformations are fine (StructDR does not model the uncertainty of the linear transform itself though), and most nonlinear methods including GraphDR are not supported. 
+
 
 ### Graphical Interface - Trenti
 
