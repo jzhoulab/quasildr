@@ -271,8 +271,6 @@ class GraphDR(BaseEstimator):
         computed from `regularization`,
         specifying `regularization` instead of `_lambda` is generally recommended as it
         automatically adjusts based on graph density. Default is None.
-    symmetrize : bool, optional
-        Symmetrize the nearest-neighbors graph by averaging with its transpose. Default is `True`.
     rescale : bool, optional
         Rescale each dimension in the output to align with the input. It works with and without
         `no_rotation`. Default is `False`
@@ -315,7 +313,7 @@ class GraphDR(BaseEstimator):
             self,
             n_neighbors=10, regularization=100, n_components=None, no_rotation=False,
             metric='l2', metric_params={}, method='auto',
-            _lambda=None, symmetrize=True, rescale=False,
+            _lambda=None, rescale=False,
             refine_iter=0, refine_threshold=12, _refine_threshold=None,
             tol=1e-7, atol=1e-15, nmslib_params={'post': 2},
             n_jobs=1, n_jobs_nmslib=8, use_cuda=False, verbose=False):
@@ -329,7 +327,6 @@ class GraphDR(BaseEstimator):
         self.metric = metric
         self.metric_params = metric_params
         self.method = method
-        self.symmetrize = symmetrize
         self.rescale = rescale
         self.no_rotation = no_rotation
         self.refine_iter = refine_iter
@@ -371,7 +368,7 @@ class GraphDR(BaseEstimator):
         output = graphdr(X, n_neighbors=self.n_neighbors, regularization=self.regularization,
                          metric=self.metric, metric_params=self.metric_params,
                          n_components=self.n_components, no_rotation=self.no_rotation, _lambda=self._lambda,
-                         custom_graph=custom_graph, rescale=self.rescale, symmetrize=self.symmetrize,
+                         custom_graph=custom_graph, rescale=self.rescale,
                          refine_iter=self.refine_iter, refine_threshold=self.refine_threshold,
                          _refine_threshold=self._refine_threshold, refine_protected_graph=refine_protected_graph,
                          tol=self.tol, atol=self.atol, nmslib_params=self.nmslib_params, verbose=self.verbose,
@@ -422,7 +419,7 @@ class GraphDR(BaseEstimator):
         Z = graphdr(X, n_neighbors=self.n_neighbors, regularization=self.regularization,
                          metric=self.metric, metric_params=self.metric_params,
                          n_components=self.n_components, no_rotation=True, _lambda=self._lambda, 
-                         custom_graph=custom_graph, rescale=self.rescale, symmetrize=self.symmetrize,
+                         custom_graph=custom_graph, rescale=self.rescale,
                          refine_iter=self.refine_iter, refine_threshold=self.refine_threshold,
                          _refine_threshold=self._refine_threshold, refine_protected_graph=refine_protected_graph,
                          tol=self.tol, atol=self.atol, nmslib_params=self.nmslib_params, verbose=self.verbose,
@@ -435,7 +432,7 @@ class GraphDR(BaseEstimator):
 
 def graphdr(X, n_neighbors=10, regularization=100, n_components=None, no_rotation=False,
             metric='euclidean', metric_params={}, method='auto',
-            _lambda=None, init=None, symmetrize=True,
+            _lambda=None, init=None,
             custom_graph=None, rescale=False, refine_iter=0, refine_threshold=12,
             _refine_threshold=None, refine_protected_graph=None, tol=1e-7, atol=1e-15,
             nmslib_params={'post': 2}, n_jobs=1, n_jobs_nmslib=8, use_cuda=False, verbose=False,
@@ -561,8 +558,6 @@ def graphdr(X, n_neighbors=10, regularization=100, n_components=None, no_rotatio
         Initialize output representation Z with this array if solved through iterative solver.
         `init` is only used when `no_rotation=True` and method is not `small`.
         Default is None.
-    symmetrize : bool, optional
-        Symmetrize the nearest-neighbors graph by averaging with its transpose. Default is `True`.
     custom_graph : sparse matrix or None, optional
         If specified, use this user-provided graph instead of constructing nearest-neighbors
         graph from `X`. Default is None.
@@ -631,8 +626,7 @@ def graphdr(X, n_neighbors=10, regularization=100, n_components=None, no_rotatio
         else:
             graph = custom_graph
 
-        if symmetrize:
-            graph = 0.5 * (graph + graph.T)
+        graph = 0.5 * (graph + graph.T)
 
         graphL = csgraph.laplacian(graph)
         if _lambda is None:
@@ -683,8 +677,7 @@ def graphdr(X, n_neighbors=10, regularization=100, n_components=None, no_rotatio
         else:
             graph = custom_graph
 
-        if symmetrize:
-            graph = 0.5 * (graph + graph.T)
+        graph = 0.5 * (graph + graph.T)
 
         graphL = csgraph.laplacian(graph)
 
